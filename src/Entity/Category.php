@@ -19,16 +19,16 @@ class Category
     private ?int $id = null;
 
     #[ORM\Column(length: 128)]
-    private ?string $nameDe = null;
+    private string $nameDe;
 
     #[ORM\Column(length: 128)]
-    private ?string $nameEn = null;
+    private string $nameEn;
 
     #[ORM\Column(length: 128)]
-    private ?string $aliasDe = null;
+    private string $aliasDe;
 
     #[ORM\Column(length: 128)]
-    private ?string $aliasEn = null;
+    private string $aliasEn;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $descriptionDe = null;
@@ -65,7 +65,7 @@ class Category
         return $this->id;
     }
 
-    public function getNameDe(): ?string
+    public function getNameDe(): string
     {
         return $this->nameDe;
     }
@@ -77,7 +77,7 @@ class Category
         return $this;
     }
 
-    public function getNameEn(): ?string
+    public function getNameEn(): string
     {
         return $this->nameEn;
     }
@@ -89,7 +89,7 @@ class Category
         return $this;
     }
 
-    public function getAliasDe(): ?string
+    public function getAliasDe(): string
     {
         return $this->aliasDe;
     }
@@ -101,7 +101,7 @@ class Category
         return $this;
     }
 
-    public function getAliasEn(): ?string
+    public function getAliasEn(): string
     {
         return $this->aliasEn;
     }
@@ -208,31 +208,33 @@ class Category
 
     public function __toString(): string
     {
-        return null !== $this->getNameDe() ?: '';
+        return $this->getNameDe();
     }
 
-    public function getName(string $locale)
+    public function getName(string $locale): string
     {
-        $method = __FUNCTION__.ucfirst($locale);
-
-        return $this->$method();
-    }
-
-    public function getAlias(string $locale)
-    {
-        $method = __FUNCTION__.ucfirst($locale);
-
-        return $this->$method();
-    }
-
-    public function getDescription(string $locale): string
-    {
-        $method = __FUNCTION__.ucfirst($locale);
-
-        if (method_exists($this, $method)) {
-            return $this->$method() ?? '';
+        if ('en' === $locale) {
+            return $this->getNameEn();
         }
 
-        return $this->getDescriptionEn() ?? '';
+        return $this->getNameDe();
+    }
+
+    public function getAlias(string $locale): string
+    {
+        if ('en' === $locale) {
+            return $this->getAliasEn();
+        }
+
+        return $this->getAliasDe();
+    }
+
+    public function getDescription(string $locale): ?string
+    {
+        if ('en' === $locale) {
+            $this->getDescriptionEn();
+        }
+
+        return $this->getDescriptionDe();
     }
 }

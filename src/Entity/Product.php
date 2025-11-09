@@ -45,9 +45,11 @@ class Product
     #[ORM\Column(type: Types::TEXT)]
     private ?string $descriptionEn = null;
 
+    /** @var array<string> $colors */
     #[ORM\Column(type: Types::SIMPLE_ARRAY)]
     private array $colors = [];
 
+    /** @var array<string>|null $sizes */
     #[ORM\Column(type: Types::SIMPLE_ARRAY, nullable: true)]
     private ?array $sizes = null;
 
@@ -126,11 +128,17 @@ class Product
         return $this;
     }
 
+    /**
+     * @return array<string>
+     */
     public function getColors(): array
     {
         return $this->colors;
     }
 
+    /**
+     * @param array<string> $colors
+     */
     public function setColors(array $colors): static
     {
         $this->colors = $colors;
@@ -138,11 +146,17 @@ class Product
         return $this;
     }
 
+    /**
+     * @return array<string>|null
+     */
     public function getSizes(): ?array
     {
         return $this->sizes;
     }
 
+    /**
+     * @param array<string>|null $sizes
+     */
     public function setSizes(?array $sizes): static
     {
         $this->sizes = $sizes;

@@ -10,7 +10,7 @@ final class IndexControllerTest extends WebTestCase
 {
     public function testIndex(): void
     {
-        $client = static::createClient();
+        $client = self::createClient();
         $client->request('GET', '/index');
 
         self::assertResponseIsSuccessful();
