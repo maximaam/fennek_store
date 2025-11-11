@@ -1,0 +1,21 @@
+dashboard: Dashboard
+parent_category: Parent Kategorie
+
+category:
+  singular: Kategorie
+  plural: Kategorien
+  list: Kategorien Liste
+  parent: Parent Kategorie
+  create_new: Neue Kategorie
+  description:
+    de: Beschreibung Deutsch
+    en: Beschreibung Englisch
+  name:
+    de: Name Deutsch
+    en: Name Englisch
+
+product:
+  singular: Produkt
+  plural: Produkte
+  list: Produkte Liste
+  create_new: Neues Produkt

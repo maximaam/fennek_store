@@ -18,16 +18,16 @@ class Category
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 128)]
+    #[ORM\Column(length: 128, unique: true)]
     private string $nameDe;
 
-    #[ORM\Column(length: 128)]
+    #[ORM\Column(length: 128, unique: true)]
     private string $nameEn;
 
-    #[ORM\Column(length: 128)]
+    #[ORM\Column(length: 128, unique: true)]
     private string $aliasDe;
 
-    #[ORM\Column(length: 128)]
+    #[ORM\Column(length: 128, unique: true)]
     private string $aliasEn;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -157,10 +157,22 @@ class Category
         return $this->children;
     }
 
-    public function setChildren(?Collection $children = null): self
+    public function addChild(self $child): static
     {
-        $this->children = $children;
+        if (!$this->children->contains($child)) {
+            $this->children[] = $child;
+            $child->setParent($this);
+        }
+        return $this;
+    }
 
+    public function removeChild(self $child): static
+    {
+        if ($this->children->removeElement($child)) {
+            if ($child->getParent() === $this) {
+                $child->setParent(null);
+            }
+        }
         return $this;
     }
 
@@ -205,6 +217,8 @@ class Category
 
         return $this;
     }
+
+    // Extra entity methods //
 
     public function __toString(): string
     {
