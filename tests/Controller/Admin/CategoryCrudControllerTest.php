@@ -6,6 +6,7 @@ namespace App\Tests\Controller\Admin;
 
 use App\Entity\Category;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -18,9 +19,18 @@ final class CategoryCrudControllerTest extends WebTestCase
 
     protected function setUp(): void
     {
-        $this->client = static::createClient();
-        $this->em = self::getContainer()->get('doctrine')->getManager();
-        $this->slugger = self::getContainer()->get(SluggerInterface::class);
+        $this->client = self::createClient();
+
+        /** @var ManagerRegistry $doctrine */
+        $doctrine = self::getContainer()->get('doctrine');
+
+        /** @var EntityManagerInterface $em */
+        $em = $doctrine->getManager();
+        $this->em = $em;
+
+        /** @var SluggerInterface $slugger */
+        $slugger = self::getContainer()->get(SluggerInterface::class);
+        $this->slugger = $slugger;
 
         $this->cleanUp();
     }
@@ -53,7 +63,7 @@ final class CategoryCrudControllerTest extends WebTestCase
     {
         $category = $this->createCategory(true, 'Name DE', 'Name EN');
 
-        $this->client->request('GET', sprintf('/admin/category/%s/edit', $category->getId()));
+        $this->client->request('GET', \sprintf('/admin/category/%s/edit', $category->getId()));
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('h1');
         self::assertSelectorExists('select#Category_parent');
@@ -67,7 +77,7 @@ final class CategoryCrudControllerTest extends WebTestCase
     {
         $category = $this->createCategory(true, 'Name DE', 'Name EN');
 
-        $this->client->request('GET', sprintf('/admin/category/%s', $category->getId()));
+        $this->client->request('GET', \sprintf('/admin/category/%s', $category->getId()));
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('h1');
         self::assertSelectorExists('section#main');
@@ -125,7 +135,7 @@ final class CategoryCrudControllerTest extends WebTestCase
         $category = $this->createCategory(true, 'Parent DE', 'Parent EN');
         self::assertNull($category->getParent());
 
-        $this->client->request('GET', sprintf('/admin/category/%s/edit', $category->getId()));
+        $this->client->request('GET', \sprintf('/admin/category/%s/edit', $category->getId()));
         self::assertResponseIsSuccessful();
 
         $this->client->submitForm('ea[newForm][btn]', [
@@ -150,7 +160,7 @@ final class CategoryCrudControllerTest extends WebTestCase
         $parent = $this->createCategory(true, 'Parent DE', 'Parent EN');
         $child = $this->createCategory(false, 'Child DE', 'Child EN', $parent);
 
-        $this->client->request('GET', sprintf('/admin/category/%s/edit', $child->getId()));
+        $this->client->request('GET', \sprintf('/admin/category/%s/edit', $child->getId()));
         self::assertResponseIsSuccessful();
 
         $this->client->submitForm('ea[newForm][btn]', [
@@ -173,10 +183,10 @@ final class CategoryCrudControllerTest extends WebTestCase
 
     protected function tearDown(): void
     {
-        // Clean up all categories to keep DB clean for other tests
         $this->cleanUp();
 
         parent::tearDown();
+        $this->em->close();
         unset($this->em);
     }
 
@@ -192,7 +202,7 @@ final class CategoryCrudControllerTest extends WebTestCase
                  ->setAliasDe($this->slugger->slug($nameDe)->toString())
                  ->setAliasEn($this->slugger->slug($nameEn)->toString());
 
-        if (!$isParent && $parent !== null) {
+        if (!$isParent && $parent instanceof Category) {
             $category->setParent($parent);
         }
 
@@ -204,6 +214,6 @@ final class CategoryCrudControllerTest extends WebTestCase
 
     private function cleanUp(): void
     {
-        $this->em->createQuery('DELETE FROM App\Entity\Category c')->execute();        
+        $this->em->createQuery('DELETE FROM App\Entity\Category c')->execute();
     }
 }
