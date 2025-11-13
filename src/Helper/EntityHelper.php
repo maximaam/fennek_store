@@ -8,12 +8,13 @@ use App\Entity\Category;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
-final class EntityHelper
+final readonly class EntityHelper
 {
     public function __construct(
-        private readonly EntityManagerInterface $em,
-        private readonly SluggerInterface $slugger,
-    ) {}
+        private EntityManagerInterface $em,
+        private SluggerInterface $slugger,
+    ) {
+    }
 
     /**
      * Parent categories get a position, used for
@@ -26,7 +27,7 @@ final class EntityHelper
             ->findLastCreatedParent();
         $nextPosition = ($lastPosition?->getPosition() ?? 0) + 1;
 
-        if (null === $category->getParent()) {
+        if (!$category->getParent() instanceof Category) {
             $category->setPosition($nextPosition);
         }
     }
@@ -38,10 +39,5 @@ final class EntityHelper
 
         $category->setAliasDe($aliasDe->toString());
         $category->setAliasEn($aliasEn->toString());
-    }
-
-    public function createParentCategoryField(Category $category): void
-    {
-        
     }
 }

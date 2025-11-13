@@ -27,7 +27,7 @@ class CategoryRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
-    public function findParentsQueryBuilder(): ?QueryBuilder
+    public function findParentsQueryBuilder(): QueryBuilder
     {
         return $this->createQueryBuilder('c')
             ->andWhere('c.parent IS NULL')

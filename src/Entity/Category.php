@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-class Category
+class Category implements \Stringable
 {
     use TimestampableTrait;
 
@@ -167,16 +167,16 @@ class Category
             $this->children[] = $child;
             $child->setParent($this);
         }
+
         return $this;
     }
 
     public function removeChild(self $child): static
     {
-        if ($this->children->removeElement($child)) {
-            if ($child->getParent() === $this) {
-                $child->setParent(null);
-            }
+        if ($this->children->removeElement($child) && $child->getParent() === $this) {
+            $child->setParent(null);
         }
+
         return $this;
     }
 
@@ -212,17 +212,14 @@ class Category
 
     public function removeProduct(Product $product): static
     {
-        if ($this->products->removeElement($product)) {
-            // set the owning side to null (unless already changed)
-            if ($product->getCategory() === $this) {
-                $product->setCategory(null);
-            }
+        if ($this->products->removeElement($product) && $product->getCategory() === $this) {
+            $product->setCategory(null);
         }
 
         return $this;
     }
 
-    // Extra entity methods //
+    // ### Extra entity methods ###//
 
     public function __toString(): string
     {

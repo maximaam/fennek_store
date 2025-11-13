@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Entity\Category;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
+use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
@@ -20,12 +20,15 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * @extends AbstractCrudController<Category>
+ */
 final class CategoryCrudController extends AbstractCrudController
 {
     public function __construct(
-        private readonly EntityManagerInterface $em,
         private readonly TranslatorInterface $translator,
-    ) {}
+    ) {
+    }
 
     public static function getEntityFqcn(): string
     {
@@ -41,8 +44,7 @@ final class CategoryCrudController extends AbstractCrudController
                 Crud::PAGE_INDEX,
                 Action::NEW,
                 static fn (Action $action) => $action->setIcon('fas fa-tags')->setLabel('category.action.create_new')
-            )
-        ;
+            );
     }
 
     #[\Override]
@@ -64,6 +66,9 @@ final class CategoryCrudController extends AbstractCrudController
             ->setPaginatorPageSize(25);
     }
 
+    /**
+     * @return iterable<FieldInterface|string>
+     */
     #[\Override]
     public function configureFields(string $pageName): iterable
     {
@@ -75,24 +80,26 @@ final class CategoryCrudController extends AbstractCrudController
         };
     }
 
+    /**
+     * @return iterable<FieldInterface|string>
+     */
     private function getFormFields(string $pageName): iterable
     {
-        $category = $this->getContext()?->getEntity()?->getInstance();
+        /** @var Category|null $category */
+        $category = $this->getContext()?->getEntity()->getInstance();
 
         $parentCategory = AssociationField::new('parent')
             ->setLabel('category.parent')
             ->renderAsNativeWidget()
             ->setFormTypeOptions([
-                'query_builder' => static function (EntityRepository $er) {
-                    return $er->createQueryBuilder('c')
-                        ->andWhere('c.parent IS NULL')
-                        ->orderBy('c.nameDe', 'ASC');
-                },
+                'query_builder' => static fn (EntityRepository $er) => $er->createQueryBuilder('c')
+                    ->andWhere('c.parent IS NULL')
+                    ->orderBy('c.nameDe', 'ASC'),
             ]);
 
         // Required/disabled only in edit mode
-        if ($pageName === Crud::PAGE_EDIT && $category instanceof Category) {
-            $isTop = $category->getParent() === null;
+        if (Crud::PAGE_EDIT === $pageName && $category instanceof Category) {
+            $isTop = !$category->getParent() instanceof Category;
             $parentCategory->setRequired(!$isTop)->setDisabled($isTop);
         }
 
@@ -101,13 +108,16 @@ final class CategoryCrudController extends AbstractCrudController
 
         // Position only visible for top categories on edit
         yield FormField::addColumn(6);
-        if ($pageName === Crud::PAGE_EDIT && $category?->getParent() === null) {
+        if (Crud::PAGE_EDIT === $pageName && null === $category?->getParent()) {
             yield IntegerField::new('position')->setHelp('Nur bei TOP Kategorien');
         }
 
         yield from $this->getMainFields();
     }
 
+    /**
+     * @return iterable<FieldInterface|string>
+     */
     private function getMainFields(): iterable
     {
         // German fields
@@ -123,6 +133,9 @@ final class CategoryCrudController extends AbstractCrudController
         yield TextareaField::new('descriptionEn', 'category.description.en');
     }
 
+    /**
+     * @return iterable<FieldInterface|string>
+     */
     private function getIndexFields(): iterable
     {
         yield AssociationField::new('parent')->setLabel('category.parent');
@@ -130,6 +143,9 @@ final class CategoryCrudController extends AbstractCrudController
         yield IntegerField::new('position');
     }
 
+    /**
+     * @return iterable<FieldInterface|string>
+     */
     private function getDetailFields(): iterable
     {
         yield FormField::addColumn(12);
