@@ -7,6 +7,8 @@ namespace App\Controller\Admin;
 use App\Entity\Category;
 use App\Entity\Product;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Asset;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
@@ -53,6 +55,12 @@ class DashboardController extends AbstractDashboardController
         return Dashboard::new()
             ->setFaviconPath('/images/favicon.png')
             ->setTitle('<img src="/images/logo.png"> FS Admin');
+    }
+
+    #[\Override]
+    public function configureAssets(): Assets
+    {
+        return Assets::new()->addCssFile('css/admin.css');
     }
 
     #[\Override]

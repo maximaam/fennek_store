@@ -10,125 +10,142 @@ use Doctrine\ORM\EntityRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
-class CategoryCrudController extends AbstractCrudController
+final class CategoryCrudController extends AbstractCrudController
 {
-    public function __construct(private readonly EntityManagerInterface $em)
-    {}
+    public function __construct(
+        private readonly EntityManagerInterface $em,
+        private readonly TranslatorInterface $translator,
+    ) {}
 
     public static function getEntityFqcn(): string
     {
         return Category::class;
     }
 
+    #[\Override]
     public function configureActions(Actions $actions): Actions
     {
         return $actions
-            ->add(Crud::PAGE_INDEX, Action::DETAIL);
+            ->add(Crud::PAGE_INDEX, Action::DETAIL)
+            ->update(
+                Crud::PAGE_INDEX,
+                Action::NEW,
+                static fn (Action $action) => $action->setIcon('fas fa-tags')->setLabel('category.action.create_new')
+            )
+        ;
     }
 
-    // Override to set the position
-    /*
-    public function createEntity(string $entityFqcn)
+    #[\Override]
+    public function configureFilters(Filters $filters): Filters
     {
-        $category = new Category();
-        $lastParent = $this->em
-            ->getRepository(Category::class)
-            ->findLastCreatedParent();
-
-        $nextPosition = ($lastParent?->getPosition() ?? 0) + 1;
-        $category->setPosition($nextPosition);
-
-        return $category;
+        return $filters->add('nameDe');
     }
-    */
 
+    #[\Override]
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
             ->setEntityLabelInSingular('category.create_new')
-            // ->setEntityLabelInPlural('category.plural')
             ->setPageTitle(Crud::PAGE_INDEX, 'category.list')
             ->setPageTitle(Crud::PAGE_NEW, 'category.singular')
+            ->setPageTitle(Crud::PAGE_EDIT, fn (Category $c) => $this->translator->trans('category.title.page_edit', ['%category%' => $c->getNameDe()]))
+            ->setPageTitle(Crud::PAGE_DETAIL, fn (Category $c) => $this->translator->trans('category.title.page_index', ['%category%' => $c->getNameDe()]))
             ->showEntityActionsInlined()
-            ->setPaginatorPageSize(25)
-            ->setPageTitle(Crud::PAGE_EDIT, fn (Category $category) => sprintf('Edit "%s"', $category->getNameDe()))
-            ->setPageTitle(Crud::PAGE_DETAIL, fn (Category $category) => sprintf('Details for "%s"', $category->getNameDe()))
-        ;
-        
+            ->setPaginatorPageSize(25);
     }
 
     #[\Override]
     public function configureFields(string $pageName): iterable
     {
-        if ($pageName === Crud::PAGE_EDIT || $pageName === Crud::PAGE_NEW) {
-            $parentCategory = AssociationField::new('parent')
-                ->setLabel('category.parent')
-                ->renderAsNativeWidget()
-                ->setFormTypeOptions([
-                    'query_builder' => function (EntityRepository $er) {
-                        return $er->createQueryBuilder('c')
-                            ->andWhere('c.parent IS NULL')
-                            ->orderBy('c.nameDe', 'ASC');
-                    },
-                ]);
+        return match ($pageName) {
+            Crud::PAGE_INDEX => $this->getIndexFields(),
+            Crud::PAGE_DETAIL => $this->getDetailFields(),
+            Crud::PAGE_EDIT, Crud::PAGE_NEW => $this->getFormFields($pageName),
+            default => [],
+        };
+    }
 
-            if ($pageName === Crud::PAGE_EDIT) {
-                $parentCategory->setRequired(true);
-            }
+    private function getFormFields(string $pageName): iterable
+    {
+        $category = $this->getContext()?->getEntity()?->getInstance();
 
-            yield FormField::addColumn(6);
-            yield $parentCategory;
+        $parentCategory = AssociationField::new('parent')
+            ->setLabel('category.parent')
+            ->renderAsNativeWidget()
+            ->setFormTypeOptions([
+                'query_builder' => static function (EntityRepository $er) {
+                    return $er->createQueryBuilder('c')
+                        ->andWhere('c.parent IS NULL')
+                        ->orderBy('c.nameDe', 'ASC');
+                },
+            ]);
 
-            yield FormField::addColumn(6);
-            if (Crud::PAGE_EDIT === $pageName) {
-                $category = $this->getContext()?->getEntity()?->getInstance();
-                if (null === $category?->getParent()) {
-                    yield IntegerField::new('position')
-                        ->setHelp('Nur bei TOP Kategorien');
-                }
-            }
-
-            yield FormField::addColumn(6);
-            yield FormField::addFieldset('');
-            yield TextField::new('nameDe', 'category.name.de');
-            yield TextareaField::new('descriptionDe', 'category.description.de');
-            // yield FormField::addFieldset();
-
-            yield FormField::addColumn(6);
-            yield FormField::addFieldset();
-            yield TextField::new('nameEn', 'category.name.en');
-            yield TextareaField::new('descriptionEn', 'category.description.en');
-
+        // Required/disabled only in edit mode
+        if ($pageName === Crud::PAGE_EDIT && $category instanceof Category) {
+            $isTop = $category->getParent() === null;
+            $parentCategory->setRequired(!$isTop)->setDisabled($isTop);
         }
 
-        if ($pageName === Crud::PAGE_INDEX) {
-            yield AssociationField::new('parent')->setLabel('category.parent');
-            yield TextField::new('nameDe', 'Name');
-            yield IntegerField::new('position');
+        yield FormField::addColumn(6);
+        yield $parentCategory;
+
+        // Position only visible for top categories on edit
+        yield FormField::addColumn(6);
+        if ($pageName === Crud::PAGE_EDIT && $category?->getParent() === null) {
+            yield IntegerField::new('position')->setHelp('Nur bei TOP Kategorien');
         }
 
-        if ($pageName === Crud::PAGE_DETAIL) {
-            yield FormField::addColumn(6);
-            yield TextField::new('nameDe');
-            yield TextField::new('aliasDe');
-            yield TextField::new('descriptionDe');
+        yield from $this->getMainFields();
+    }
 
-            yield FormField::addColumn(6);
-            yield TextField::new('nameEn');
-            yield TextField::new('aliasEn');
-            yield TextField::new('descriptionEn');
+    private function getMainFields(): iterable
+    {
+        // German fields
+        yield FormField::addColumn(6);
+        yield FormField::addFieldset('Deutsch');
+        yield TextField::new('nameDe', 'category.name.de');
+        yield TextareaField::new('descriptionDe', 'category.description.de');
 
-            yield FormField::addColumn(12);
-            yield IntegerField::new('position');
-        }
+        // English fields
+        yield FormField::addColumn(6);
+        yield FormField::addFieldset('English');
+        yield TextField::new('nameEn', 'category.name.en');
+        yield TextareaField::new('descriptionEn', 'category.description.en');
+    }
+
+    private function getIndexFields(): iterable
+    {
+        yield AssociationField::new('parent')->setLabel('category.parent');
+        yield TextField::new('nameDe', 'Name');
+        yield IntegerField::new('position');
+    }
+
+    private function getDetailFields(): iterable
+    {
+        yield FormField::addColumn(12);
+        yield IntegerField::new('position');
+        yield DateTimeField::new('createdAt');
+
+        yield FormField::addColumn(6);
+        yield FormField::addFieldset('Deutsch');
+        yield TextField::new('nameDe');
+        yield TextField::new('aliasDe');
+        yield TextField::new('descriptionDe');
+
+        yield FormField::addColumn(6);
+        yield FormField::addFieldset('English');
+        yield TextField::new('nameEn');
+        yield TextField::new('aliasEn');
+        yield TextField::new('descriptionEn');
     }
 }

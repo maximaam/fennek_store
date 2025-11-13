@@ -1,12 +1,15 @@
 dashboard: Dashboard
-parent_category: Parent Kategorie
 
 category:
   singular: Kategorie
   plural: Kategorien
   list: Kategorien Liste
   parent: Parent Kategorie
-  create_new: Neue Kategorie
+  action:
+    create_new: Neue Kategorie erstellen
+  title:
+    page_edit: "'%category%' bearbeiten"
+    page_index: "Details für '%category%'"
   description:
     de: Beschreibung Deutsch
     en: Beschreibung Englisch

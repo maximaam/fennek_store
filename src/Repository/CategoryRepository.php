@@ -6,6 +6,7 @@ namespace App\Repository;
 
 use App\Entity\Category;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -20,12 +21,17 @@ class CategoryRepository extends ServiceEntityRepository
 
     public function findLastCreatedParent(): ?Category
     {
-        return $this->createQueryBuilder('c')
-            ->andWhere('c.parent IS NULL')
-            ->orderBy('c.id', 'DESC')
+        return $this->findParentsQueryBuilder()
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    public function findParentsQueryBuilder(): ?QueryBuilder
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.parent IS NULL')
+            ->orderBy('c.id', 'DESC');
     }
 
     //    /**
