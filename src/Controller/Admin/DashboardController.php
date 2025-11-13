@@ -20,6 +20,7 @@ class DashboardController extends AbstractDashboardController
     #[\Override]
     public function index(): Response
     {
+        /** @var AdminUrlGenerator $urlGenerator */
         $urlGenerator = $this->container->get(AdminUrlGenerator::class);
 
         return $this->redirect($urlGenerator->setController(ProductCrudController::class)
