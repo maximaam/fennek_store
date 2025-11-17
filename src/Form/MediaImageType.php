@@ -19,6 +19,9 @@ class MediaImageType extends AbstractType
             'allow_delete' => true,
             'download_uri' => false,
             'image_uri' => true,
+            'attr' => [
+                'class' => 'upload-btn',
+            ]
         ]);
     }
 

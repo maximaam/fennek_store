@@ -60,7 +60,9 @@ class DashboardController extends AbstractDashboardController
     #[\Override]
     public function configureAssets(): Assets
     {
-        return Assets::new()->addCssFile('css/admin.css');
+        return Assets::new()
+            ->addCssFile('css/admin.css')
+            ->addJsFile('js/admin.js');
     }
 
     #[\Override]

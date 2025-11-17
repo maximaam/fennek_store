@@ -21,7 +21,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\MoneyField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
@@ -160,7 +159,7 @@ final class ProductCrudController extends AbstractCrudController
         yield BooleanField::new('topItem', 'product.top_item');
 
         yield FormField::addColumn(12);
-        yield CollectionField::new('images')
+        yield CollectionField::new('images', 'label.images')
             ->setEntryType(MediaImageType::class)
             ->allowAdd()
             ->allowDelete()
