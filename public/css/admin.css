@@ -3,3 +3,17 @@
    --form-control-bg: blue;
 }
 */
+
+.checkbox-sizes .form-check {
+    display: inline-flex;
+    margin-right: 30px;
+}
+
+.checkbox-colors .form-check {
+    display: inline-flex;
+    min-width: 150px;
+}
+
+form[id$="-Product-form"] .field-boolean {
+   padding-top: 32px;
+}

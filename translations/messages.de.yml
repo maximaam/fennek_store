@@ -1,4 +1,19 @@
 dashboard: Dashboard
+label:
+  german: Deutsch
+  english: Engslish
+  name:
+    all: Name
+    de: Name Deutsch
+    en: Name Engslish
+  title:
+    all: Titel
+    de: Titel Deutsch
+    en: Titel Engslish
+  description:
+    all: Beschreibung
+    de: Beschreibung Deutsch
+    en: Beschreibung Englisch
 
 category:
   singular: Kategorie
@@ -10,15 +25,41 @@ category:
   title:
     page_edit: "'%category%' bearbeiten"
     page_index: "Details für '%category%'"
-  description:
-    de: Beschreibung Deutsch
-    en: Beschreibung Englisch
-  name:
-    de: Name Deutsch
-    en: Name Englisch
 
 product:
-  singular: Produkt
-  plural: Produkte
-  list: Produkte Liste
-  create_new: Neues Produkt
+  singular: Artikel
+  plural: Artikel
+  list: Artikel Liste
+  action:
+    create_new: Neues Artikel erstellen
+  title:
+    page_edit: "'%product%' bearbeiten"
+    page_index: "Details für '%product%'"
+  top_item: Top Artikel
+  item_number: Artikel Nummer
+  colors: Farben
+  sizes: Größen
+  price: Preis
+  colors_list:
+    white: Weiss
+    silver: Silber
+    gray: Grau
+    black: Schwarz
+    beige: Beige
+    yellow: Gelb
+    gold: Gold
+    orange: Orange
+    red: Rot
+    pink: Rosa
+    violet: Violett
+    fuchsia: Fuchsia
+    purple: Lila
+    lightblue: Hellblau
+    blue: Blau
+    darkblue: Dunkelblau
+    green: Grün
+    lightgreen: Hellgrün
+    burlywood: Hellbraun
+    brown: Braun
+    maroon: Bordeaux
+    darkred: Dunkelrot

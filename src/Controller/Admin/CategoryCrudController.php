@@ -123,14 +123,14 @@ final class CategoryCrudController extends AbstractCrudController
         // German fields
         yield FormField::addColumn(6);
         yield FormField::addFieldset('Deutsch');
-        yield TextField::new('nameDe', 'category.name.de');
-        yield TextareaField::new('descriptionDe', 'category.description.de');
+        yield TextField::new('nameDe', 'label.name.de');
+        yield TextareaField::new('descriptionDe', 'label.description.de');
 
         // English fields
         yield FormField::addColumn(6);
         yield FormField::addFieldset('English');
-        yield TextField::new('nameEn', 'category.name.en');
-        yield TextareaField::new('descriptionEn', 'category.description.en');
+        yield TextField::new('nameEn', 'label.name.en');
+        yield TextareaField::new('descriptionEn', 'label.description.en');
     }
 
     /**

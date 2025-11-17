@@ -1,0 +1,9 @@
+{% for value in field.value %}
+    {% if field.property == 'colors' %}
+        <span class="badge badge-secondary" style="border: 2px solid {{ value }}">
+            {{ ('product.colors_list.' ~ value)|trans }}
+        </span>
+    {% else %}
+        <span class="badge badge-secondary">{{ value }}</span>
+    {% endif %}
+{% endfor %}
