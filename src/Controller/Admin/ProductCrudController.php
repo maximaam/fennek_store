@@ -6,6 +6,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\Category;
 use App\Entity\Product;
+use App\Form\MediaImageType;
 use Doctrine\ORM\EntityRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
@@ -17,7 +18,10 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\MoneyField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
@@ -148,14 +152,20 @@ final class ProductCrudController extends AbstractCrudController
             ->renderExpanded()
             ->addCssClass('checkbox-sizes');
 
-        yield FormField::addColumn(3);
+        yield FormField::addColumn(6);
         yield MoneyField::new('price', 'label.price')
             ->setCurrency('EUR');
 
-        yield FormField::addColumn(3);
+        yield FormField::addColumn(6);
         yield BooleanField::new('topItem', 'product.top_item');
 
-        yield FormField::addColumn(6);
+        yield FormField::addColumn(12);
+        yield CollectionField::new('images')
+            ->setEntryType(MediaImageType::class)
+            ->allowAdd()
+            ->allowDelete()
+            ->setFormTypeOptions(['by_reference' => false])
+            ->onlyOnForms();
     }
 
     /**
@@ -174,6 +184,8 @@ final class ProductCrudController extends AbstractCrudController
      */
     private function getDetailFields(): iterable
     {
+        yield FormField::addColumn(12);
+        yield DateField::new('createdAt', 'label.date.created');
         yield FormField::addColumn(12);
         yield TextField::new('category', 'category.singular');
         yield FormField::addColumn(12);
@@ -201,5 +213,9 @@ final class ProductCrudController extends AbstractCrudController
         yield FormField::addColumn(12);
         yield MoneyField::new('price', 'product.price')
             ->setCurrency('EUR');
+
+        yield CollectionField::new('images', 'Images')
+            ->setTemplatePath('admin/fields/multiple_images.html.twig')
+            ->onlyOnDetail();
     }
 }

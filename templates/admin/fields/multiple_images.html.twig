@@ -1,0 +1,8 @@
+<div class="d-flex flex-wrap gap-2">
+    {% for image in field.value %}
+        {% if image.imageName %}
+            <img src="/uploads/images/{{ image.imageName }}" 
+                 style="max-width: 120px; border-radius: 6px;">
+        {% endif %}
+    {% endfor %}
+</div>
