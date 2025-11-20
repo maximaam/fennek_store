@@ -14,6 +14,10 @@ label:
     all: Beschreibung
     de: Beschreibung Deutsch
     en: Beschreibung Englisch
+  images: Bilder
+  image: Bild
+
+action.add_new_item: Neues Element
 
 category:
   singular: Kategorie

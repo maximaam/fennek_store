@@ -152,7 +152,7 @@ final class ProductCrudController extends AbstractCrudController
             ->addCssClass('checkbox-sizes');
 
         yield FormField::addColumn(6);
-        yield MoneyField::new('price', 'label.price')
+        yield MoneyField::new('price', 'product.price')
             ->setCurrency('EUR');
 
         yield FormField::addColumn(6);
@@ -213,7 +213,7 @@ final class ProductCrudController extends AbstractCrudController
         yield MoneyField::new('price', 'product.price')
             ->setCurrency('EUR');
 
-        yield CollectionField::new('images', 'Images')
+        yield CollectionField::new('images', 'label.images')
             ->setTemplatePath('admin/fields/multiple_images.html.twig')
             ->onlyOnDetail();
     }

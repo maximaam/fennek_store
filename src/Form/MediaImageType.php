@@ -21,7 +21,7 @@ class MediaImageType extends AbstractType
             'image_uri' => true,
             'attr' => [
                 'class' => 'upload-btn',
-            ]
+            ],
         ]);
     }
 
