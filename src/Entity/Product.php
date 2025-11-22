@@ -6,10 +6,8 @@ namespace App\Entity;
 
 use App\Repository\ProductRepository;
 use App\Traits\TimestampableTrait;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -28,9 +26,7 @@ class Product
 
     public const array SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Id, ORM\GeneratedValue, ORM\Column]
     private ?int $id = null;
 
     #[ORM\Column(length: 128, nullable: true)]
@@ -65,14 +61,6 @@ class Product
     #[ORM\ManyToOne(inversedBy: 'products')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Category $category = null;
-
-    #[ORM\OneToMany(mappedBy: 'product', targetEntity: MediaImage::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
-    private Collection $images;
-
-    public function __construct()
-    {
-        $this->images = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {
@@ -207,32 +195,6 @@ class Product
     public function setCategory(?Category $category): static
     {
         $this->category = $category;
-
-        return $this;
-    }
-
-    public function getImages(): Collection
-    {
-        return $this->images;
-    }
-
-    public function addImage(MediaImage $image): self
-    {
-        if (!$this->images->contains($image)) {
-            $this->images[] = $image;
-            $image->setProduct($this);
-        }
-
-        return $this;
-    }
-
-    public function removeImage(MediaImage $image): self
-    {
-        if ($this->images->removeElement($image)) {
-            if ($image->getProduct() === $this) {
-                $image->setProduct(null);
-            }
-        }
 
         return $this;
     }

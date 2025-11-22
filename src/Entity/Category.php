@@ -17,9 +17,7 @@ class Category implements \Stringable
 {
     use TimestampableTrait;
 
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Id, ORM\GeneratedValue, ORM\Column]
     private ?int $id = null;
 
     #[ORM\Column(length: 128, unique: true)]

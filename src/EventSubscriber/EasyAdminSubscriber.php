@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\EventSubscriber;
 
 use App\Entity\Category;
+use App\Entity\Page;
 use App\Helper\EntityHelper;
 use EasyCorp\Bundle\EasyAdminBundle\Event\BeforeEntityPersistedEvent;
 use EasyCorp\Bundle\EasyAdminBundle\Event\BeforeEntityUpdatedEvent;
@@ -35,6 +36,10 @@ class EasyAdminSubscriber implements EventSubscriberInterface
         if ($entity instanceof Category) {
             $this->entityHelper->setCategoryPosition($entity);
             $this->entityHelper->setCategoryAlias($entity);
+        }
+
+        if ($entity instanceof Page) {
+            $this->entityHelper->setPageAlias($entity);
         }
     }
 

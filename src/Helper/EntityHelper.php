@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Helper;
 
 use App\Entity\Category;
+use App\Entity\Page;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
@@ -36,8 +37,13 @@ final readonly class EntityHelper
     {
         $aliasDe = $this->slugger->slug($category->getNameDe())->lower();
         $aliasEn = $this->slugger->slug($category->getNameEn())->lower();
-
         $category->setAliasDe($aliasDe->toString());
         $category->setAliasEn($aliasEn->toString());
+    }
+
+    public function setPageAlias(Page $page): void
+    {
+        $title = $this->slugger->slug($page->getTitle())->lower();
+        $page->setAlias($title->toString());
     }
 }
