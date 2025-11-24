@@ -67,3 +67,7 @@ product:
     brown: Braun
     maroon: Bordeaux
     darkred: Dunkelrot
+page:
+    title:
+        page_edit: 'messages'
+        page_index: 'messages'

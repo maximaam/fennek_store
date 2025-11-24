@@ -22,7 +22,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\MoneyField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -120,12 +120,12 @@ final class ProductCrudController extends AbstractCrudController
         yield FormField::addColumn(6);
         yield FormField::addFieldset('label.german');
         yield TextField::new('titleDe', 'label.title.de');
-        yield TextareaField::new('descriptionDe', 'label.description.de');
+        yield TextEditorField::new('descriptionDe', 'label.description.de');
 
         yield FormField::addColumn(6);
         yield FormField::addFieldset('label.english');
         yield TextField::new('titleEn', 'label.title.en');
-        yield TextareaField::new('descriptionEn', 'label.description.en');
+        yield TextEditorField::new('descriptionEn', 'label.description.en');
 
         yield FormField::addColumn(12);
         yield ChoiceField::new('colors')

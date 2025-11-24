@@ -43,7 +43,9 @@ final readonly class EntityHelper
 
     public function setPageAlias(Page $page): void
     {
-        $title = $this->slugger->slug($page->getTitle())->lower();
-        $page->setAlias($title->toString());
+        $aliasDe = $this->slugger->slug($page->getTitleDe())->lower();
+        $aliasEn = $this->slugger->slug($page->getTitleEn())->lower();
+        $page->setAliasDe($aliasDe->toString());
+        $page->setAliasEn($aliasEn->toString());
     }
 }

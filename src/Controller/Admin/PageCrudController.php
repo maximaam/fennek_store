@@ -14,7 +14,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -48,7 +48,7 @@ final class PageCrudController extends AbstractCrudController
     #[\Override]
     public function configureFilters(Filters $filters): Filters
     {
-        return $filters->add('title');
+        return $filters->add('titleDe');
     }
 
     #[\Override]
@@ -58,8 +58,8 @@ final class PageCrudController extends AbstractCrudController
             ->setEntityLabelInSingular('page.create_new')
             ->setPageTitle(Crud::PAGE_INDEX, 'page.list')
             ->setPageTitle(Crud::PAGE_NEW, 'page.singular')
-            ->setPageTitle(Crud::PAGE_EDIT, fn (Page $p) => $this->translator->trans('page.title.page_edit', ['%page%' => $p->getTitle()]))
-            ->setPageTitle(Crud::PAGE_DETAIL, fn (Page $p) => $this->translator->trans('page.title.page_index', ['%page%' => $p->getTitle()]))
+            ->setPageTitle(Crud::PAGE_EDIT, fn (Page $p) => $this->translator->trans('page.title.page_edit', ['%page%' => $p->getTitleDe()]))
+            ->setPageTitle(Crud::PAGE_DETAIL, fn (Page $p) => $this->translator->trans('page.title.page_index', ['%page%' => $p->getTitleDe()]))
             ->showEntityActionsInlined()
             ->setPaginatorPageSize(25);
     }
@@ -94,16 +94,15 @@ final class PageCrudController extends AbstractCrudController
      */
     private function getMainFields(): iterable
     {
-        // German fields
-        yield FormField::addColumn(12);
-        yield TextField::new('title', 'label.title');
-        yield TextareaField::new('description', 'label.description');
+        yield FormField::addColumn(6);
+        yield FormField::addFieldset('label.german');
+        yield TextField::new('titleDe', 'label.title.de');
+        yield TextEditorField::new('descriptionDe', 'label.description.de');
 
-        yield ImageField::new('graphic', 'Image')
-            ->setBasePath('public/uploads/images')
-            ->setUploadedFileNamePattern('[randomhash].[extension]')
-            ->setFormTypeOptions(['required' => false])
-            ->setUploadDir('public/uploads/images');
+        yield FormField::addColumn(6);
+        yield FormField::addFieldset('label.english');
+        yield TextField::new('titleEn', 'label.title.en');
+        yield TextEditorField::new('descriptionEn', 'label.description.en');
     }
 
     /**
@@ -111,7 +110,7 @@ final class PageCrudController extends AbstractCrudController
      */
     private function getIndexFields(): iterable
     {
-        yield TextField::new('title', 'label.title');
+        yield TextField::new('titleDe', 'label.title.all');
     }
 
     /**
@@ -122,10 +121,14 @@ final class PageCrudController extends AbstractCrudController
         yield FormField::addColumn(12);
         yield DateTimeField::new('createdAt');
 
-        yield FormField::addColumn(6);
-        yield TextField::new('title');
-        yield TextField::new('description');
-        yield ImageField::new('graphic.imageName')
-            ->setBasePath('/uploads/images');
+        yield FormField::addColumn(12);
+        yield FormField::addFieldset('label.german');
+        yield TextField::new('titleDe', 'label.title.all');
+        yield TextField::new('descriptionDe', 'label.description.all');
+
+        yield FormField::addColumn(12);
+        yield FormField::addFieldset('label.english');
+        yield TextField::new('titleEn', 'label.title.all');
+        yield TextField::new('descriptionEn', 'label.description.all');
     }
 }

@@ -19,51 +19,96 @@ class Page
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $title = null;
-
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $description = null;
+    private ?string $titleDe = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $alias = null;
+    private ?string $aliasDe = null;
+
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $descriptionDe = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $titleEn = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $aliasEn = null;
+
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $descriptionEn = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getTitle(): ?string
+    public function getTitleDe(): ?string
     {
-        return $this->title;
+        return $this->titleDe;
     }
 
-    public function setTitle(string $title): static
+    public function setTitleDe(string $titleDe): static
     {
-        $this->title = $title;
+        $this->titleDe = $titleDe;
 
         return $this;
     }
 
-    public function getDescription(): ?string
+    public function getAliasDe(): ?string
     {
-        return $this->description;
+        return $this->aliasDe;
     }
 
-    public function setDescription(string $description): static
+    public function setAliasDe(string $aliasDe): static
     {
-        $this->description = $description;
+        $this->aliasDe = $aliasDe;
 
         return $this;
     }
 
-    public function getAlias(): ?string
+    public function getDescriptionDe(): ?string
     {
-        return $this->alias;
+        return $this->descriptionDe;
     }
 
-    public function setAlias(string $alias): static
+    public function setDescriptionDe(string $descriptionDe): static
     {
-        $this->alias = $alias;
+        $this->descriptionDe = $descriptionDe;
+
+        return $this;
+    }
+
+    public function getTitleEn(): ?string
+    {
+        return $this->titleEn;
+    }
+
+    public function setTitleEn(string $titleEn): static
+    {
+        $this->titleEn = $titleEn;
+
+        return $this;
+    }
+
+    public function getAliasEn(): ?string
+    {
+        return $this->aliasEn;
+    }
+
+    public function setAliasEn(string $aliasEn): static
+    {
+        $this->aliasEn = $aliasEn;
+
+        return $this;
+    }
+
+    public function getDescriptionEn(): ?string
+    {
+        return $this->descriptionEn;
+    }
+
+    public function setDescriptionEn(string $descriptionEn): static
+    {
+        $this->descriptionEn = $descriptionEn;
 
         return $this;
     }
