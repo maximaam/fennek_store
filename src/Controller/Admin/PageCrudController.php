@@ -13,7 +13,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -73,7 +72,7 @@ final class PageCrudController extends AbstractCrudController
         return match ($pageName) {
             Crud::PAGE_INDEX => $this->getIndexFields(),
             Crud::PAGE_DETAIL => $this->getDetailFields(),
-            Crud::PAGE_EDIT, Crud::PAGE_NEW => $this->getFormFields($pageName),
+            Crud::PAGE_EDIT, Crud::PAGE_NEW => $this->getFormFields(),
             default => [],
         };
     }
@@ -81,11 +80,8 @@ final class PageCrudController extends AbstractCrudController
     /**
      * @return iterable<FieldInterface|string>
      */
-    private function getFormFields(string $pageName): iterable
+    private function getFormFields(): iterable
     {
-        /** @var Page|null $page */
-        $page = $this->getContext()?->getEntity()->getInstance();
-
         yield from $this->getMainFields();
     }
 

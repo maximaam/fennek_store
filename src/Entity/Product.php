@@ -64,6 +64,7 @@ class Product
     #[ORM\JoinColumn(nullable: false)]
     private ?Category $category = null;
 
+    /** @var Collection<int, MediaImage> */
     #[ORM\OneToMany(targetEntity: MediaImage::class, mappedBy: 'product', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $images;
 
@@ -209,6 +210,7 @@ class Product
         return $this;
     }
 
+    /** @return Collection<int, MediaImage> */
     public function getImages(): Collection
     {
         return $this->images;
@@ -226,10 +228,8 @@ class Product
 
     public function removeImage(MediaImage $image): self
     {
-        if ($this->images->removeElement($image)) {
-            if ($image->getProduct() === $this) {
-                $image->setProduct(null);
-            }
+        if ($this->images->removeElement($image) && $image->getProduct() === $this) {
+            $image->setProduct(null);
         }
 
         return $this;

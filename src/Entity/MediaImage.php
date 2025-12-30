@@ -37,8 +37,7 @@ class MediaImage
     public function setImageFile(?File $file): void
     {
         $this->imageFile = $file;
-
-        if (null !== $file) {
+        if ($file instanceof File) {
             $this->updatedAt = new \DateTimeImmutable();
         }
     }

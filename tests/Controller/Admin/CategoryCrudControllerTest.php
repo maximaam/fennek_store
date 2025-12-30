@@ -48,7 +48,7 @@ final class CategoryCrudControllerTest extends WebTestCase
         self::assertSelectorExists('.table.datagrid');
     }
 
-    public function testNewPageSuccessfull(): void
+    public function testNewPageSuccessful(): void
     {
         $this->client->request('GET', '/admin/category/new');
 
@@ -59,7 +59,7 @@ final class CategoryCrudControllerTest extends WebTestCase
         self::assertSelectorExists('select#Category_parent');
     }
 
-    public function testEditPageSuccessfull(): void
+    public function testEditPageSuccessful(): void
     {
         $category = $this->createCategory(true, 'Name DE', 'Name EN');
 
@@ -73,7 +73,7 @@ final class CategoryCrudControllerTest extends WebTestCase
         self::assertSame($category->getNameDe(), $inputValue);
     }
 
-    public function testDetailPageSuccessfull(): void
+    public function testDetailPageSuccessful(): void
     {
         $category = $this->createCategory(true, 'Name DE', 'Name EN');
 
@@ -181,6 +181,7 @@ final class CategoryCrudControllerTest extends WebTestCase
         self::assertSame('Child EN Edited', $updatedChild->getNameEn());
     }
 
+    #[\Override]
     protected function tearDown(): void
     {
         $this->cleanUp();

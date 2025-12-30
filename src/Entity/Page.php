@@ -19,29 +19,29 @@ class Page
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $titleDe = null;
+    private string $titleDe;
 
     #[ORM\Column(length: 255)]
-    private ?string $aliasDe = null;
+    private string $aliasDe;
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $descriptionDe = null;
+    private string $descriptionDe;
 
     #[ORM\Column(length: 255)]
-    private ?string $titleEn = null;
+    private string $titleEn;
 
     #[ORM\Column(length: 255)]
-    private ?string $aliasEn = null;
+    private string $aliasEn;
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $descriptionEn = null;
+    private string $descriptionEn;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getTitleDe(): ?string
+    public function getTitleDe(): string
     {
         return $this->titleDe;
     }
@@ -53,7 +53,7 @@ class Page
         return $this;
     }
 
-    public function getAliasDe(): ?string
+    public function getAliasDe(): string
     {
         return $this->aliasDe;
     }
@@ -65,7 +65,7 @@ class Page
         return $this;
     }
 
-    public function getDescriptionDe(): ?string
+    public function getDescriptionDe(): string
     {
         return $this->descriptionDe;
     }
@@ -77,7 +77,7 @@ class Page
         return $this;
     }
 
-    public function getTitleEn(): ?string
+    public function getTitleEn(): string
     {
         return $this->titleEn;
     }
@@ -89,7 +89,7 @@ class Page
         return $this;
     }
 
-    public function getAliasEn(): ?string
+    public function getAliasEn(): string
     {
         return $this->aliasEn;
     }
@@ -101,7 +101,7 @@ class Page
         return $this;
     }
 
-    public function getDescriptionEn(): ?string
+    public function getDescriptionEn(): string
     {
         return $this->descriptionEn;
     }
