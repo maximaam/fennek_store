@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Entity\Category;
+use App\Entity\MediaImage;
 use App\Entity\Product;
 use App\Form\MediaImageType;
 use Doctrine\ORM\EntityRepository;
@@ -161,9 +162,22 @@ final class ProductCrudController extends AbstractCrudController
         yield FormField::addColumn(12);
         yield CollectionField::new('images', 'label.images')
             ->setEntryType(MediaImageType::class)
+            ->setEntryToStringMethod(static function (mixed $image, TranslatorInterface $translator) {
+                return $translator->trans('label.image');
+            })
+            ->showEntryLabel(false)
             ->allowAdd()
-            ->allowDelete()
-            ->setFormTypeOptions(['by_reference' => false])
+            // ->allowDelete()
+            ->renderExpanded()
+            ->setFormTypeOptions([
+                'by_reference' => false,
+                'entry_options' => [
+                    'label' => 'test test',
+                ],
+                'attr' => [
+                    'class' => 'mimosa',
+                ],
+            ])
             ->onlyOnForms();
     }
 

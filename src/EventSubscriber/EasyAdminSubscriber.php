@@ -11,10 +11,10 @@ use EasyCorp\Bundle\EasyAdminBundle\Event\BeforeEntityPersistedEvent;
 use EasyCorp\Bundle\EasyAdminBundle\Event\BeforeEntityUpdatedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class EasyAdminSubscriber implements EventSubscriberInterface
+readonly class EasyAdminSubscriber implements EventSubscriberInterface
 {
     public function __construct(
-        private readonly EntityHelper $entityHelper,
+        private EntityHelper $entityHelper,
     ) {
     }
 
