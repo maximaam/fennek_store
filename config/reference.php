@@ -745,7 +745,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *             options?: array<string, mixed>,
  *             mapping_types?: array<string, scalar|null>,
  *             default_table_options?: array<string, scalar|null>,
- *             schema_manager_factory?: scalar|null, // Default: "doctrine.dbal.legacy_schema_manager_factory"
+ *             schema_manager_factory?: scalar|null, // Default: "doctrine.dbal.default_schema_manager_factory"
  *             result_cache?: scalar|null,
  *             slaves?: array<string, array{ // Default: []
  *                 url?: scalar|null, // A URL with connection information; any parameter value parsed from this string will override explicitly set parameters
@@ -1373,7 +1373,6 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *         bubble?: bool, // Default: true
  *         interactive_only?: bool, // Default: false
  *         app_name?: scalar|null, // Default: null
- *         fill_extra_context?: bool, // Default: false
  *         include_stacktraces?: bool, // Default: false
  *         process_psr_3_messages?: array{
  *             enabled?: bool|null, // Default: null
@@ -1393,7 +1392,6 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *         activation_strategy?: scalar|null, // Default: null
  *         stop_buffering?: bool, // Default: true
  *         passthru_level?: scalar|null, // Default: null
- *         excluded_404s?: list<scalar|null>,
  *         excluded_http_codes?: list<array{ // Default: []
  *             code?: scalar|null,
  *             urls?: list<scalar|null>,
@@ -1407,9 +1405,6 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *         url?: scalar|null,
  *         exchange?: scalar|null,
  *         exchange_name?: scalar|null, // Default: "log"
- *         room?: scalar|null,
- *         message_format?: scalar|null, // Default: "text"
- *         api_version?: scalar|null, // Default: null
  *         channel?: scalar|null, // Default: null
  *         bot_name?: scalar|null, // Default: "Monolog"
  *         use_attachment?: scalar|null, // Default: true
@@ -1418,9 +1413,6 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *         icon_emoji?: scalar|null, // Default: null
  *         webhook_url?: scalar|null,
  *         exclude_fields?: list<scalar|null>,
- *         team?: scalar|null,
- *         notify?: scalar|null, // Default: false
- *         nickname?: scalar|null, // Default: "Monolog"
  *         token?: scalar|null,
  *         region?: scalar|null,
  *         source?: scalar|null,
@@ -1438,12 +1430,6 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *         store?: scalar|null, // Default: null
  *         connection_timeout?: scalar|null,
  *         persistent?: bool,
- *         dsn?: scalar|null,
- *         hub_id?: scalar|null, // Default: null
- *         client_id?: scalar|null, // Default: null
- *         auto_log_stacks?: scalar|null, // Default: false
- *         release?: scalar|null, // Default: null
- *         environment?: scalar|null, // Default: null
  *         message_type?: scalar|null, // Default: 0
  *         parse_mode?: scalar|null, // Default: null
  *         disable_webpage_preview?: bool|null, // Default: null
@@ -1453,7 +1439,6 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *         topic?: int, // Default: null
  *         factor?: int, // Default: 1
  *         tags?: list<scalar|null>,
- *         console_formater_options?: mixed, // Deprecated: "monolog.handlers..console_formater_options.console_formater_options" is deprecated, use "monolog.handlers..console_formater_options.console_formatter_options" instead.
  *         console_formatter_options?: mixed, // Default: []
  *         formatter?: scalar|null,
  *         nested?: bool, // Default: false
@@ -1463,15 +1448,6 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *             port?: scalar|null, // Default: 12201
  *             chunk_size?: scalar|null, // Default: 1420
  *             encoder?: "json"|"compressed_json",
- *         },
- *         mongo?: string|array{
- *             id?: scalar|null,
- *             host?: scalar|null,
- *             port?: scalar|null, // Default: 27017
- *             user?: scalar|null,
- *             pass?: scalar|null,
- *             database?: scalar|null, // Default: "monolog"
- *             collection?: scalar|null, // Default: "logs"
  *         },
  *         mongodb?: string|array{
  *             id?: scalar|null, // ID of a MongoDB\Client service
@@ -1515,7 +1491,6 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *             id: scalar|null,
  *             method?: scalar|null, // Default: null
  *         },
- *         lazy?: bool, // Default: true
  *         verbosity_levels?: array{
  *             VERBOSITY_QUIET?: scalar|null, // Default: "ERROR"
  *             VERBOSITY_NORMAL?: scalar|null, // Default: "WARNING"
