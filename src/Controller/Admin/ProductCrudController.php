@@ -12,6 +12,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
+use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
@@ -24,6 +25,10 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\MoneyField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
@@ -87,6 +92,28 @@ final class ProductCrudController extends AbstractCrudController
             Crud::PAGE_EDIT, Crud::PAGE_NEW => $this->getFormFields(),
             default => [],
         };
+    }
+
+    /**
+     * Always redirect to the detail page after save
+     * to generate the cached images.
+     *
+     * @throws NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     */
+    #[\Override]
+    protected function getRedirectResponseAfterSave(AdminContext $context, string $action): RedirectResponse
+    {
+        $detailUrl = $this->container
+            ->get(AdminUrlGenerator::class)
+            ->setController(self::class)
+            ->setAction(Action::DETAIL);
+
+        if (Crud::PAGE_NEW === $action) {
+            $detailUrl->setEntityId($context->getEntity()->getPrimaryKeyValue());
+        }
+
+        return $this->redirect($detailUrl->generateUrl());
     }
 
     /**
@@ -168,9 +195,6 @@ final class ProductCrudController extends AbstractCrudController
             ->renderExpanded()
             ->setFormTypeOptions([
                 'by_reference' => false,
-                'entry_options' => [
-                    'label' => 'test test',
-                ],
                 'attr' => [
                     'class' => 'mimosa',
                 ],
@@ -185,7 +209,7 @@ final class ProductCrudController extends AbstractCrudController
     {
         yield AssociationField::new('category')->setLabel('category.singular');
         yield TextField::new('titleDe', 'label.name.de');
-        yield TextField::new('titleEn', 'label.name.en');
+        // yield TextField::new('titleEn', 'label.name.en');
         yield BooleanField::new('topItem', 'product.top_item');
     }
 
