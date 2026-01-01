@@ -158,7 +158,7 @@ final class ProductCrudController extends AbstractCrudController
         yield ChoiceField::new('colors')
             ->setLabel('product.colors')
             ->setChoices(array_combine(
-                array_map(static fn ($c) => "product.colors_list.$c", Product::COLORS),
+                array_map(static fn (string $c) => 'product.colors_list.'.$c, Product::COLORS),
                 Product::COLORS
             ))
             ->allowMultipleChoices()
