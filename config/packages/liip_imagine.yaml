@@ -12,8 +12,12 @@ liip_imagine:
         product_thumbnail:
             quality: 80
             filters:
-                thumbnail: { size: [300, 300], mode: inset }
-        product_mid:
+                thumbnail: { size: [150, 150], mode: inset }
+        product_medium:
             quality: 80
             filters:
                 thumbnail: { size: [ 600, 600 ], mode: inset }
+        product_large:
+            quality: 80
+            filters:
+                thumbnail: { size: [ 1200, 1200 ], mode: inset }
