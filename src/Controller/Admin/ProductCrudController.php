@@ -54,7 +54,7 @@ final class ProductCrudController extends AbstractCrudController
             ->update(
                 Crud::PAGE_INDEX,
                 Action::NEW,
-                static fn (Action $action) => $action->setIcon('fas fa-tags')->setLabel('product.action.create_new')
+                static fn (Action $action) => $action->setIcon('fas fa-tags')->setLabel('btn.create_new')
             );
     }
 
@@ -74,8 +74,8 @@ final class ProductCrudController extends AbstractCrudController
             ->setEntityLabelInSingular('product.action.create_new')
             ->setPageTitle(Crud::PAGE_INDEX, 'product.list')
             ->setPageTitle(Crud::PAGE_NEW, 'product.singular')
-            ->setPageTitle(Crud::PAGE_EDIT, fn (Product $p) => $this->translator->trans('product.title.page_edit', ['%product%' => $p->getTitleDe()]))
-            ->setPageTitle(Crud::PAGE_DETAIL, fn (Product $p) => $this->translator->trans('product.title.page_index', ['%product%' => $p->getTitleDe()]))
+            ->setPageTitle(Crud::PAGE_EDIT, fn (Product $p) => $this->translator->trans('label.crud_title.page_edit', ['%item%' => $p->getTitleDe()]))
+            ->setPageTitle(Crud::PAGE_DETAIL, fn (Product $p) => $this->translator->trans('label.crud_title.page_index', ['%item%' => $p->getTitleDe()]))
             ->showEntityActionsInlined()
             ->setPaginatorPageSize(25);
     }

@@ -30,6 +30,9 @@ class MediaImage
     #[ORM\ManyToOne(inversedBy: 'images')]
     private ?Product $product = null;
 
+    #[ORM\ManyToOne(inversedBy: 'images')]
+    private ?Page $page = null;
+
     #[ORM\Column(enumType: MediaImageOwner::class)]
     private MediaImageOwner $owner;
 
@@ -73,6 +76,18 @@ class MediaImage
     public function setProduct(?Product $product): static
     {
         $this->product = $product;
+
+        return $this;
+    }
+
+    public function getPage(): ?Page
+    {
+        return $this->page;
+    }
+
+    public function setPage(?Page $page): static
+    {
+        $this->page = $page;
 
         return $this;
     }

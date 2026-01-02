@@ -1,44 +1,37 @@
 dashboard: Dashboard
 label:
   german: Deutsch
-  english: Engslish
+  english: Englisch
   name:
     all: Name
     de: Name Deutsch
-    en: Name Engslish
+    en: Name Englisch
   title:
     all: Titel
     de: Titel Deutsch
-    en: Titel Engslish
+    en: Titel Englisch
   description:
     all: Beschreibung
     de: Beschreibung Deutsch
     en: Beschreibung Englisch
   images: Bilder
   image: Bild
+  crud_title:
+      page_edit: "'%item%' bearbeiten"
+      page_index: "Details für '%item%'"
 
-action.add_new_item: Neues Element
+# action.add_new_item: Neues Element
 
 category:
   singular: Kategorie
   plural: Kategorien
   list: Kategorien Liste
   parent: Parent Kategorie
-  action:
-    create_new: Neue Kategorie erstellen
-  title:
-    page_edit: "'%category%' bearbeiten"
-    page_index: "Details für '%category%'"
 
 product:
   singular: Artikel
   plural: Artikel
   list: Artikel Liste
-  action:
-    create_new: Neues Artikel erstellen
-  title:
-    page_edit: "'%product%' bearbeiten"
-    page_index: "Details für '%product%'"
   top_item: Top Artikel
   item_number: Artikel Nummer
   colors: Farben
@@ -67,7 +60,11 @@ product:
     brown: Braun
     maroon: Bordeaux
     darkred: Dunkelrot
+
 page:
-    title:
-        page_edit: 'messages'
-        page_index: 'messages'
+    plural: Seiten
+    singular: Seite
+    list: Seiten Liste
+
+btn:
+    create_new: Neu anlegen

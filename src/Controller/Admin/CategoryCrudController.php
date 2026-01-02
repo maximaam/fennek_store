@@ -43,7 +43,7 @@ final class CategoryCrudController extends AbstractCrudController
             ->update(
                 Crud::PAGE_INDEX,
                 Action::NEW,
-                static fn (Action $action) => $action->setIcon('fas fa-tags')->setLabel('category.action.create_new')
+                static fn (Action $action) => $action->setIcon('fas fa-tags')->setLabel('btn.create_new')
             );
     }
 
@@ -60,8 +60,8 @@ final class CategoryCrudController extends AbstractCrudController
             ->setEntityLabelInSingular('category.create_new')
             ->setPageTitle(Crud::PAGE_INDEX, 'category.list')
             ->setPageTitle(Crud::PAGE_NEW, 'category.singular')
-            ->setPageTitle(Crud::PAGE_EDIT, fn (Category $c) => $this->translator->trans('category.title.page_edit', ['%category%' => $c->getNameDe()]))
-            ->setPageTitle(Crud::PAGE_DETAIL, fn (Category $c) => $this->translator->trans('category.title.page_index', ['%category%' => $c->getNameDe()]))
+            ->setPageTitle(Crud::PAGE_EDIT, fn (Category $c) => $this->translator->trans('label.crud_title.page_edit', ['%item%' => $c->getNameDe()]))
+            ->setPageTitle(Crud::PAGE_DETAIL, fn (Category $c) => $this->translator->trans('label.crud_title.page_index', ['%item%' => $c->getNameDe()]))
             ->showEntityActionsInlined()
             ->setPaginatorPageSize(25);
     }

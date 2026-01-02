@@ -82,13 +82,11 @@ final readonly class MediaImageCacheListener
             return;
         }
 
-        /*
         if (null !== $image->getPage()) {
             $image->setOwner(MediaImageOwner::PAGE);
 
             return;
         }
-        */
 
         throw new \LogicException('MediaImage must have an owner');
     }
