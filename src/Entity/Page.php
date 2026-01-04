@@ -36,6 +36,15 @@ class Page
     #[ORM\Column(type: Types::TEXT)]
     private string $descriptionEn;
 
+    #[ORM\OneToOne(inversedBy: 'page', cascade: ['persist', 'remove'])]
+    private ?MediaImage $image = null;
+
+    public function __construct()
+    {
+        $this->image = new MediaImage();
+        $this->image->setPage($this);
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -109,6 +118,18 @@ class Page
     public function setDescriptionEn(string $descriptionEn): static
     {
         $this->descriptionEn = $descriptionEn;
+
+        return $this;
+    }
+
+    public function getImage(): ?MediaImage
+    {
+        return $this->image;
+    }
+
+    public function setImage(?MediaImage $image): static
+    {
+        $this->image = $image;
 
         return $this;
     }

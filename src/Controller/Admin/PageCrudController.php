@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Entity\MediaImage;
 use App\Entity\Page;
 use App\Form\MediaImageType;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -12,12 +13,16 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Vich\UploaderBundle\Form\Type\VichImageType;
 
 /**
  * @extends AbstractCrudController<Page>
@@ -87,6 +92,17 @@ final class PageCrudController extends AbstractCrudController
         yield from $this->getMainFields();
     }
 
+    public function createEntity(string $entityFqcn): Page
+    {
+        $page = new Page();
+
+        $image = new MediaImage();
+        $image->setPage($page);
+        $page->setImage($image);
+
+        return $page;
+    }
+
     /**
      * @return iterable<FieldInterface|string>
      */
@@ -103,20 +119,9 @@ final class PageCrudController extends AbstractCrudController
         yield TextEditorField::new('descriptionEn', 'label.description.en');
 
         yield FormField::addColumn(12);
-        yield CollectionField::new('images', 'label.images')
-            ->setEntryType(MediaImageType::class)
-            ->setEntryToStringMethod(static fn (mixed $image, TranslatorInterface $translator) => $translator->trans('label.image'))
-            ->showEntryLabel(false)
-            // ->allowAdd()
-            // ->allowDelete()
-            ->renderExpanded()
-            ->setFormTypeOptions([
-                // 'by_reference' => false,
-                'attr' => [
-                    'class' => 'mimosa',
-                ],
-            ])
-            ->onlyOnForms();
+        yield Field::new('image', 'label.image')
+            ->setUploadDir('public/uploads/images')
+            ->setBasePath('uploads/images');
     }
 
     /**

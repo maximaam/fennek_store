@@ -33,6 +33,9 @@ class MediaImage
     #[ORM\Column(enumType: MediaImageOwner::class)]
     private MediaImageOwner $owner;
 
+    #[ORM\OneToOne(mappedBy: 'image')]
+    private ?Page $page = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -85,6 +88,28 @@ class MediaImage
     public function setOwner(MediaImageOwner $owner): static
     {
         $this->owner = $owner;
+
+        return $this;
+    }
+
+    public function getPage(): ?Page
+    {
+        return $this->page;
+    }
+
+    public function setPage(?Page $page): static
+    {
+        // unset the owning side of the relation if necessary
+        if (null === $page && null !== $this->page) {
+            $this->page->setImage(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if (null !== $page && $page->getImage() !== $this) {
+            $page->setImage($this);
+        }
+
+        $this->page = $page;
 
         return $this;
     }
