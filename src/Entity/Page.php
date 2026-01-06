@@ -6,6 +6,8 @@ namespace App\Entity;
 
 use App\Repository\PageRepository;
 use App\Traits\TimestampableTrait;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -36,13 +38,13 @@ class Page
     #[ORM\Column(type: Types::TEXT)]
     private string $descriptionEn;
 
-    #[ORM\OneToOne(inversedBy: 'page', cascade: ['persist', 'remove'])]
-    private ?MediaImage $image = null;
+    /** @var Collection<int, MediaImage> */
+    #[ORM\OneToMany(targetEntity: MediaImage::class, mappedBy: 'page', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $images;
 
     public function __construct()
     {
-        $this->image = new MediaImage();
-        $this->image->setPage($this);
+        $this->images = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -122,14 +124,27 @@ class Page
         return $this;
     }
 
-    public function getImage(): ?MediaImage
+    /** @return Collection<int, MediaImage> */
+    public function getImages(): Collection
     {
-        return $this->image;
+        return $this->images;
     }
 
-    public function setImage(?MediaImage $image): static
+    public function addImage(MediaImage $image): self
     {
-        $this->image = $image;
+        if (!$this->images->contains($image)) {
+            $this->images[] = $image;
+            $image->setPage($this);
+        }
+
+        return $this;
+    }
+
+    public function removeImage(MediaImage $image): self
+    {
+        if ($this->images->removeElement($image) && $image->getPage() === $this) {
+            $image->setPage(null);
+        }
 
         return $this;
     }

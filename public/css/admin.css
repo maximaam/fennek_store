@@ -17,3 +17,9 @@
 form[id$="-Product-form"] .field-boolean {
    padding-top: 32px;
 }
+
+/* hide "Add another" button for product images
+.field-collection-add-button {
+    display: none !important;
+}
+*/

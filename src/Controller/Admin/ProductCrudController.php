@@ -220,7 +220,7 @@ final class ProductCrudController extends AbstractCrudController
     private function getDetailFields(): iterable
     {
         yield FormField::addColumn(12);
-        yield DateField::new('createdAt', 'label.date.created');
+        yield DateField::new('createdAt', 'label.date.created_at');
         yield FormField::addColumn(12);
         yield TextField::new('category', 'category.singular');
         yield FormField::addColumn(12);

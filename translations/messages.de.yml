@@ -19,6 +19,8 @@ label:
   crud_title:
       page_edit: "'%item%' bearbeiten"
       page_index: "Details für '%item%'"
+date:
+    created_at: Erstellt am
 
 # action.add_new_item: Neues Element
 
