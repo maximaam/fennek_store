@@ -1,17 +1,103 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-        {% block stylesheets %}
-        {% endblock %}
+<html lang="{{ app.request.locale }}">
 
-        {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
-        {% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-    </body>
+{% set title = app_name %}
+
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}{{ title }}!{% endblock %}</title>
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="keywords" content="Fennek-Store, lederwaren, Sommerwaren, Winterwaren, Kopfbedeckung, Berlin">
+    <meta name="description" content="Lederwaren, Saisonwaren & Geschenkartikel in Berlin.">
+    <meta name="robots" content="index,follow">
+    <meta name="author" content="{{ app_name }}">
+    <meta name="title" content="{{ title }}!">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://{{ app.request.host ~ app.request.pathInfo }}">
+    <meta property="og:title" content="{{ title }}!">
+    <meta property="og:description" content="Lederwaren, Saisonwaren & Geschenkartikel in Berlin.">
+
+    <link href="https://{{ app.request.host ~ app.request.pathInfo }}" rel="canonical">
+    <link rel="icon" type="image/x-icon" href="{{ asset('images/favicon.png') }}" />
+    {% block stylesheets %}{% endblock %}
+
+    {% block js_head %}{% endblock %}
+</head>
+
+<body>
+<header class="main-header">
+    <nav class="navbar fixed-top navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <img src="{{ asset('images/logo-fennek-store.png') }}" alt="{{ app_name }} Logo" title="{{ app_name }}" width="50" height="50">
+            </a>
+
+            <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                {{ knp_menu_render('main') }}
+                <div class="user-cart form-inline mt-2 mt-md-0">
+                    {% set cartItems = app.session.get('cart')|length %}
+
+                    <form class="form-inline mt-2 mt-md-0" method="get" action="{{ path('app_index_search') }}" onsubmit="">
+                        <div class="input-group">
+                            <input class="form-control py-2 border-right-0 border" type="search" name="query" placeholder="{{ 'label.search'|trans }}" required pattern=".{3,}" title="3 chars minimum" autocomplete="false" value="{{ app.request.get('query') }}">
+                        </div>
+                    </form>
+
+                    <ul class="languages">
+                        <li><a href="/de" class="{{ app.request.locale == 'de' ? 'current' }}" title="Deutsch">DE</a></li>
+                        <li><a href="/en" class="{{ app.request.locale == 'en' ? 'current' }}" title="English">EN</a></li>
+                    </ul>
+
+                    <a href="{{ path('app_cart_index') }}" class="cart" title="{{ 'cart.my-cart'|trans }} {{ cartItems }}">
+                        <span {{ cartItems > 0 ? 'class="active"'}}>{{ cartItems }}</span>
+                        <i class="fa fa-shopping-basket"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
+<main>{% block body %}{% endblock %}</main>
+<footer class="main-footer text-muted">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                {{ knp_menu_render('footer') }}
+            </div>
+            <div class="col-md-4">
+                <p class="copyright text-white">
+                    <small>&copy; {{ "now"|date('Y') }} {{ 'copyright'|trans }}</small>
+                </p>
+            </div>
+            <div class="col-md-4 socials">
+                <a href="https://www.facebook.com/Rezouani-Leder-ImportExport-Berlin-401470737274935/" target="_blank">
+                    <i class="fa fa-facebook-official" title="REZOUANI Facebook page"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<!--
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+<script src="{{ asset('js/app.js') }}"></script>
+{% block javascripts %}{% endblock %}
+
+<div id="overlay">
+    <img src="{{ asset('../images/loading.gif') }}" alt="Loading img">
+</div>
+</body>
+
 </html>

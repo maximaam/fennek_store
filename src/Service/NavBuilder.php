@@ -1,0 +1,79 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Service;
+
+use App\Entity\Category;
+use App\Entity\Page;
+use App\Enum\PostType;
+use Doctrine\ORM\EntityManagerInterface;
+use Knp\Menu\FactoryInterface;
+use Knp\Menu\ItemInterface;
+// use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Contracts\Translation\TranslatorInterface;
+
+final readonly class NavBuilder
+{
+    public function __construct(
+        private FactoryInterface $factory,
+        private EntityManagerInterface $entityManager,
+        private RequestStack $requestStack,
+        private TranslatorInterface $translator,
+    ) {
+    }
+
+    public function mainMenu(): ItemInterface
+    {
+        $menu = $this->factory->createItem('root');
+        $menu->setChildrenAttribute('class', 'navbar-nav me-auto mb-2 mb-lg-0');
+
+        $categories = $this->entityManager
+            ->getRepository(Category::class)
+            ->findParentsQueryBuilder()
+            ->setMaxResults(5)
+            ->getQuery()
+            ->getResult();
+
+        $locale = $this->requestStack->getCurrentRequest()->getLocale();
+
+        /** @var Category $category */
+        foreach ($categories as $category) {
+            $menu->addChild($category->getName($locale), [
+                'route' => 'app_index_catalogue',
+                'attributes' => ['class' => 'nav-item'],
+                'linkAttributes' => ['class' => 'nav-link'],
+                'routeParameters' => [
+                    'catAlias' => $category->getAlias($locale)
+                ],
+            ]);
+        }
+
+        return $menu;
+    }
+
+    public function footerMenu(): ItemInterface
+    {
+        $menu = $this->factory->createItem('root');
+        $menu->setChildrenAttribute('class', 'footer-nav list-unstyled');
+        $pages = $this->entityManager->getRepository(Page::class)->findAll();
+
+        foreach ($pages as $page) {
+            if ('home' === $page->getAlias()) {
+                continue;
+            }
+
+            $menu->addChild('> '.$page->getTitle(), [
+                'route' => 'app_frontend_page',
+                // 'attributes' => ['class' => ''],
+                // 'linkAttributes' => ['class' => 'white-u'],
+                'routeParameters' => [
+                    'alias' => $page->getAlias(),
+                ],
+            ]);
+        }
+
+        return $menu;
+    }
+}

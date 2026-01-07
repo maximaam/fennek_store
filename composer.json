@@ -12,6 +12,7 @@
         "doctrine/doctrine-migrations-bundle": "^3.7",
         "doctrine/orm": "^3.6.0",
         "easycorp/easyadmin-bundle": "^4.27.5",
+        "knplabs/knp-menu-bundle": "^3.7",
         "liip/imagine-bundle": "^2.16",
         "phpdocumentor/reflection-docblock": "^5.6.6",
         "phpstan/phpdoc-parser": "^2.3",

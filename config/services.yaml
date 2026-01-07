@@ -9,6 +9,7 @@
 parameters:
     products_dir: 'uploads/images'
     pages_dir: 'uploads/images'
+    app_name: 'Fennek Store'
 
 services:
     # default configuration for services in *this* file
@@ -28,3 +29,10 @@ services:
     # but is not registered as an autowireable service by class name.
     Liip\ImagineBundle\Imagine\Filter\FilterConfiguration:
         alias: liip_imagine.filter.configuration
+
+    App\Service\NavBuilder:
+        #arguments: [ "@knp_menu.factory", "@doctrine.orm.entity_manager" ]
+        arguments: [ "@knp_menu.factory" ]
+        tags:
+            - { name: knp_menu.menu_builder, method: mainMenu, alias: main }
+            - { name: knp_menu.menu_builder, method: footerMenu, alias: footer }

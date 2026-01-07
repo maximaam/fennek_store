@@ -1,5 +1,11 @@
 twig:
     file_name_pattern: '*.twig'
+    form_themes:
+        - 'bootstrap_5_layout.html.twig'
+    globals:
+        app_name: '%app_name%'
+    date:
+        format: d-m-Y H:i
 
 when@test:
     twig:
