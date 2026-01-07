@@ -21,9 +21,20 @@ class ProductRepository extends ServiceEntityRepository
 
     public function fetchByCategories(array $categories): QueryBuilder
     {
-        return $this ->createQueryBuilder('p')
+        return $this->createQueryBuilder('p')
             ->leftJoin('p.category', 'c')
             ->where('c.id IN(:categories)')
             ->setParameter('categories', $categories);
+    }
+
+    public function searchTitle(string $query, string $locale, int $limit = 10)
+    {
+        return $this->createQueryBuilder('p')
+            ->select('p')
+            ->where('p.title'.\ucfirst($locale).' LIKE :title')
+            ->setParameter('title', '%'.$query.'%')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
     }
 }

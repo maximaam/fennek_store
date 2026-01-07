@@ -1,3 +1,12 @@
+:root {
+    --la-pointe: #1372aa;
+    --rocher: #0a4b85; /* rgb(10, 75, 133); */
+    --rocher-light: rgba(10, 75, 133, 0.5);
+    --bg-moudja: rgba(255, 255, 255, 0.15);
+    --border-moudja: 1px solid rgba(255, 255, 255, 0.2);
+}
 body {
-    background-color: skyblue;
+    color: var(--bs-white);
+    background: var(--la-pointe);
+    font-family: "Roboto Light", sans-serif;
 }

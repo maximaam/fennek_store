@@ -6,7 +6,6 @@ namespace App\Service;
 
 use App\Entity\Category;
 use App\Entity\Page;
-use App\Enum\PostType;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Menu\FactoryInterface;
 use Knp\Menu\ItemInterface;
@@ -45,7 +44,7 @@ final readonly class NavBuilder
                 'attributes' => ['class' => 'nav-item'],
                 'linkAttributes' => ['class' => 'nav-link'],
                 'routeParameters' => [
-                    'catAlias' => $category->getAlias($locale)
+                    'catAlias' => $category->getAlias($locale),
                 ],
             ]);
         }

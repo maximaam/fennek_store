@@ -34,28 +34,18 @@ class CategoryRepository extends ServiceEntityRepository
             ->orderBy('c.id', 'DESC');
     }
 
-    //    /**
-    //     * @return Category[] Returns an array of Category objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('c')
-    //            ->andWhere('c.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('c.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function fetchChildren(?Category $category = null): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('c')
+            ->where('c.parent IS NOT NULL');
 
-    //    public function findOneBySomeField($value): ?Category
-    //    {
-    //        return $this->createQueryBuilder('c')
-    //            ->andWhere('c.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        if (null !== $category) {
+            $qb->andWhere('c.parent = :parentId')
+                ->setParameter('parentId', $category->getId());
+        }
+
+        $qb->orderBy('c.position', 'ASC');
+
+        return $qb;
+    }
 }
