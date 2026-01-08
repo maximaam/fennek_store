@@ -16,9 +16,18 @@ label:
     en: Beschreibung Englisch
   images: Bilder
   image: Bild
+  search: Suchen
+  more: Mehr
+  welcome:
+    title: Willkommen bei Fennek-Store!
+    sub-title: Lederwaren, Saisonwaren & Geschenkartikel in Berlin.
+    desc: |
+        Fennek-Store is ein Unternehmen mit Sitz in Berlin, was sich auf Herstellung und Vermarktung von Leder Waren spezialisiert hat. Ob Damen Portemonnaies, Herren Portemonnaies, Taschen oder Handschuhe, Fennek-Store bietet Hochqualität Leder mit bester Verarbeitung.
   crud_title:
       page_edit: "'%item%' bearbeiten"
       page_index: "Details für '%item%'"
+  about-us: Über uns
+
 date:
     created_at: Erstellt am
 
@@ -68,5 +77,35 @@ page:
     singular: Seite
     list: Seiten Liste
 
+routes:
+    about-us: ueber-uns
+
 btn:
     create_new: Neu anlegen
+
+cart:
+    to-cart: In den Warenkorb
+    my-cart: Ihr Warenkorb
+    pay-now: Jetzt mit PayPal zahlen!
+    continue-shopping: Weiter einkaufen
+    empty: Ihr Warenkorb ist leer
+    order-overview: Bestellung Übersicht
+    paypal-shipping-address: PayPal Liferadresse
+
+msg:
+    confirm_delete: Löschen bestätigen?
+    no_products_in_category: Zurzeit keine Ware in dieser Kategorie
+    no_search_result: 'Keine Treffer gefunden für Ihre Suche nach: %query%'
+    thanks-for-order: Vielen Dank für Ihre Bestellung
+    email-sent: Eine Email wurde an %buyer_email% gesendet mit der gesamten Übersicht.
+    error-to-cart-params: Fehler! Bitte korrigieren Sie Ihr Auswhal (Farbe, Größe, Menge...)
+
+payment:
+    email-subject: Ihre Bestellung bei Fennek-Store
+    email-msg-part1: Hallo %buyer_name%,
+    email-msg-part2: Vielen Dank für Ihren Kauf!
+    email-msg-part3: 'Bestellungsübersicht:'
+    email-msg-part4: 'Lieferadresse:'
+    email-msg-part5: Ihr Fennek-Store-Team
+
+copyright: Copyright Fennek-Store - Alle Rechte vorbehalten

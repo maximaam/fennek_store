@@ -32,65 +32,70 @@
 </head>
 
 <body>
-<header class="main-header">
-    <nav class="navbar fixed-top navbar-expand-lg navbar-dark">
+    <header class="main-header">
+    <nav class="navbar navbar-expand-lg">
         <div class="container">
             <a class="navbar-brand" href="/">
-                <img src="{{ asset('images/logo-fennek-store.png') }}" alt="{{ app_name }} Logo" title="{{ app_name }}" width="50" height="50">
+                <img src="{{ asset('images/logo.png') }}" alt="{{ app_name }} Logo" title="{{ app_name }}" width="50" height="50" class="logo rounded-circle">
             </a>
-
-            <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-main" aria-controls="navbar-main" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <div class="collapse navbar-collapse" id="navbarCollapse">
+            <div class="collapse navbar-collapse" id="navbar-main">
                 {{ knp_menu_render('main') }}
-                <div class="user-cart form-inline mt-2 mt-md-0">
+                <form class="d-flex" role="search" method="get" action="{{ path('app_index_search') }}">
+                    <label for="search-query"></label>
+                    <input id="search-query" class="form-control py-2 border-right-0 border" type="search" name="query" placeholder="{{ 'label.search'|trans }}..." required pattern=".{3,}" title="3 chars minimum" autocomplete="false" value="{{ app.request.get('query') }}">
+                </form>
+                <div class="d-flex navbar-cart">
                     {% set cartItems = app.session.get('cart')|length %}
-
-                    <form class="form-inline mt-2 mt-md-0" method="get" action="{{ path('app_index_search') }}" onsubmit="">
-                        <div class="input-group">
-                            <input class="form-control py-2 border-right-0 border" type="search" name="query" placeholder="{{ 'label.search'|trans }}" required pattern=".{3,}" title="3 chars minimum" autocomplete="false" value="{{ app.request.get('query') }}">
-                        </div>
-                    </form>
-
-                    <ul class="languages">
-                        <li><a href="/de" class="{{ app.request.locale == 'de' ? 'current' }}" title="Deutsch">DE</a></li>
-                        <li><a href="/en" class="{{ app.request.locale == 'en' ? 'current' }}" title="English">EN</a></li>
-                    </ul>
-
-                    <a href="{{ path('app_cart_index') }}" class="cart" title="{{ 'cart.my-cart'|trans }} {{ cartItems }}">
-                        <span {{ cartItems > 0 ? 'class="active"'}}>{{ cartItems }}</span>
-                        <i class="fa fa-shopping-basket"></i>
+                    <a href="{{ path('app_cart_index') }}" title="{{ 'cart.my-cart'|trans }} {{ cartItems }}">
+                        <span {{ cartItems > 0 ? 'class="with-items"'}}>{{ cartItems }}</span>
+                        {{ ea_ux_icon('bi:cart-fill', {class: 'basic-icon'}) }}
                     </a>
                 </div>
             </div>
         </div>
     </nav>
 </header>
-<main>{% block body %}{% endblock %}</main>
+    <main>{% block body %}{% endblock %}</main>
 
-<footer class="main-footer text-muted">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-4">
-                {#  {{ knp_menu_render('footer') }} #}
-            </div>
-            <div class="col-md-4">
-                <p class="copyright text-white">
-                    <small>&copy; {{ "now"|date('Y') }} {{ 'copyright'|trans }}</small>
-                </p>
-            </div>
-            <div class="col-md-4 socials">
-                <a href="https://www.facebook.com/Rezouani-Leder-ImportExport-Berlin-401470737274935/" target="_blank">
-                    <i class="fa fa-facebook-official" title="REZOUANI Facebook page"></i>
-                </a>
+    <footer class="main-footer text-muted">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    {{ knp_menu_render('footer') }}
+                </div>
+                <div class="col-md-4">
+                    <ul>
+                        <li>
+                            <a href="/de" title="Deutsch">
+                                <img src="{{ asset('images/de.png') }}" alt="{{ app_name }} Logo" title="{{ app_name }}" width="32" height="32">
+                                Deutsch
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/en" title="English">
+                                <img src="{{ asset('images/en.png') }}" alt="{{ app_name }} Logo" title="{{ app_name }}" width="32" height="32">
+                                English
+                            </a>
+                        </li>
+                    </ul>
+
+                    <p class="copyright text-white">
+                        <small>&copy; {{ "now"|date('Y') }} {{ 'copyright'|trans }}</small>
+                    </p>
+                </div>
+                <div class="col-md-4 socials">
+                    <a href="https://www.facebook.com/Rezouani-Leder-ImportExport-Berlin-401470737274935/" target="_blank">
+                        {{ ea_ux_icon('bi:facebook', {class: 'basic-icon'}) }}
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
-</footer>
+    </footer>
 
-{% block javascripts %}{% endblock %}
 </body>
 
 </html>

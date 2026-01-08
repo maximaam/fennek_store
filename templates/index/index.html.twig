@@ -1,7 +1,31 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello IndexController!{% endblock %}
-
 {% block body %}
-index
+    <div class="start-page">
+        <div class="container">
+            <div class="intro">
+                <h1 class="display-4">{{ 'label.welcome.title'|trans }}</h1>
+                <h2>{{ 'label.welcome.sub-title'|trans }}</h2>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                {% for product in products %}
+                    {{ product.title(app.request.locale) }}
+                {#  {% include 'app/partials/item.html.twig' with {product: item, isHomepage: true} %}#}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="container start-seo">
+        <h2>{{ 'label.about-us'|trans }}</h2>
+        <p>{{ 'label.welcome.desc'|trans|nl2br }}</p>
+        <p class="pull-right">
+            <a class="btn btn-primary btn-lg" href="{{ path('app_index_page', {alias: 'routes.about-us'|trans}) }}" role="button">
+                {{ 'label.more'|trans }} »
+            </a>
+        </p>
+    </div>
+
 {% endblock %}

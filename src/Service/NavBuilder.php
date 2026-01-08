@@ -54,21 +54,22 @@ final readonly class NavBuilder
 
     public function footerMenu(): ItemInterface
     {
+        $locale = $this->requestStack->getCurrentRequest()->getLocale();
         $menu = $this->factory->createItem('root');
         $menu->setChildrenAttribute('class', 'footer-nav list-unstyled');
         $pages = $this->entityManager->getRepository(Page::class)->findAll();
 
         foreach ($pages as $page) {
-            if ('home' === $page->getAlias()) {
+            if ('home' === $page->getAlias($locale)) {
                 continue;
             }
 
-            $menu->addChild('> '.$page->getTitle(), [
-                'route' => 'app_frontend_page',
+            $menu->addChild('> '.$page->getTitle($locale), [
+                'route' => 'app_index_page',
                 // 'attributes' => ['class' => ''],
                 // 'linkAttributes' => ['class' => 'white-u'],
                 'routeParameters' => [
-                    'alias' => $page->getAlias(),
+                    'alias' => $page->getAlias($locale),
                 ],
             ]);
         }

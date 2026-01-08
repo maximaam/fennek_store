@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\DTO\CatalogueRequestDTO;
-use App\DTO\CatalogueResultDTO;
+use App\Dto\CatalogueRequestDto;
+use App\Dto\CatalogueResultDto;
 use App\Entity\Category;
 use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
@@ -19,7 +19,7 @@ final readonly class CatalogueResolver
     ) {
     }
 
-    public function resolve(CatalogueRequestDTO $dto): CatalogueResultDTO
+    public function resolve(CatalogueRequestDto $dto): CatalogueResultDto
     {
         // ─────────────────────────────
         // Product page
@@ -28,7 +28,7 @@ final readonly class CatalogueResolver
             $product = $this->productRepository->find($dto->productId)
                 ?? throw new NotFoundHttpException();
 
-            return new CatalogueResultDTO(
+            return new CatalogueResultDto(
                 category: null,
                 products: null,
                 product: $product,
@@ -56,7 +56,7 @@ final readonly class CatalogueResolver
                 ->getQuery()
                 ->getResult();
 
-            return new CatalogueResultDTO(
+            return new CatalogueResultDto(
                 category: $category,
                 products: $products,
                 product: null,
@@ -75,7 +75,7 @@ final readonly class CatalogueResolver
             'category' => $category,
         ]);
 
-        return new CatalogueResultDTO(
+        return new CatalogueResultDto(
             category: $category,
             products: $products,
             product: null,

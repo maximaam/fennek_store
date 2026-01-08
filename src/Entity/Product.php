@@ -234,4 +234,22 @@ class Product
 
         return $this;
     }
+
+    // ─────────────────────────────
+    // Extra Entity Methods
+    // ─────────────────────────────
+
+    public function getTitle(string $locale): ?string
+    {
+        $key = __FUNCTION__.ucfirst($locale);
+
+        return $this->$key();
+    }
+
+    public function getDescription(string $locale): ?string
+    {
+        $key = __FUNCTION__.ucfirst($locale);
+
+        return $this->$key();
+    }
 }

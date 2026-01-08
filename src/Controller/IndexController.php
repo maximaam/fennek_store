@@ -18,18 +18,21 @@ use Symfony\Component\Routing\Attribute\Route;
 final class IndexController extends AbstractController
 {
     #[Route('/', name: 'index')]
-    public function index(): Response
+    public function index(ProductRepository $productRepo): Response
     {
-        return $this->render('index/index.html.twig');
+        return $this->render('index/index.html.twig', [
+            'products' => $productRepo->findBy(['topItem' => true], ['updatedAt' => 'DESC'], 18),
+        ]);
     }
 
-    #[Route('/{_locale}/page/{slug}', name: 'page')]
-    public function page(PageRepository $pageRepo, string $slug, string $_locale = 'en'): Response
+    #[Route('/{_locale}/page/{alias}', name: 'page')]
+    public function page(PageRepository $pageRepo, string $alias, string $_locale): Response
     {
-        $page = $pageRepo->findOneBy(['alias' => $slug]);
+        $aliasI18n = 'alias'.ucfirst($_locale);
+        $page = $pageRepo->findOneBy([$aliasI18n => $alias]);
 
         if (!$page instanceof Page) {
-            throw $this->createNotFoundException(\sprintf('Page with alias "%s" not found', $slug));
+            throw $this->createNotFoundException(\sprintf('Page with alias "%s" not found', $alias));
         }
 
         return $this->render('index/page.html.twig', ['page' => $page]);
