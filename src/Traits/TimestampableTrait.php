@@ -15,14 +15,14 @@ trait TimestampableTrait
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\PrePersist]
+    // #[ORM\PrePersist]
     public function setCreatedAtValue(): void
     {
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
     }
 
-    #[ORM\PreUpdate]
+    // #[ORM\PreUpdate]
     public function setUpdatedAtValue(): void
     {
         $this->updatedAt = new \DateTimeImmutable();
@@ -36,5 +36,31 @@ trait TimestampableTrait
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->updatedAt;
+    }
+
+    /**
+     * @throws \DateMalformedStringException
+     */
+    public function setCreatedAtLegacy(string $date): self
+    {
+        $this->createdAt = new \DateTimeImmutable($date);
+
+        return $this;
+    }
+
+    /**
+     * @throws \DateMalformedStringException
+     */
+    public function setUpdatedAtLegacy(?string $date = null): self
+    {
+        if ('NULL' === $date) {
+            $datetime = new \DateTimeImmutable();
+        } else {
+            $datetime = new \DateTimeImmutable($date);
+        }
+
+        $this->updatedAt = $datetime;
+
+        return $this;
     }
 }

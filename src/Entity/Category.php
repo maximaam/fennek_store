@@ -38,7 +38,7 @@ class Category implements \Stringable
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $descriptionEn = null;
 
-    #[ORM\Column(unique: true, nullable: true)]
+    #[ORM\Column(nullable: true)]
     private ?int $position = null;
 
     /**

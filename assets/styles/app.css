@@ -7,19 +7,16 @@
     --darker-tassili: #290101;
     --light-tassili: #ec974e;
     --mid-tassili: #ff7f2a;
+    --mid-green: #009a93;
 }
 body {
     background: var(--bs-white);
-    color: var(--bs-black);
+    color: var(--bs-dark);
     font-family: "Roboto Light", sans-serif;
 }
 main {
     min-height: 80rem;
     padding: 20px 0;
-}
-header.main-header, .navbar {
-    background: var(--dark-tassili);
-    height: 65px;
 }
 .basic-icon {
     width: 1.5rem;
@@ -29,21 +26,19 @@ header.main-header, .navbar {
 
 .navbar-nav {
     .nav-item {
-        margin-right: 5px;
+        &:not(:last-child) {
+            border-right: 1px solid var(--bs-gray-600);
+        }
     }
     a.nav-link {
-        color: var(--bs-white) !important;
+        padding: 0;
         letter-spacing: 1px;
-        border-radius: .3rem;
-        -webkit-transition: all .2s ease-in-out;
-        -o-transition: all .2s ease-in-out;
         transition: all .2s ease-in-out;
     }
 }
 .navbar-nav a.nav-link:hover,
 .nav-item.current a.nav-link {
-    color: var(--bs-gray-800) !important;
-    background: var(--bs-white);
+    color: var(--bs-white) !important;
 }
 .navbar-cart {
     position: relative;
@@ -64,7 +59,7 @@ header.main-header, .navbar {
             line-height: 22px;
             text-align: center;
             border-radius: 50%;
-            box-shadow: 0 0 0 2px var(--bs-white);
+            box-shadow: 0 0 0 2px var(--bs-gray-900);
             &.with-items {
                 background: var(--bs-danger);
                 color: var(--bs-white);
@@ -74,8 +69,8 @@ header.main-header, .navbar {
 }
 
 footer.main-footer {
-    background: var(--darker-tassili);
-    /* background: var(--darker-tassili) url("../images/tassili.jpg") center center no-repeat;*/
+    background: var(--bs-dark-bg-subtle);
+    /*background: var(--bs-black) url("../images/tassili.jpg") center center no-repeat;*/
     object-fit: cover;
     min-height: 300px;
     padding-top: 50px;
@@ -147,11 +142,11 @@ footer.main-footer {
 }
 
 .btn-primary {
-    background: #75af34;
+    background: var(--mid-tassili);
     border: none;
 }
 .btn-primary:hover {
-    background: #90cd37;
+    background: var(--light-tassili);
 }
 
 

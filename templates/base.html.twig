@@ -33,20 +33,20 @@
 
 <body>
     <header class="main-header">
-    <nav class="navbar navbar-expand-lg">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand" href="/">
-                <img src="{{ asset('images/logo.png') }}" alt="{{ app_name }} Logo" title="{{ app_name }}" width="50" height="50" class="logo rounded-circle">
+                <img src="{{ asset('images/logo.png') }}" alt="{{ app_name }} Logo" title="{{ app_name }}" width="40" height="40" class="logo rounded-circle">
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-main" aria-controls="navbar-main" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <div class="collapse navbar-collapse" id="navbar-main">
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 {{ knp_menu_render('main') }}
                 <form class="d-flex" role="search" method="get" action="{{ path('app_index_search') }}">
                     <label for="search-query"></label>
-                    <input id="search-query" class="form-control py-2 border-right-0 border" type="search" name="query" placeholder="{{ 'label.search'|trans }}..." required pattern=".{3,}" title="3 chars minimum" autocomplete="false" value="{{ app.request.get('query') }}">
+                    <input id="search-query" class="form-control py-1" type="search" name="query" placeholder="{{ 'label.search'|trans }}..." required pattern=".{3,}" title="3 chars minimum" autocomplete="false" value="{{ app.request.get('query') }}">
                 </form>
                 <div class="d-flex navbar-cart">
                     {% set cartItems = app.session.get('cart')|length %}
@@ -95,7 +95,6 @@
             </div>
         </div>
     </footer>
-
 </body>
 
 </html>

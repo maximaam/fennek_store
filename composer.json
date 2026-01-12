@@ -91,11 +91,15 @@
             "@auto-scripts"
         ],
         "static-code-check": [
+            "@doctrine:schema-validate",
+            "@doctrine:mapping-info",
             "@cs-fixer:check",
             "@phpstan:check",
             "@rector:check",
             "@phpunit"
         ],
+        "doctrine:schema-validate": "php bin/console doctrine:schema:validate",
+        "doctrine:mapping-info": "php bin/console doctrine:mapping:info",
         "cs-fixer:fix": "php vendor/bin/php-cs-fixer fix",
         "cs-fixer:check": "php vendor/bin/php-cs-fixer fix --dry-run --diff",
         "phpstan:check": "phpstan analyse",

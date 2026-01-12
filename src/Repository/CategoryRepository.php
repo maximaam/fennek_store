@@ -8,6 +8,7 @@ use App\Entity\Category;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use phpDocumentor\Reflection\Types\Iterable_;
 
 /**
  * @extends ServiceEntityRepository<Category>
@@ -47,5 +48,14 @@ class CategoryRepository extends ServiceEntityRepository
         $qb->orderBy('c.position', 'ASC');
 
         return $qb;
+    }
+
+    public function fetchForTopNavBar(int $limit = 5): array
+    {
+        return $this->findParentsQueryBuilder()
+            ->setMaxResults($limit)
+            ->orderBy('c.position', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 }

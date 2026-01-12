@@ -9,7 +9,6 @@ use App\Entity\Page;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Menu\FactoryInterface;
 use Knp\Menu\ItemInterface;
-// use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -26,18 +25,9 @@ final readonly class NavBuilder
     public function mainMenu(): ItemInterface
     {
         $menu = $this->factory->createItem('root');
-        $menu->setChildrenAttribute('class', 'navbar-nav me-auto mb-2 mb-lg-0');
-
-        $categories = $this->entityManager
-            ->getRepository(Category::class)
-            ->findParentsQueryBuilder()
-            ->setMaxResults(5)
-            ->getQuery()
-            ->getResult();
-
+        $menu->setChildrenAttribute('class', 'navbar-nav me-auto mb-lg-0');
         $locale = $this->requestStack->getCurrentRequest()->getLocale();
-
-        /** @var Category $category */
+        $categories = $this->entityManager->getRepository(Category::class)->fetchForTopNavBar();
         foreach ($categories as $category) {
             $menu->addChild($category->getName($locale), [
                 'route' => 'app_index_catalogue',
@@ -58,7 +48,6 @@ final readonly class NavBuilder
         $menu = $this->factory->createItem('root');
         $menu->setChildrenAttribute('class', 'footer-nav list-unstyled');
         $pages = $this->entityManager->getRepository(Page::class)->findAll();
-
         foreach ($pages as $page) {
             if ('home' === $page->getAlias($locale)) {
                 continue;
