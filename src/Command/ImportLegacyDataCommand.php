@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\Entity\Category;
+use App\Entity\MediaImage;
+use App\Entity\Page;
+use App\Entity\Product;
+use App\Enum\MediaImageOwner;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -40,7 +44,7 @@ class ImportLegacyDataCommand extends Command
         $table = $input->getArgument('table');
         $io->note(\sprintf('You are about to import data from %s table.', $table));
 
-        $this->$table();
+        $this->$table($io);
 
         $io->success('Data imported successfully.');
 
@@ -50,14 +54,9 @@ class ImportLegacyDataCommand extends Command
     /**
      * @throws \DateMalformedStringException
      */
-    private function category(): void
+    private function category(SymfonyStyle $io): void
     {
-        $file = new \SplFileObject($this->rootDir.'/var/category.csv');
-        $file->setFlags(
-            \SplFileObject::READ_CSV
-            | \SplFileObject::SKIP_EMPTY
-            | \SplFileObject::DROP_NEW_LINE
-        );
+        $file = $this->loadCsv('category');
 
         /** @var array<string, Category> $parents */
         $parents = [];
@@ -109,6 +108,108 @@ class ImportLegacyDataCommand extends Command
     /**
      * @throws \DateMalformedStringException
      */
+    private function product(SymfonyStyle $io): void
+    {
+        $products = $this->loadCsv('product');
+        $categories = $this->loadCsv('category');
+
+        // Map id to alias, to be able to find the product's category
+        $cats = [];
+        foreach ($categories as $row) {
+            if ($row === [null] || !\is_array($row)) {
+                continue;
+            }
+
+            $row = array_map('trim', $row);
+            $cats[$row[0]] = $row[6];
+        }
+
+        $fetchedCategories = [];
+        foreach ($products as $i => $row) {
+            if ($row === [null] || !\is_array($row)) {
+                continue;
+            }
+            $row = array_map('trim', $row);
+
+            $io->writeln(\sprintf('%d - Importing product : %s', $i, $row[6]));
+
+            $category = $this->entityManager
+                ->getRepository(Category::class)
+                ->findOneBy(['aliasDe' => $cats[$row[1]]]);
+
+            $product = new Product()
+                ->setCategory($category)
+                ->setCreatedAtLegacy($row[2])
+                ->setUpdatedAtLegacy($row[3])
+                ->setItemNumber($row[4])
+                ->setTitleDe($row[6])
+                ->setTitleEn($row[7])
+                ->setDescriptionDe($row[8])
+                ->setDescriptionEn($row[9])
+                ->setColors($row[10] ? explode(',', $row[10]) : null)
+                ->setSizes($row[11] ? explode(',', $row[11]) : null)
+                ->setPrice(bcmul($row[12], '100', 0))
+                ->setTopItem('1' === $row[13]);
+
+            if ($row[14]) {
+                $images = trim($row[14], '-');
+                foreach (explode('-', $images) as $image) {
+                    $newImage = new MediaImage()
+                        ->setOwner(MediaImageOwner::PRODUCT)
+                        ->setCreatedAtLegacy($row[2])
+                        ->setUpdatedAtLegacy($row[3])
+                        ->setImageName($image)
+                        ->setProduct($product);
+                    $product->addImage($newImage);
+                }
+            }
+
+            $this->entityManager->persist($product);
+
+            if (0 === $i % 10) {
+                $this->entityManager->flush();
+                $this->entityManager->clear();
+            }
+        }
+
+        $this->entityManager->flush();
+        $this->entityManager->clear();
+    }
+
+    /**
+     * @throws \DateMalformedStringException
+     */
+    private function page(SymfonyStyle $io): void
+    {
+        $pages = $this->loadCsv('page');
+        foreach ($pages as $i => $row) {
+            if ($row === [null] || !\is_array($row)) {
+                continue;
+            }
+            $row = array_map('trim', $row);
+
+            $io->writeln(\sprintf('%d - Importing page : %s', $i, $row[3]));
+
+            $page = new Page()
+                ->setCreatedAtLegacy($row[1])
+                ->setUpdatedAtLegacy($row[2])
+                ->setTitleDe($row[3])
+                ->setTitleEn($row[4])
+                ->setDescriptionDe($row[5])
+                ->setDescriptionEn($row[6])
+                ->setAliasDe($row[7])
+                ->setAliasEn($row[8]);
+
+            $this->entityManager->persist($page);
+        }
+
+        $this->entityManager->flush();
+        $this->entityManager->clear();
+    }
+
+    /**
+     * @throws \DateMalformedStringException
+     */
     private function createCategoryFromRow(array $row, ?Category $parent): Category
     {
         return new Category()
@@ -122,5 +223,17 @@ class ImportLegacyDataCommand extends Command
             ->setDescriptionDe($row[8])
             ->setDescriptionEn($row[9])
             ->setPosition(0);
+    }
+
+    private function loadCsv(string $filename): \SplFileObject
+    {
+        $file = new \SplFileObject($this->rootDir.'/var/'.$filename.'.csv');
+        $file->setFlags(
+            \SplFileObject::READ_CSV
+            | \SplFileObject::SKIP_EMPTY
+            | \SplFileObject::DROP_NEW_LINE
+        );
+
+        return $file;
     }
 }
