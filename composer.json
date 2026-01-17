@@ -5,9 +5,9 @@
     "prefer-stable": true,
     "require": {
         "php": ">=8.3",
+        "ext-bcmath": "*",
         "ext-ctype": "*",
         "ext-iconv": "*",
-        "ext-bcmath": "*",
         "doctrine/dbal": "^4.4.1",
         "doctrine/doctrine-bundle": "^2.18.2",
         "doctrine/doctrine-migrations-bundle": "^3.7",
@@ -47,6 +47,7 @@
         "symfony/web-link": "7.4.*",
         "symfony/yaml": "7.4.*",
         "twig/extra-bundle": "^2.12|^3.22.2",
+        "twig/intl-extra": "^3.22",
         "twig/twig": "^2.12|^3.22.2",
         "vich/uploader-bundle": "^2.9.1"
     },

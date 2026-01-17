@@ -21,7 +21,7 @@ final class IndexController extends AbstractController
     public function index(ProductRepository $productRepo): Response
     {
         return $this->render('index/index.html.twig', [
-            'products' => $productRepo->findBy(['topItem' => true], ['updatedAt' => 'DESC'], 18),
+            'products' => $productRepo->findBy(['topItem' => true], ['updatedAt' => 'DESC'], 16),
         ]);
     }
 

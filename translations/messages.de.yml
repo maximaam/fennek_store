@@ -26,7 +26,7 @@ label:
   crud_title:
       page_edit: "'%item%' bearbeiten"
       page_index: "Details für '%item%'"
-  about-us: Über uns
+  about_us: Über uns
 
 date:
     created_at: Erstellt am
@@ -78,10 +78,11 @@ page:
     list: Seiten Liste
 
 routes:
-    about-us: ueber-uns
+    about_us: ueber-uns
 
 btn:
     create_new: Neu anlegen
+    show_details: Details anzeigen
 
 cart:
     to-cart: In den Warenkorb

@@ -17,17 +17,6 @@ class Product
 {
     use TimestampableTrait;
 
-    public const array COLORS = [
-        'white', 'silver', 'gray', 'black',
-        'beige', 'yellow', 'gold', 'orange', 'red',
-        'pink', 'violet', 'fuchsia', 'purple',
-        'lightblue', 'blue', 'darkblue',
-        'green', 'lightgreen',
-        'burlywood', 'brown', 'maroon', 'darkred',
-    ];
-
-    public const array SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
-
     #[ORM\Id, ORM\GeneratedValue, ORM\Column]
     private ?int $id = null;
 
@@ -40,32 +29,36 @@ class Product
     #[ORM\Column(length: 255)]
     private ?string $titleEn = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $titleDeSlug = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $titleEnSlug = null;
+
     #[ORM\Column(type: Types::TEXT)]
     private ?string $descriptionDe = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $descriptionEn = null;
 
-    /** @var array<string> $colors */
-    #[ORM\Column(type: Types::SIMPLE_ARRAY)]
+    #[ORM\Column(type: Types::JSON)]
     private array $colors = [];
 
-    /** @var array<string>|null $sizes */
-    #[ORM\Column(type: Types::SIMPLE_ARRAY, nullable: true)]
+    #[ORM\Column(type: Types::JSON, nullable: true)]
     private ?array $sizes = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    private ?string $price = null;
+    #[ORM\Column(type: Types::INTEGER)]
+    private int $price;
 
     #[ORM\Column]
-    private ?bool $topItem = null;
+    private bool $topItem = false;
 
-    #[ORM\ManyToOne(inversedBy: 'products')]
+    #[ORM\ManyToOne(targetEntity: Category::class, fetch: 'EAGER', inversedBy: 'products')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Category $category = null;
+    private Category $category;
 
     /** @var Collection<int, MediaImage> */
-    #[ORM\OneToMany(targetEntity: MediaImage::class, mappedBy: 'product', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: MediaImage::class, mappedBy: 'product', cascade: ['persist', 'remove'], fetch: 'EAGER', orphanRemoval: true)]
     private Collection $images;
 
     public function __construct()
@@ -110,6 +103,30 @@ class Product
     public function setTitleEn(string $titleEn): static
     {
         $this->titleEn = $titleEn;
+
+        return $this;
+    }
+
+    public function getTitleDeSlug(): ?string
+    {
+        return $this->titleDeSlug;
+    }
+
+    public function setTitleDeSlug(string $titleDeSlug): static
+    {
+        $this->titleDeSlug = $titleDeSlug;
+
+        return $this;
+    }
+
+    public function getTitleEnSlug(): ?string
+    {
+        return $this->titleEnSlug;
+    }
+
+    public function setTitleEnSlug(string $titleEnSlug): static
+    {
+        $this->titleEnSlug = $titleEnSlug;
 
         return $this;
     }
@@ -174,19 +191,19 @@ class Product
         return $this;
     }
 
-    public function getPrice(): ?string
+    public function getPrice(): int
     {
         return $this->price;
     }
 
-    public function setPrice(string $price): static
+    public function setPrice(int $price): static
     {
         $this->price = $price;
 
         return $this;
     }
 
-    public function isTopItem(): ?bool
+    public function isTopItem(): bool
     {
         return $this->topItem;
     }
@@ -198,12 +215,12 @@ class Product
         return $this;
     }
 
-    public function getCategory(): ?Category
+    public function getCategory(): Category
     {
         return $this->category;
     }
 
-    public function setCategory(?Category $category): static
+    public function setCategory(Category $category): static
     {
         $this->category = $category;
 
@@ -241,15 +258,20 @@ class Product
 
     public function getTitle(string $locale): ?string
     {
-        $key = __FUNCTION__.ucfirst($locale);
-
-        return $this->$key();
+        return match ($locale) {
+            'de' => $this->titleDe,
+            'en' => $this->titleEn,
+            default => null,
+        };
     }
 
     public function getDescription(string $locale): ?string
     {
-        $key = __FUNCTION__.ucfirst($locale);
-
-        return $this->$key();
+        return match ($locale) {
+            'de' => $this->descriptionDe,
+            'en' => $this->descriptionEn,
+            default => null,
+        };
     }
+
 }

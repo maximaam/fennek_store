@@ -1,0 +1,62 @@
+{% set data = payment.paypalPaymentDetails.payer.payer_info.shipping_address %}
+
+<h3>{{ 'payment.email-msg-part1'|trans({'%buyer_name%': data.recipient_name}) }}</h3>
+<p>{{ 'payment.email-msg-part2'|trans }}</p>
+
+<h5>{{ 'payment.email-msg-part3'|trans }}</h5>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>{{ 'label.title'|trans }}</th>
+        <th>{{ 'label.product-number'|trans }}</th>
+        <th>{{ 'label.color'|trans }}</th>
+        <th>{{ 'label.size'|trans }}</th>
+        <th>{{ 'label.quantity'|trans }}</th>
+        <th>{{ 'label.price-unit'|trans }}</th>
+        <th>{{ 'label.price-total'|trans }}</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {% for id, product in cart.products %}
+        <tr>
+            <td>{{ product.title }}</td>
+            <td>{{ product.product_number }}</td>
+            <td>{{ product.color|trans }}</td>
+            <td>{{ product.size|length > 0 ? product.size : '-' }}</td>
+            <td>{{ product.quantity }}</td>
+            <td>{{ product.price|number_format(2, ',', '.') }} <i class="fa fa-eur"></i></td>
+            <td>{{ product.full_price|number_format(2, ',', '.') }} <i class="fa fa-eur"></i></td>
+        </tr>
+    {% endfor %}
+    </tbody>
+
+    <tfoot>
+    <tr>
+        <td colspan="5"></td>
+        <td class="font-weight-bold">{{ 'label.total-excl-tax'|trans }}</td>
+        <td>{{ cart.totals.excl_tax|number_format(2, ',', '.') }} <i class="fa fa-eur"></i></td>
+    </tr>
+    <tr>
+        <td colspan="5"></td>
+        <td class="font-weight-bold">{{ 'label.vat'|trans }}</td>
+        <td>{{ cart.totals.vat|number_format(2, ',', '.') }} <i class="fa fa-eur"></i></td>
+    </tr>
+    <tr>
+        <td colspan="5"></td>
+        <td class="font-weight-bold">{{ 'label.total-incl-tax'|trans }}</td>
+        <td>{{ cart.totals.total|number_format(2, ',', '.') }} <i class="fa fa-eur"></i></td>
+    </tr>
+    </tfoot>
+
+</table>
+
+<h5>{{ 'payment.email-msg-part4'|trans }}</h5>
+<address>
+    {{ data.line1 }}<br>
+    {{ data.postal_code }} {{ data.city }}<br>
+    {{ data.country_code }}<br>
+</address>
+
+<p>{{ 'payment.email-msg-part5'|trans }}</p>

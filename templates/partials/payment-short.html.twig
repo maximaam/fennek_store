@@ -1,0 +1,15 @@
+<ul class="mt-4">
+    {% if locale == 'de' %}
+        <li>Kostenloser Versand nach Deutschland. Bei einer Rücksendung trägt der Käufer die Versandkosten.</li>
+        <li>Zahlungen nur Mit PayPal oder Überweisung/Kreditkarte durch PayPal.</li>
+        <li>14 Tage Widerrufsrecht.<br>
+            <a href="{{ path('app_index_page', {slug: 'zahlung-und-versand' }) }}">zusätzliche hinweise zur kaufabwicklung</a>
+        </li>
+    {% else %}
+        <li>Free shipping in Germany. In case of a return, buyer pays the fees.</li>
+        <li>Payments only with PayPal or transfert/credit card through PayPal</li>
+        <li>14 days open for return.<br>
+            <a href="{{ path('app_index_page', {slug: 'payment-and-delivery' }) }}">more details to payments and delivery</a>
+        </li>
+    {% endif %}
+</ul>

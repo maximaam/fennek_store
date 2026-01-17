@@ -9,6 +9,7 @@ use App\Entity\MediaImage;
 use App\Entity\Page;
 use App\Entity\Product;
 use App\Enum\MediaImageOwner;
+use App\Helper\EntityHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -26,8 +27,9 @@ class ImportLegacyDataCommand extends Command
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
+        private readonly EntityHelper $entityHelper,
         #[Autowire('%kernel.project_dir%')]
-        private string $rootDir,
+        private readonly string $rootDir,
     ) {
         parent::__construct();
     }
@@ -124,7 +126,6 @@ class ImportLegacyDataCommand extends Command
             $cats[$row[0]] = $row[6];
         }
 
-        $fetchedCategories = [];
         foreach ($products as $i => $row) {
             if ($row === [null] || !\is_array($row)) {
                 continue;
@@ -137,6 +138,16 @@ class ImportLegacyDataCommand extends Command
                 ->getRepository(Category::class)
                 ->findOneBy(['aliasDe' => $cats[$row[1]]]);
 
+            $colors = [];
+            if (isset($row[10]) && '' !== $row[10] && 'NULL' !== $row[10]) {
+                $colors = explode(',', $row[10]);
+            }
+
+            $sizes = null;
+            if (isset($row[11]) && '' !== $row[11] && 'NULL' !== $row[11]) {
+                $sizes = explode(',', $row[11]);
+            }
+
             $product = new Product()
                 ->setCategory($category)
                 ->setCreatedAtLegacy($row[2])
@@ -146,10 +157,12 @@ class ImportLegacyDataCommand extends Command
                 ->setTitleEn($row[7])
                 ->setDescriptionDe($row[8])
                 ->setDescriptionEn($row[9])
-                ->setColors($row[10] ? explode(',', $row[10]) : null)
-                ->setSizes($row[11] ? explode(',', $row[11]) : null)
-                ->setPrice(bcmul($row[12], '100', 0))
+                ->setColors($colors)
+                ->setSizes($sizes)
+                ->setPrice((int) bcmul($row[12], '100', 0))
                 ->setTopItem('1' === $row[13]);
+
+            $this->entityHelper->setProductTitleSlug($product);
 
             if ($row[14]) {
                 $images = trim($row[14], '-');

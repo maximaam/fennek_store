@@ -6,6 +6,7 @@ namespace App\EventSubscriber;
 
 use App\Entity\Category;
 use App\Entity\Page;
+use App\Entity\Product;
 use App\Helper\EntityHelper;
 use EasyCorp\Bundle\EasyAdminBundle\Event\BeforeEntityPersistedEvent;
 use EasyCorp\Bundle\EasyAdminBundle\Event\BeforeEntityUpdatedEvent;
@@ -40,6 +41,10 @@ readonly class EasyAdminSubscriber implements EventSubscriberInterface
 
         if ($entity instanceof Page) {
             $this->entityHelper->setPageAlias($entity);
+        }
+
+        if ($entity instanceof Product) {
+            $this->entityHelper->setProductTitleSlug($entity);
         }
     }
 

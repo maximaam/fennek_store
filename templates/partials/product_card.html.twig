@@ -1,0 +1,28 @@
+{% set itemUrl = path('app_index_catalogue', {
+    catAlias: product.category.parent.alias(app.request.locale),
+    subCatAlias: product.category.alias(app.request.locale),
+    itemId: product.id
+}) %}
+
+<div class="col-lg-{{ card_size ?? 3}}">
+    <a href="{{ itemUrl }}" class="a-single-item">
+        <div class="card single-item">
+            <div class="img-container">
+                <img src="{{ asset('uploads/images/' ~ product.images[0].imageName) | imagine_filter('product_' ~ img_filter ?? 'thumbnail') }}" alt="">
+            </div>
+
+            <div class="card-body">
+                <h2>{{ product.title(app.request.locale) }}</h2>
+                <p class="card-text">
+                    {{ 'product.price'|trans }}: {{ (product.price / 100)|format_currency('EUR') }}
+                </p>
+                <p class="card-text">
+                    <span class="btn btn-primary">
+                        <i class="fa fa-plus-circle"></i>
+                        {{ 'btn.show_details'|trans }}
+                    </span>
+                </p>
+            </div>
+        </div>
+    </a>
+</div>

@@ -6,6 +6,8 @@ namespace App\Controller\Admin;
 
 use App\Entity\Category;
 use App\Entity\Product;
+use App\Enum\Color;
+use App\Enum\Size;
 use App\Form\MediaImageType;
 use Doctrine\ORM\EntityRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -159,8 +161,8 @@ final class ProductCrudController extends AbstractCrudController
         yield ChoiceField::new('colors')
             ->setLabel('product.colors')
             ->setChoices(array_combine(
-                array_map(static fn (string $c) => 'product.colors_list.'.$c, Product::COLORS),
-                Product::COLORS
+                array_map(static fn (string $c) => 'product.colors_list.'.$c, Color::values()),
+                Color::values()
             ))
             ->allowMultipleChoices()
             ->renderExpanded()
@@ -174,7 +176,7 @@ final class ProductCrudController extends AbstractCrudController
         yield FormField::addColumn(12);
         yield ChoiceField::new('sizes')
             ->setLabel('product.sizes')
-            ->setChoices(\array_combine(Product::SIZES, Product::SIZES))
+            ->setChoices(\array_combine(Size::values(), Size::values()))
             ->allowMultipleChoices()
             ->renderExpanded()
             ->addCssClass('checkbox-sizes');

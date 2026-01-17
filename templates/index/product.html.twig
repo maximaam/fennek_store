@@ -1,7 +1,115 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello IndexController!{% endblock %}
+{% set locale = app.request.locale %}
+
+{% block title %}
+    {{ product.category.name(locale) }} -
+    {{ product.title(locale) }} -
+    {{ parent() }}
+{% endblock %}
 
 {% block body %}
-index
+    <div class="container product-view">
+        <div class="row">
+            {% if product|length == 0 %}
+            <div class="alert alert-info">
+                {{ 'msg.no_products_in_category'|trans }}
+            </div>
+            {% else %}
+            <div class="col-md-3">
+                {% set subCatMenu = knp_menu_get('subCategory') %}
+                {{ knp_menu_render(subCatMenu) }}
+            </div>
+
+            <div class="col-md-9">
+                {% for message in app.flashes('error') %}
+                    <div class="alert alert-danger">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+
+                <h1>{{ product.title(locale)}}</h1>
+                <div data-controller="carousel" class="carousel">
+                    <div class="carousel-track" data-carousel-target="track">
+                        {% for image in product.images %}
+                        <div class="carousel-slide">
+                            <img src="{{ asset('uploads/images/' ~ image.imageName) | imagine_filter('product_medium') }}" alt="" class="carousel-image">
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <button class="carousel-btn prev" data-action="carousel#prev">‹</button>
+                    <button class="carousel-btn next" data-action="carousel#next">›</button>
+                </div>
+
+                <div class="product-details">
+                    <p>{{ product.description(locale)|nl2br }}</p>
+                    <hr>
+                    <ul>
+                        <li>{{ 'product.item_number'|trans }}: {{ product.itemNumber }}</li>
+                        <li>{{ 'product.colors'|trans }}:
+                            {% for color in product.colors %}
+                                {{ ('product.colors_list.' ~ color)|trans }} -
+                            {% endfor %}
+                        </li>
+                        {{ dump(product.sizes) }}
+                        {% if  product.sizes is not null and product.sizes|length > 0 %}
+                            <li>{{ 'product.sizes'|trans }}: {{ product.sizes|join(', ') }}</li>
+                        {% endif %}
+                        <li>{{ 'product.price'|trans }}: {{ (product.price / 100)|format_currency('EUR') }}</li>
+                    </ul>
+                </div>
+
+                <div class="product-cart-form">
+                    <form action="{{ path('app_cart_index', {'id':product.id}) }}" name="add-to-cart" id="add-to-cart" class="form-inline" method="post">
+                        <div class="form-group">
+                            <label for="product-color">
+                                <select id="product-color" name="color" size="1" class="form-control custom-select form-control-lg" required>
+                                    <option value="">--- {{ 'product.colors'|trans }} ---</option>
+                                    {% for color in product.colors %}
+                                        <option value="{{ color }}">{{ color|trans }}</option>
+                                    {% endfor %}
+                                </select>
+                            </label>
+                        </div>
+
+                        {% if  product.sizes|length > 0 %}
+                            <div class="form-group">
+                                <label for="product-color">
+                                    <select id="product-size" name="size" size="1" class="form-control custom-select form-control-lg">
+                                        <option value="">--- {{ 'label.sizes-available'|trans }} ---</option>
+                                        {% for size in product.sizes %}
+                                            <option value="{{ size }}">{{ size }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </label>
+                            </div>
+
+                        {% endif %}
+
+                        <div class="form-group">
+                            <label for="product-quantity">
+                                <select id="product-quantity" name="quantity" size="1" class="form-control custom-select form-control-lg" required>
+                                    <option value="">--- {{ 'label.quantity'|trans }} ---</option>
+                                    {% for quantity in range(1, 10) %}
+                                        <option value="{{ quantity }}" {{ quantity == 1 ? 'selected' }}>{{ quantity }}</option>
+                                    {% endfor %}
+                                </select>
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa fa-shopping-basket"></i>
+                                {{ 'cart.to-cart'|trans }}
+                            </button>
+                        </div>
+                    </form>
+
+{#                    {{ include('partials/payment-short.html.twig', {locale: locale}) }}#}
+                </div>
+            </div>
+        </div>
+
+        {% endif %}
+    </div>
 {% endblock %}

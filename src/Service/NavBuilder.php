@@ -42,6 +42,38 @@ final readonly class NavBuilder
         return $menu;
     }
 
+    public function subCategoryMenu(array $options): ItemInterface
+    {
+        $request = $this->requestStack->getCurrentRequest();
+        $locale = $request->getLocale();
+
+        $menu = $this->factory->createItem('root');
+        $menu
+            ->setChildrenAttribute('class', 'navbar-subcategory')
+            ->setChildrenAttribute('data-cat-label', \sprintf('--- %s ---', $this->translator->trans('category.plural')));
+
+        $repository = $this->entityManager->getRepository(Category::class);
+        $currentCategory = $repository->findOneBy(['alias'.ucfirst($locale) => $request->get('catAlias')]);
+        $subCategories = $repository
+            ->fetchChildren($currentCategory)
+            ->getQuery()
+            ->getResult();
+
+        foreach ($subCategories as $category) {
+            $menu->addChild($category->getName($locale), [
+                'route' => 'app_index_catalogue',
+                'attributes' => ['class' => ''],
+                'linkAttributes' => ['class' => ''],
+                'routeParameters' => [
+                    'catAlias' => $currentCategory->getAlias($locale),
+                    'subCatAlias' => $category->getAlias($locale),
+                ],
+            ]);
+        }
+
+        return $menu;
+    }
+
     public function footerMenu(): ItemInterface
     {
         $locale = $this->requestStack->getCurrentRequest()->getLocale();

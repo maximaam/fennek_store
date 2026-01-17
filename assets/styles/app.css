@@ -8,7 +8,10 @@
     --light-tassili: #ec974e;
     --mid-tassili: #ff7f2a;
     --mid-green: #009a93;
+    --logo-orange: #ffaa1b;
+    --logo-orange-light: #fcb94e;
 }
+
 body {
     background: var(--bs-white);
     color: var(--bs-dark);
@@ -18,10 +21,18 @@ main {
     min-height: 80rem;
     padding: 20px 0;
 }
+a {
+    color: var(--bs-dark);
+    text-decoration: none;
+}
 .basic-icon {
     width: 1.5rem;
     height: 1.5rem;
     color: var(--bs-white);
+}
+
+img.logo {
+    border: 1px solid var(--bs-white);
 }
 
 .navbar-nav {
@@ -69,7 +80,7 @@ main {
 }
 
 footer.main-footer {
-    background: var(--bs-dark-bg-subtle);
+    background: var(--bs-dark);
     /*background: var(--bs-black) url("../images/tassili.jpg") center center no-repeat;*/
     object-fit: cover;
     min-height: 300px;
@@ -104,28 +115,6 @@ footer.main-footer {
     }
 }
 
-.start-page .categories a {
-    color: #333;
-}
-.start-page .categories a:hover {
-    text-decoration: none;
-}
-
-.start-page .category {
-    background: rgba(255,255,255,.8);
-    height: 360px;
-    border-radius: 100%;
-    text-align: center;
-    vertical-align: middle;
-    line-height: 360px;
-    font-size: 2rem;
-    box-shadow: 0 0 2px #999;
-}
-.start-page .category:hover {
-    background: rgba(254,111,34,.3);
-    color: #fff;
-}
-
 .start-seo {
     background: #eee;
     padding: 20px;
@@ -142,11 +131,11 @@ footer.main-footer {
 }
 
 .btn-primary {
-    background: var(--mid-tassili);
+    background: var(--bs-dark);
     border: none;
-}
-.btn-primary:hover {
-    background: var(--light-tassili);
+    &:hover {
+        background: var(--logo-orange);
+    }
 }
 
 
@@ -154,32 +143,25 @@ footer.main-footer {
     padding: 5px 10px;
     box-shadow: 0 0 3px #ccc;
     margin-bottom: 20px;
+    h2 {
+        font-weight: 600;
+        min-height: 50px;
+        border-bottom: 1px solid #999;
+        font-size: 1rem !important;
+    }
 }
 .a-single-item, .a-single-item:hover {
-    color: #333;
     text-decoration: none;
-}
-
-.single-item h2 {
-    font-size: 1rem;
-    font-weight: 600;
-    min-height: 50px;
-    border-bottom: 1px solid #999;
-    font-size: 1rem !important;
 }
 
 .img-container {
     height: 160px;
-    margin-bottom: 10px;
-}
-.img-container.homepage {
-    height: 200px;
-}
-.img-container img {
-    max-width: 100%;
-    max-height: 100%;
-    margin: auto;
-    display: block;
+    img {
+        max-width: 100%;
+        max-height: 100%;
+        margin: auto;
+        display: block;
+    }
 }
 
 .product-details {
@@ -193,18 +175,14 @@ footer.main-footer {
     padding: 10px 10px 10px 20px;
     list-style: none;
     margin-bottom: 30px;
-}
-
-.navbar-subcategory li {
-    border-bottom: 1px dotted #ccc;
-    margin-bottom: 10px;
-}
-.navbar-subcategory li a {
-    color: #333;
-}
-.navbar-subcategory li a:hover,
-.navbar-subcategory li.current a {
-    color: #75af34;
+    li {
+        border-bottom: 1px dotted var(--bs-gray-600);
+        margin-bottom: 10px;
+        a:hover,
+        &.current a {
+            color: var(--logo-orange);
+        }
+    }
 }
 .cat-desc {
     color: #999;
@@ -216,12 +194,52 @@ footer.main-footer {
     height: 400px;
 }
 
-.carousel-img {
-    max-width: 100%;
-    max-height: 100%;
-    margin: auto;
-    display: block;
+.carousel {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
 }
+
+.carousel-track {
+    display: flex;
+    transition: transform 0.4s ease;
+}
+
+.carousel-slide {
+    width: 100%;
+    flex-shrink: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.carousel-image {
+    max-width: 600px;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    font-size: 2rem;
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
+.carousel-btn.prev {
+    left: 10px;
+}
+
+.carousel-btn.next {
+    right: 10px;
+}
+
 
 #overlay {
     background: rgba(0,0,0,.7);
@@ -340,7 +358,7 @@ img.page-img {
         text-align: center;
     }
 
-    .carousel-img {
+    .carousel-image {
         width: 100%;
     }
 
