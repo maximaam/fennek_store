@@ -24,22 +24,22 @@ class Product
     private ?string $itemNumber = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $titleDe = null;
+    private string $titleDe;
 
     #[ORM\Column(length: 255)]
-    private ?string $titleEn = null;
+    private string $titleEn;
 
     #[ORM\Column(length: 255)]
-    private ?string $titleDeSlug = null;
+    private string $titleDeSlug;
 
     #[ORM\Column(length: 255)]
-    private ?string $titleEnSlug = null;
+    private string $titleEnSlug;
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $descriptionDe = null;
+    private string $descriptionDe;
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $descriptionEn = null;
+    private string $descriptionEn;
 
     #[ORM\Column(type: Types::JSON)]
     private array $colors = [];
@@ -50,7 +50,7 @@ class Product
     #[ORM\Column(type: Types::INTEGER)]
     private int $price;
 
-    #[ORM\Column]
+    #[ORM\Column(type: Types::BOOLEAN, options: ['default' => false])]
     private bool $topItem = false;
 
     #[ORM\ManyToOne(targetEntity: Category::class, fetch: 'EAGER', inversedBy: 'products')]
@@ -83,7 +83,7 @@ class Product
         return $this;
     }
 
-    public function getTitleDe(): ?string
+    public function getTitleDe(): string
     {
         return $this->titleDe;
     }
@@ -95,7 +95,7 @@ class Product
         return $this;
     }
 
-    public function getTitleEn(): ?string
+    public function getTitleEn(): string
     {
         return $this->titleEn;
     }
@@ -107,7 +107,7 @@ class Product
         return $this;
     }
 
-    public function getTitleDeSlug(): ?string
+    public function getTitleDeSlug(): string
     {
         return $this->titleDeSlug;
     }
@@ -119,7 +119,7 @@ class Product
         return $this;
     }
 
-    public function getTitleEnSlug(): ?string
+    public function getTitleEnSlug(): string
     {
         return $this->titleEnSlug;
     }
@@ -131,7 +131,7 @@ class Product
         return $this;
     }
 
-    public function getDescriptionDe(): ?string
+    public function getDescriptionDe(): string
     {
         return $this->descriptionDe;
     }
@@ -143,7 +143,7 @@ class Product
         return $this;
     }
 
-    public function getDescriptionEn(): ?string
+    public function getDescriptionEn(): string
     {
         return $this->descriptionEn;
     }
@@ -273,5 +273,4 @@ class Product
             default => null,
         };
     }
-
 }

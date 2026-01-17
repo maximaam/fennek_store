@@ -32,7 +32,6 @@ use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use Vich\UploaderBundle\Form\Type\VichImageType;
 
 /**
  * @extends AbstractCrudController<Product>
