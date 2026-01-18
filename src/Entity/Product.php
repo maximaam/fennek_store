@@ -258,21 +258,19 @@ class Product
     // Extra Entity Methods
     // ─────────────────────────────
 
-    public function getTitle(string $locale): ?string
+    public function getTitle(string $locale): string
     {
         return match ($locale) {
-            'de' => $this->titleDe,
             'en' => $this->titleEn,
-            default => null,
+            default => $this->titleDe,
         };
     }
 
-    public function getDescription(string $locale): ?string
+    public function getDescription(string $locale): string
     {
         return match ($locale) {
-            'de' => $this->descriptionDe,
             'en' => $this->descriptionEn,
-            default => null,
+            default => $this->descriptionDe,
         };
     }
 }

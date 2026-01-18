@@ -153,21 +153,19 @@ class Page
     // Extra Entity Methods
     // ─────────────────────────────
 
-    public function getTitle(string $locale): ?string
+    public function getTitle(string $locale): string
     {
         return match ($locale) {
-            'de' => $this->titleDe,
             'en' => $this->titleEn,
-            default => null,
+            default => $this->titleDe,
         };
     }
 
-    public function getAlias(string $locale): ?string
+    public function getAlias(string $locale): string
     {
         return match ($locale) {
-            'de' => $this->aliasDe,
             'en' => $this->aliasEn,
-            default => null,
+            default => $this->aliasDe,
         };
     }
 

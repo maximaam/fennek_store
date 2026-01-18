@@ -208,7 +208,6 @@ class Category implements \Stringable
     public function getName(string $locale): string
     {
         return match ($locale) {
-            'de' => $this->nameDe,
             'en' => $this->nameEn,
             default => $this->nameDe,
         };
@@ -217,7 +216,6 @@ class Category implements \Stringable
     public function getAlias(string $locale): string
     {
         return match ($locale) {
-            'de' => $this->aliasDe,
             'en' => $this->aliasEn,
             default => $this->aliasDe,
         };

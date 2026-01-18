@@ -15,22 +15,19 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 final readonly class NavBuilder
 {
-    private Request $request;
-
     public function __construct(
         private FactoryInterface $factory,
         private EntityManagerInterface $entityManager,
         private RequestStack $requestStack,
         private TranslatorInterface $translator,
     ) {
-        $this->request = $this->requestStack->getCurrentRequest() ?? throw new \RuntimeException('No current request found');
     }
 
     public function mainMenu(): ItemInterface
     {
         $menu = $this->factory->createItem('root');
         $menu->setChildrenAttribute('class', 'navbar-nav me-auto mb-lg-0');
-        $locale = $this->request->getLocale();
+        $locale = $this->getLocale();
         $categories = $this->entityManager->getRepository(Category::class)->fetchForTopNavBar();
         foreach ($categories as $category) {
             $menu->addChild($category->getName($locale), [
@@ -48,7 +45,7 @@ final readonly class NavBuilder
 
     public function subCategoryMenu(): ItemInterface
     {
-        $locale = $this->request->getLocale();
+        $locale = $this->getLocale();
         $menu = $this->factory->createItem('root');
         $menu
             ->setChildrenAttribute('class', 'navbar-subcategory')
@@ -56,7 +53,7 @@ final readonly class NavBuilder
 
         $repository = $this->entityManager->getRepository(Category::class);
         $currentCategory = $repository
-            ->findOneBy(['alias'.ucfirst($locale) => $this->request->request->get('catAlias')])
+            ->findOneBy(['alias'.ucfirst($locale) => $this->getRequest()->request->get('catAlias')])
             ?? throw new \RuntimeException('No current category found');
 
         $subCategories = $repository
@@ -81,7 +78,7 @@ final readonly class NavBuilder
 
     public function footerMenu(): ItemInterface
     {
-        $locale = $this->request->getLocale();
+        $locale = $this->getLocale();
         $menu = $this->factory->createItem('root');
         $menu->setChildrenAttribute('class', 'footer-nav list-unstyled');
         $pages = $this->entityManager->getRepository(Page::class)->findAll();
@@ -90,7 +87,7 @@ final readonly class NavBuilder
                 continue;
             }
 
-            $menu->addChild('> '.$page->getTitle($locale), [
+            $menu->addChild($page->getTitle($locale), [
                 'route' => 'app_index_page',
                 // 'attributes' => ['class' => ''],
                 // 'linkAttributes' => ['class' => 'white-u'],
@@ -101,5 +98,15 @@ final readonly class NavBuilder
         }
 
         return $menu;
+    }
+
+    private function getRequest(): Request
+    {
+        return $this->requestStack->getCurrentRequest() ?? throw new \RuntimeException('No current request found');
+    }
+
+    private function getLocale(): string
+    {
+        return $this->getRequest()->getLocale();
     }
 }
