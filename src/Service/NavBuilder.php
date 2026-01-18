@@ -53,7 +53,7 @@ final readonly class NavBuilder
 
         $repository = $this->entityManager->getRepository(Category::class);
         $currentCategory = $repository
-            ->findOneBy(['alias'.ucfirst($locale) => $this->getRequest()->request->get('catAlias')])
+            ->findOneBy(['alias'.ucfirst($locale) => $this->getRequest()->attributes->get('catAlias')])
             ?? throw new \RuntimeException('No current category found');
 
         $subCategories = $repository
@@ -83,10 +83,6 @@ final readonly class NavBuilder
         $menu->setChildrenAttribute('class', 'footer-nav list-unstyled');
         $pages = $this->entityManager->getRepository(Page::class)->findAll();
         foreach ($pages as $page) {
-            if ('home' === $page->getAlias($locale)) {
-                continue;
-            }
-
             $menu->addChild($page->getTitle($locale), [
                 'route' => 'app_index_page',
                 // 'attributes' => ['class' => ''],
