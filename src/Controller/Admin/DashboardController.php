@@ -53,7 +53,7 @@ class DashboardController extends AbstractDashboardController
     #[\Override]
     public function configureDashboard(): Dashboard
     {
-        $logo = \sprintf('%s../assets/images/logo.webp', '');
+        // $logo = \sprintf('%s../assets/images/logo.webp', '');
 
         return Dashboard::new()
             ->setFaviconPath('/images/favicon.png')

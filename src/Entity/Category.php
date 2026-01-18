@@ -198,25 +198,6 @@ class Category implements \Stringable
         return $this->products;
     }
 
-    public function addProduct(Product $product): static
-    {
-        if (!$this->products->contains($product)) {
-            $this->products->add($product);
-            $product->setCategory($this);
-        }
-
-        return $this;
-    }
-
-    public function removeProduct(Product $product): static
-    {
-        if ($this->products->removeElement($product) && $product->getCategory() === $this) {
-            $product->setCategory(null);
-        }
-
-        return $this;
-    }
-
     // ### Extra entity methods ###//
 
     public function __toString(): string
@@ -226,28 +207,28 @@ class Category implements \Stringable
 
     public function getName(string $locale): string
     {
-        if ('en' === $locale) {
-            return $this->getNameEn();
-        }
-
-        return $this->getNameDe();
+        return match ($locale) {
+            'de' => $this->nameDe,
+            'en' => $this->nameEn,
+            default => $this->nameDe,
+        };
     }
 
     public function getAlias(string $locale): string
     {
-        if ('en' === $locale) {
-            return $this->getAliasEn();
-        }
-
-        return $this->getAliasDe();
+        return match ($locale) {
+            'de' => $this->aliasDe,
+            'en' => $this->aliasEn,
+            default => $this->aliasDe,
+        };
     }
 
     public function getDescription(string $locale): ?string
     {
-        if ('en' === $locale) {
-            $this->getDescriptionEn();
-        }
-
-        return $this->getDescriptionDe();
+        return match ($locale) {
+            'de' => $this->descriptionDe,
+            'en' => $this->descriptionEn,
+            default => null,
+        };
     }
 }

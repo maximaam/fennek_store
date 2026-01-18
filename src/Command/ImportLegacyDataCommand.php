@@ -40,13 +40,21 @@ class ImportLegacyDataCommand extends Command
             ->addArgument('table', InputArgument::REQUIRED, 'Argument description');
     }
 
+    /**
+     * @throws \DateMalformedStringException
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         $table = $input->getArgument('table');
         $io->note(\sprintf('You are about to import data from %s table.', $table));
 
-        $this->$table($io);
+        match ($table) {
+            'product' => $this->product($io),
+            'category' => $this->category($io),
+            'page' => $this->page($io),
+            default => throw new \RuntimeException("Unknown table '$table'"),
+        };
 
         $io->success('Data imported successfully.');
 
@@ -69,7 +77,7 @@ class ImportLegacyDataCommand extends Command
                 continue;
             }
 
-            $row = array_map('trim', $row);
+            $row = array_map(trim(...), $row);
             [$id, $parentId] = $row;
             if ('NULL' !== $parentId) {
                 continue;
@@ -77,7 +85,6 @@ class ImportLegacyDataCommand extends Command
 
             $category = $this->createCategoryFromRow($row, null);
             $this->entityManager->persist($category);
-
             $parents[$id] = $category;
         }
         $this->entityManager->flush();
@@ -90,7 +97,7 @@ class ImportLegacyDataCommand extends Command
                 continue;
             }
 
-            $row = array_map('trim', $row);
+            $row = array_map(trim(...), $row);
 
             [$id, $parentId] = $row;
             if ('NULL' === $parentId) {
@@ -101,6 +108,7 @@ class ImportLegacyDataCommand extends Command
                 throw new \RuntimeException("Parent category $parentId not found.");
 
             $category = $this->createCategoryFromRow($row, $parent);
+            $io->writeln(\sprintf('Importing category : %s', $category->getNameDe()));
             $this->entityManager->persist($category);
         }
 
@@ -122,7 +130,7 @@ class ImportLegacyDataCommand extends Command
                 continue;
             }
 
-            $row = array_map('trim', $row);
+            $row = array_map(trim(...), $row);
             $cats[$row[0]] = $row[6];
         }
 
@@ -130,13 +138,13 @@ class ImportLegacyDataCommand extends Command
             if ($row === [null] || !\is_array($row)) {
                 continue;
             }
-            $row = array_map('trim', $row);
+            $row = array_map(trim(...), $row);
 
             $io->writeln(\sprintf('%d - Importing product : %s', $i, $row[6]));
 
             $category = $this->entityManager
                 ->getRepository(Category::class)
-                ->findOneBy(['aliasDe' => $cats[$row[1]]]);
+                ->findOneBy(['aliasDe' => $cats[$row[1]]]) ?? throw new \RuntimeException("Category {$cats[$row[1]]} not found.");
 
             $colors = [];
             if (isset($row[10]) && '' !== $row[10] && 'NULL' !== $row[10]) {
@@ -146,6 +154,11 @@ class ImportLegacyDataCommand extends Command
             $sizes = null;
             if (isset($row[11]) && '' !== $row[11] && 'NULL' !== $row[11]) {
                 $sizes = explode(',', $row[11]);
+            }
+
+            $price = trim($row[12]);
+            if (!is_numeric($price)) {
+                throw new \RuntimeException("Invalid price value: {$row[12]}");
             }
 
             $product = new Product()
@@ -159,12 +172,12 @@ class ImportLegacyDataCommand extends Command
                 ->setDescriptionEn($row[9])
                 ->setColors($colors)
                 ->setSizes($sizes)
-                ->setPrice((int) bcmul($row[12], '100', 0))
+                ->setPrice((int) bcmul($price, '100', 0))
                 ->setTopItem('1' === $row[13]);
 
             $this->entityHelper->setProductTitleSlug($product);
 
-            if ($row[14]) {
+            if ('' !== $row[14]) {
                 $images = trim($row[14], '-');
                 foreach (explode('-', $images) as $image) {
                     $newImage = new MediaImage()
@@ -199,7 +212,7 @@ class ImportLegacyDataCommand extends Command
             if ($row === [null] || !\is_array($row)) {
                 continue;
             }
-            $row = array_map('trim', $row);
+            $row = array_map(trim(...), $row);
 
             $io->writeln(\sprintf('%d - Importing page : %s', $i, $row[3]));
 
@@ -221,6 +234,8 @@ class ImportLegacyDataCommand extends Command
     }
 
     /**
+     * @param array<int, string> $row
+     *
      * @throws \DateMalformedStringException
      */
     private function createCategoryFromRow(array $row, ?Category $parent): Category

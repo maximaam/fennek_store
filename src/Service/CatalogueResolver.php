@@ -46,10 +46,7 @@ final readonly class CatalogueResolver
                 ->findOneBy([$aliasField => $dto->categoryAlias])
                 ?? throw new NotFoundHttpException();
 
-            $categoryIds = \array_map(function (Category $cat) {
-                return $cat->getId();
-            }, \iterator_to_array($category->getChildren()));
-
+            $categoryIds = \array_map(static fn (Category $cat) => $cat->getId(), \iterator_to_array($category->getChildren()));
             $products = $this->productRepository
                 ->fetchByCategories($categoryIds)
                 ->setMaxResults(12)

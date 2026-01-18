@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\EventListener;
 
 use App\Entity\MediaImage;
+use App\Entity\Page;
 use App\Entity\Product;
 use App\Enum\MediaImageOwner;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
@@ -82,7 +83,7 @@ final readonly class MediaImageCacheListener
             return;
         }
 
-        if (null !== $image->getPage()) {
+        if ($image->getPage() instanceof Page) {
             $image->setOwner(MediaImageOwner::PAGE);
 
             return;

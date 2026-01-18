@@ -41,9 +41,11 @@ class Product
     #[ORM\Column(type: Types::TEXT)]
     private string $descriptionEn;
 
+    /** @var array<string> */
     #[ORM\Column(type: Types::JSON)]
     private array $colors = [];
 
+    /** @var array<string> */
     #[ORM\Column(type: Types::JSON, nullable: true)]
     private ?array $sizes = null;
 

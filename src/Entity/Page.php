@@ -155,22 +155,28 @@ class Page
 
     public function getTitle(string $locale): ?string
     {
-        $key = __FUNCTION__.ucfirst($locale);
-
-        return $this->$key();
+        return match ($locale) {
+            'de' => $this->titleDe,
+            'en' => $this->titleEn,
+            default => null,
+        };
     }
 
     public function getAlias(string $locale): ?string
     {
-        $key = __FUNCTION__.ucfirst($locale);
-
-        return $this->$key();
+        return match ($locale) {
+            'de' => $this->aliasDe,
+            'en' => $this->aliasEn,
+            default => null,
+        };
     }
 
     public function getDescription(string $locale): ?string
     {
-        $key = __FUNCTION__.ucfirst($locale);
-
-        return $this->$key();
+        return match ($locale) {
+            'de' => $this->descriptionDe,
+            'en' => $this->descriptionEn,
+            default => null,
+        };
     }
 }

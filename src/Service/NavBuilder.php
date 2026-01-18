@@ -9,24 +9,28 @@ use App\Entity\Page;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Menu\FactoryInterface;
 use Knp\Menu\ItemInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 final readonly class NavBuilder
 {
+    private Request $request;
+
     public function __construct(
         private FactoryInterface $factory,
         private EntityManagerInterface $entityManager,
         private RequestStack $requestStack,
         private TranslatorInterface $translator,
     ) {
+        $this->request = $this->requestStack->getCurrentRequest() ?? throw new \RuntimeException('No current request found');
     }
 
     public function mainMenu(): ItemInterface
     {
         $menu = $this->factory->createItem('root');
         $menu->setChildrenAttribute('class', 'navbar-nav me-auto mb-lg-0');
-        $locale = $this->requestStack->getCurrentRequest()->getLocale();
+        $locale = $this->request->getLocale();
         $categories = $this->entityManager->getRepository(Category::class)->fetchForTopNavBar();
         foreach ($categories as $category) {
             $menu->addChild($category->getName($locale), [
@@ -42,18 +46,19 @@ final readonly class NavBuilder
         return $menu;
     }
 
-    public function subCategoryMenu(array $options): ItemInterface
+    public function subCategoryMenu(): ItemInterface
     {
-        $request = $this->requestStack->getCurrentRequest();
-        $locale = $request->getLocale();
-
+        $locale = $this->request->getLocale();
         $menu = $this->factory->createItem('root');
         $menu
             ->setChildrenAttribute('class', 'navbar-subcategory')
             ->setChildrenAttribute('data-cat-label', \sprintf('--- %s ---', $this->translator->trans('category.plural')));
 
         $repository = $this->entityManager->getRepository(Category::class);
-        $currentCategory = $repository->findOneBy(['alias'.ucfirst($locale) => $request->get('catAlias')]);
+        $currentCategory = $repository
+            ->findOneBy(['alias'.ucfirst($locale) => $this->request->request->get('catAlias')])
+            ?? throw new \RuntimeException('No current category found');
+
         $subCategories = $repository
             ->fetchChildren($currentCategory)
             ->getQuery()
@@ -76,7 +81,7 @@ final readonly class NavBuilder
 
     public function footerMenu(): ItemInterface
     {
-        $locale = $this->requestStack->getCurrentRequest()->getLocale();
+        $locale = $this->request->getLocale();
         $menu = $this->factory->createItem('root');
         $menu->setChildrenAttribute('class', 'footer-nav list-unstyled');
         $pages = $this->entityManager->getRepository(Page::class)->findAll();

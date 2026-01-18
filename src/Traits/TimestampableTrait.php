@@ -53,12 +53,7 @@ trait TimestampableTrait
      */
     public function setUpdatedAtLegacy(?string $date = null): self
     {
-        if ('NULL' === $date) {
-            $datetime = new \DateTimeImmutable();
-        } else {
-            $datetime = new \DateTimeImmutable($date);
-        }
-
+        $datetime = 'NULL' === $date || null === $date ? new \DateTimeImmutable() : new \DateTimeImmutable($date);
         $this->updatedAt = $datetime;
 
         return $this;

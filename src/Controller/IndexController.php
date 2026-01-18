@@ -41,7 +41,7 @@ final class IndexController extends AbstractController
     #[Route('/{_locale}/search', name: 'search', methods: [Request::METHOD_POST])]
     public function search(Request $request, ProductRepository $productRepo): Response
     {
-        $query = trim((string) $request->query->get('query', ''));
+        $query = trim($request->query->get('query', ''));
         if (\mb_strlen($query) < 3) {
             return $this->redirectToRoute('app_index_index');
         }

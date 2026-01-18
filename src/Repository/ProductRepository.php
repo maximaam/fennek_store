@@ -19,6 +19,9 @@ class ProductRepository extends ServiceEntityRepository
         parent::__construct($registry, Product::class);
     }
 
+    /**
+     * @param array<int, int|null> $categories
+     */
     public function fetchByCategories(array $categories): QueryBuilder
     {
         return $this->createQueryBuilder('p')
@@ -27,7 +30,10 @@ class ProductRepository extends ServiceEntityRepository
             ->setParameter('categories', $categories);
     }
 
-    public function searchTitle(string $query, string $locale, int $limit = 10)
+    /**
+     * @return Product[]
+     */
+    public function searchTitle(string $query, string $locale, int $limit = 10): array
     {
         return $this->createQueryBuilder('p')
             ->select('p')

@@ -34,6 +34,7 @@ enum Color: string
     case MAROON = 'maroon';
     case DARKRED = 'darkred';
 
+    /** @return array<string> */
     public static function values(): array
     {
         return array_map(

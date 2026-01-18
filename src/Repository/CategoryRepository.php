@@ -39,7 +39,7 @@ class CategoryRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('c')
             ->where('c.parent IS NOT NULL');
 
-        if (null !== $category) {
+        if ($category instanceof Category) {
             $qb->andWhere('c.parent = :parentId')
                 ->setParameter('parentId', $category->getId());
         }
@@ -49,6 +49,9 @@ class CategoryRepository extends ServiceEntityRepository
         return $qb;
     }
 
+    /**
+     * @return Category[]
+     */
     public function fetchForTopNavBar(int $limit = 5): array
     {
         return $this->findParentsQueryBuilder()
