@@ -14,18 +14,23 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route(name: 'app_index_')]
+#[Route(
+    '/{_locale}',
+    name: 'app_index_',
+    requirements: ['_locale' => 'en|de'],
+    defaults: ['_locale' => 'de']
+)]
 final class IndexController extends AbstractController
 {
-    #[Route('/', name: 'index')]
-    public function index(ProductRepository $productRepo): Response
+    #[Route('/', name: 'index', methods: [Request::METHOD_GET])]
+    public function index(Request $request, ProductRepository $productRepo): Response
     {
         return $this->render('index/index.html.twig', [
             'products' => $productRepo->findBy(['topItem' => true], ['updatedAt' => 'DESC'], 16),
         ]);
     }
 
-    #[Route('/{_locale}/page/{alias}', name: 'page')]
+    #[Route('/page/{alias}', name: 'page', methods: [Request::METHOD_GET])]
     public function page(PageRepository $pageRepo, string $alias, string $_locale): Response
     {
         $aliasI18n = 'alias'.ucfirst($_locale);
@@ -38,7 +43,7 @@ final class IndexController extends AbstractController
         return $this->render('index/page.html.twig', ['page' => $page]);
     }
 
-    #[Route('/{_locale}/search', name: 'search', methods: [Request::METHOD_POST])]
+    #[Route('/search', name: 'search', methods: [Request::METHOD_POST])]
     public function search(Request $request, ProductRepository $productRepo): Response
     {
         $query = trim($request->query->get('query', ''));
@@ -55,7 +60,7 @@ final class IndexController extends AbstractController
         ]);
     }
 
-    #[Route('/{_locale}/catalogue/{catAlias}/{subCatAlias?}/{itemId?}', name: 'catalogue')]
+    #[Route('/catalogue/{catAlias}/{subCatAlias?}/{itemId?}', name: 'catalogue', methods: [Request::METHOD_GET])]
     // #[Cache(expires: 'tomorrow', public: true)]
     public function catalogue(CatalogueResolver $resolver, string $_locale, string $catAlias, ?string $subCatAlias = null, ?int $itemId = null): Response
     {
