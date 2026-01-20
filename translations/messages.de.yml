@@ -46,9 +46,12 @@ product:
   list: Artikel Liste
   top_item: Top Artikel
   item_number: Artikel Nummer
+  color: Farbe
   colors: Farben
   sizes: Größen
+  size: Größe
   price: Preis
+  price_total: Preis Total
   quantity: Menge
   colors_list:
     white: Weiss
@@ -99,9 +102,9 @@ msg:
     confirm_delete: Löschen bestätigen?
     no_products_in_category: Zurzeit keine Ware in dieser Kategorie
     no_search_result: 'Keine Treffer gefunden für Ihre Suche nach: %query%'
-    thanks-for-order: Vielen Dank für Ihre Bestellung
-    email-sent: Eine Email wurde an %buyer_email% gesendet mit der gesamten Übersicht.
-    error-to-cart-params: Fehler! Bitte korrigieren Sie Ihr Auswhal (Farbe, Größe, Menge...)
+    thanks_for_order: Vielen Dank für Ihre Bestellung
+    email_sent: Eine Email wurde an %buyer_email% gesendet mit der gesamten Übersicht.
+    error_cart_params: Fehler! Bitte korrigieren Sie Ihr Auswhal (Farbe, Größe, Menge...)
 
 payment:
     email-subject: Ihre Bestellung bei Fennek-Store

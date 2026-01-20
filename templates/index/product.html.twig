@@ -63,7 +63,7 @@
                         {{ 'label.make_order'|trans }}
                     </div>
                     <div class="card-body">
-                        <form action="{{ path('app_cart_index', {'id':product.id}) }}" name="add-to-cart" id="add-to-cart" class="form-inline" method="post">
+                        <form action="{{ path('app_cart_add', {'id':product.id}) }}" name="add-to-cart" id="add-to-cart" class="form-inline" method="post">
                             <div class="form-group">
                                 <label for="product-color">
                                     <select id="product-color" name="color" size="1" class="form-control" required>

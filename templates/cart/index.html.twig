@@ -1,20 +1,61 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello CartController!{% endblock %}
+{% block js_head %}
+{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+    <div class="container">
+        <div class="row">
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+            {% if cart is not defined or cart|length <= 0  %}
+                <div class="alert alert-warning">
+                    {{ 'cart.empty'|trans }}
+                </div>
+            {% endif %}
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/Users/maamarkhemissi/www/fennek_store/src/Controller/CartController.php</code></li>
-        <li>Your template at <code>/Users/maamarkhemissi/www/fennek_store/templates/cart/index.html.twig</code></li>
-    </ul>
-</div>
+            {% set products = cart.products %}
+            {% set totals = cart.totals %}
+            <div class="table-responsive">
+                <h1 class="text-center">{{ 'cart.my_cart'|trans }}</h1>
+                <table class="table table-stripped table-hover">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>{{ 'product.singular'|trans }}</th>
+                        <th>{{ 'product.item_number'|trans }}</th>
+                        <th>{{ 'product.color'|trans }}</th>
+                        <th>{{ 'product.size'|trans }}</th>
+                        <th>{{ 'product.quantity'|trans }}</th>
+                        <th>{{ 'product.price'|trans }}</th>
+                        <th>{{ 'product.price_total'|trans }}</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for itemKey,product in products %}
+                        <tr>
+                            <td><img src="{{ asset('uploads/images/' ~ product.image) | imagine_filter('product_thumbnail') }}" alt="" width="120"></td>
+                            <td><a href="{{ product.item_url }}">{{ product.title }}</a></td>
+                            <td>{{ product.item_number }}</td>
+                            <td>{{ ('product.colors_list.' ~ product.color)|trans }}</td>
+                            <td>{{ product.size|length > 0 ? product.size : '-' }}</td>
+                            <td>{{ product.quantity }}</td>
+                            <td>{{ (product.price / 100)|format_currency('EUR') }}</td>
+                            <td>{{ (product.full_price / 100)|format_currency('EUR') }}</td>
+                            <td>
+                                <div class="pull-right">
+                                    <a href="{{ path('app_cart_remove', {'itemKey': itemKey}) }}" title="{{ 'form.delete'|trans }}" rel="nofollow" class="btn btn-danger">
+                                        <i class="fa fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
 {% endblock %}
