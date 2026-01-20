@@ -51,7 +51,6 @@
                                 {{ ('product.colors_list.' ~ color)|trans }} -
                             {% endfor %}
                         </li>
-                        {{ dump(product.sizes) }}
                         {% if  product.sizes is not null and product.sizes|length > 0 %}
                             <li>{{ 'product.sizes'|trans }}: {{ product.sizes|join(', ') }}</li>
                         {% endif %}
@@ -59,53 +58,57 @@
                     </ul>
                 </div>
 
-                <div class="product-cart-form">
-                    <form action="{{ path('app_cart_index', {'id':product.id}) }}" name="add-to-cart" id="add-to-cart" class="form-inline" method="post">
-                        <div class="form-group">
-                            <label for="product-color">
-                                <select id="product-color" name="color" size="1" class="form-control custom-select form-control-lg" required>
-                                    <option value="">--- {{ 'product.colors'|trans }} ---</option>
-                                    {% for color in product.colors %}
-                                        <option value="{{ color }}">{{ color|trans }}</option>
-                                    {% endfor %}
-                                </select>
-                            </label>
-                        </div>
-
-                        {% if  product.sizes|length > 0 %}
+                <div class="card order-card">
+                    <div class="card-header">
+                        {{ 'label.make_order'|trans }}
+                    </div>
+                    <div class="card-body">
+                        <form action="{{ path('app_cart_index', {'id':product.id}) }}" name="add-to-cart" id="add-to-cart" class="form-inline" method="post">
                             <div class="form-group">
                                 <label for="product-color">
-                                    <select id="product-size" name="size" size="1" class="form-control custom-select form-control-lg">
-                                        <option value="">--- {{ 'label.sizes-available'|trans }} ---</option>
-                                        {% for size in product.sizes %}
-                                            <option value="{{ size }}">{{ size }}</option>
+                                    <select id="product-color" name="color" size="1" class="form-control" required>
+                                        <option value="">--- {{ 'product.colors'|trans }} ---</option>
+                                        {% for color in product.colors %}
+                                            <option value="{{ color }}">{{ ('product.colors_list.' ~ color)|trans }}</option>
                                         {% endfor %}
                                     </select>
                                 </label>
                             </div>
 
-                        {% endif %}
+                            {% if  product.sizes|length > 0 %}
+                                <div class="form-group">
+                                    <label for="product-color">
+                                        <select id="product-size" name="size" size="1" class="form-control">
+                                            <option value="">--- {{ 'product.sizes'|trans }} ---</option>
+                                            {% for size in product.sizes %}
+                                                <option value="{{ size }}">{{ size }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </label>
+                                </div>
+                            {% endif %}
 
-                        <div class="form-group">
-                            <label for="product-quantity">
-                                <select id="product-quantity" name="quantity" size="1" class="form-control custom-select form-control-lg" required>
-                                    <option value="">--- {{ 'label.quantity'|trans }} ---</option>
-                                    {% for quantity in range(1, 10) %}
-                                        <option value="{{ quantity }}" {{ quantity == 1 ? 'selected' }}>{{ quantity }}</option>
-                                    {% endfor %}
-                                </select>
-                            </label>
-                        </div>
-
-                        <div class="form-group">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fa fa-shopping-basket"></i>
-                                {{ 'cart.to-cart'|trans }}
-                            </button>
-                        </div>
-                    </form>
-
-{#                    {{ include('partials/payment-short.html.twig', {locale: locale}) }}#}
+                            <div class="form-group">
+                                <label for="product-quantity">
+                                    <select id="product-quantity" name="quantity" size="1" class="form-control" required>
+                                        <option value="">--- {{ 'product.quantity'|trans }} ---</option>
+                                        {% for quantity in range(1, 10) %}
+                                            <option value="{{ quantity }}">{{ quantity }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa fa-shopping-basket"></i>
+                                    {{ 'cart.to-cart'|trans }}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="card-footer">
+                        {{ include('partials/_order_info.html.twig', {locale: locale}) }}
+                    </div>
                 </div>
             </div>
         </div>

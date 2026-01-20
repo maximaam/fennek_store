@@ -27,6 +27,7 @@ label:
       page_edit: "'%item%' bearbeiten"
       page_index: "Details für '%item%'"
   about_us: Über uns
+  make_order: Produkt Bestellen
 
 date:
     created_at: Erstellt am
@@ -48,6 +49,7 @@ product:
   colors: Farben
   sizes: Größen
   price: Preis
+  quantity: Menge
   colors_list:
     white: Weiss
     silver: Silber
