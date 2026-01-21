@@ -18,6 +18,7 @@ label:
   image: Bild
   search: Suchen
   more: Mehr
+  delete: Löschen
   welcome:
     title: Willkommen bei Fennek-Store!
     sub-title: Lederwaren, Saisonwaren & Geschenkartikel in Berlin.
@@ -90,13 +91,13 @@ btn:
     show_details: Details anzeigen
 
 cart:
-    to-cart: In den Warenkorb
-    my-cart: Ihr Warenkorb
-    pay-now: Jetzt mit PayPal zahlen!
-    continue-shopping: Weiter einkaufen
+    to_cart: In den Warenkorb
+    my_cart: Ihr Warenkorb
+    pay_now: Jetzt mit PayPal zahlen!
+    continue_shopping: Weiter einkaufen
     empty: Ihr Warenkorb ist leer
-    order-overview: Bestellung Übersicht
-    paypal-shipping-address: PayPal Liferadresse
+    order_overview: Bestellung Übersicht
+    paypal_shipping_address: PayPal Liferadresse
 
 msg:
     confirm_delete: Löschen bestätigen?
@@ -106,12 +107,19 @@ msg:
     email_sent: Eine Email wurde an %buyer_email% gesendet mit der gesamten Übersicht.
     error_cart_params: Fehler! Bitte korrigieren Sie Ihr Auswhal (Farbe, Größe, Menge...)
 
+order:
+    price_unit: Einzelnpreis
+    price_total: Gesamtpreis
+    total_excl_tax: Summe
+    total_incl_tax: Zwischensumme (inlc. MwSt.)
+    vat: MwSt.
+
 payment:
-    email-subject: Ihre Bestellung bei Fennek-Store
-    email-msg-part1: Hallo %buyer_name%,
-    email-msg-part2: Vielen Dank für Ihren Kauf!
-    email-msg-part3: 'Bestellungsübersicht:'
-    email-msg-part4: 'Lieferadresse:'
-    email-msg-part5: Ihr Fennek-Store-Team
+    email_subject: Ihre Bestellung bei Fennek-Store
+    email_msg_part1: Hallo %buyer_name%,
+    email_msg_part2: Vielen Dank für Ihren Kauf!
+    email-msg_part3: 'Bestellungsübersicht:'
+    email_msg_part4: 'Lieferadresse:'
+    email_msg_part5: Ihr Fennek-Store-Team
 
 copyright: Copyright Fennek-Store - Alle Rechte vorbehalten

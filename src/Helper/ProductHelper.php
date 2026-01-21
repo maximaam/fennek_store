@@ -33,4 +33,11 @@ final readonly class ProductHelper
 
         return $result;
     }
+
+    public static function formatCartToPayPalOrder(array $cart): array
+    {
+        foreach ($cart as $itemKey => $item) {
+
+        }
+    }
 }

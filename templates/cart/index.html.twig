@@ -1,6 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block js_head %}
+    <script src="https://www.paypal.com/sdk/js?client-id={{ paypal_client_id }}&currency=EUR"></script>
 {% endblock %}
 
 {% block body %}
@@ -17,7 +18,7 @@
             {% set totals = cart.totals %}
             <div class="table-responsive">
                 <h1 class="text-center">{{ 'cart.my_cart'|trans }}</h1>
-                <table class="table table-stripped table-hover">
+                <table class="table table-stripped">
                     <thead>
                     <tr>
                         <th></th>
@@ -26,8 +27,8 @@
                         <th>{{ 'product.color'|trans }}</th>
                         <th>{{ 'product.size'|trans }}</th>
                         <th>{{ 'product.quantity'|trans }}</th>
-                        <th>{{ 'product.price'|trans }}</th>
-                        <th>{{ 'product.price_total'|trans }}</th>
+                        <th>{{ 'order.price_unit'|trans }}</th>
+                        <th>{{ 'order.price_total'|trans }}</th>
                         <th></th>
                     </tr>
                     </thead>
@@ -44,15 +45,60 @@
                             <td>{{ (product.price / 100)|format_currency('EUR') }}</td>
                             <td>{{ (product.full_price / 100)|format_currency('EUR') }}</td>
                             <td>
-                                <div class="pull-right">
-                                    <a href="{{ path('app_cart_remove', {'itemKey': itemKey}) }}" title="{{ 'form.delete'|trans }}" rel="nofollow" class="btn btn-danger">
-                                        <i class="fa fa-trash"></i>
-                                    </a>
-                                </div>
+                                <a href="{{ path('app_cart_remove', {'itemKey': itemKey}) }}" title="{{ 'label.delete'|trans }}" rel="nofollow" class="btn btn-danger">
+                                    {{ ea_ux_icon('bi:trash-fill', {class: 'basic-icon'}) }}
+                                </a>
                             </td>
                         </tr>
                     {% endfor %}
                     </tbody>
+
+                    <tfoot>
+                        <tr>
+                            <td colspan="7"></td>
+                            <td class="font-weight-bold">{{ 'order.total_excl_tax'|trans }}</td>
+                            <td>{{ (totals.excl_tax / 100)|format_currency('EUR') }}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="7"></td>
+                            <td class="font-weight-bold">{{ 'order.vat'|trans }}</td>
+                            <td>{{ (totals.vat / 100)|format_currency('EUR') }}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="7"></td>
+                            <td class="font-weight-bold">{{ 'order.total_incl_tax'|trans }}</td>
+                            <td>{{ (totals.total / 100)|format_currency('EUR') }}</td>
+                        </tr>
+                    <tr>
+                        <td colspan="7">
+                            <a href="#">{{ 'cart.continue-shopping'|trans }}</a>
+                        </td>
+                        <td colspan="2">
+                            <div id="paypal-button-container"></div>
+                            <script>
+                                paypal.Buttons({
+                                    createOrder: () => {
+                                        return fetch('{{ path("app_order_create") }}', {
+                                            method: 'POST'
+                                        })
+                                            .then(res => res.json())
+                                            .then(data => data.id);
+                                    },
+
+                                    onApprove: (data) => {
+                                        return fetch(`/de/order/capture/${data.orderID}`, {
+                                            method: 'POST'
+                                        })
+                                            .then(res => res.json())
+                                            .then(() => {
+                                                console.log('Payment successful!');
+                                            });
+                                    }
+                                }).render('#paypal-button-container');
+                            </script>
+                        </td>
+                    </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>

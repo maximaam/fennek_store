@@ -21,14 +21,13 @@ final class CartController extends AbstractController
     #[Route('/', name: 'index', methods: [Request::METHOD_GET])]
     public function index(SessionInterface $session): Response
     {
-        $cart = $session->get('cart', []);
-
-        if ([] === $cart) {
+        if ([] === $cart = $session->get('cart', [])) {
             return $this->redirectToRoute('app_index_index');
         }
 
         return $this->render('cart/index.html.twig', [
             'cart' => ProductHelper::computeCard($cart),
+            'paypal_client_id' => $_ENV['PAYPAL_CLIENT_ID'],
         ]);
     }
 
@@ -93,4 +92,76 @@ final class CartController extends AbstractController
 
         return $this->redirectToRoute('app_cart_index');
     }
+
+    /*#[Route('/create-payment', name: 'create_payment', methods: [Request::METHOD_POST])]
+    public function createPayment(Request $request): Response
+    {
+        $paymentDetails = $request->request->get('paymentDetails');
+
+        if (!$paymentDetails) {
+            $this->redirectToRoute('app_index_index');
+        }
+
+        $amount = 0;
+        foreach ($paymentDetails['transactions'] as $transaction) {
+            $amount += $transaction['amount']['total'];
+        }
+
+        $address =
+            $paymentDetails['payer']['payer_info']['shipping_address']['line1'].' <br> '.
+            $paymentDetails['payer']['payer_info']['shipping_address']['postal_code'].' '.$paymentDetails['payer']['payer_info']['shipping_address']['city'].' <br> '.
+            $paymentDetails['payer']['payer_info']['shipping_address']['country_code'];
+
+        //  $products = $this->getProductsFromSession();
+        $products = [];
+
+        $productsContent = '<ul>';
+        foreach ($products as $product) {
+            $url = $this->generateUrl(
+                'app_index_catalogue',
+                [
+                    'catAlias' => $product->getCategory()->getParent()->getAlias($request->getLocale()),
+                    'subCatAlias' => $product->getCategory()->getAlias($request->getLocale()),
+                    'itemId' => $product->getId()],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+            $productsContent .= '<li><a href="'.$url.'" target="_blank">'.$product->getTitle($request->getLocale()).'</a></li>';
+        }
+        $productsContent .= '</ul>';
+
+        $payment = new Payment();
+        $payment->setStatus(Payment::STATUS_INIT)
+            ->setBuyerName($paymentDetails['payer']['payer_info']['shipping_address']['recipient_name'])
+            ->setBuyerEmail($paymentDetails['payer']['payer_info']['email'])
+            ->setBuyerAddress($address)
+            ->setPaymentId($paymentDetails['id'])
+            ->setAmount($amount)
+            ->setPaypalPaymentDetails($paymentDetails)
+            ->setProductsContent($productsContent)
+            ->setProductsIds($this->getProductsIds());
+
+        $em = $this->getDoctrine()->getManager();
+
+        $em->persist($payment);
+        $em->flush();
+
+        return new Response('success');
+    }
+
+    #[Route('/confirm-payment', name: 'confirm_payment', methods: [Request::METHOD_GET])]
+    public function confirmPayment(Request $request, TranslatorInterface $translator, SessionInterface $session): Response
+    {
+        $paymentId = $request->query->get('paymentId');
+
+        return $this->render('cart/confirm_payment.html.twig', [
+            'cart' => $paymentId,
+            'payment' => $paymentId,
+        ]);
+    }
+
+    #[Route('/cancel-payment', name: 'cancel_payment', methods: [Request::METHOD_GET])]
+    public function cancelPayment(): Response
+    {
+        return $this->redirectToRoute('app_cart_index');
+    }*/
 }

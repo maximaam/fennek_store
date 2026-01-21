@@ -1,0 +1,521 @@
+        // payload order
+        /*array(8) {
+        ["id"]=>
+  string(17) "48T39167XS4059908"
+        ["intent"]=>
+  string(7) "CAPTURE"
+        ["status"]=>
+  string(8) "APPROVED"
+        ["payment_source"]=>
+  array(1) {
+            ["paypal"]=>
+    array(5) {
+                ["email_address"]=>
+      string(28) "mimo.berlino-buyer@gmail.com"
+                ["account_id"]=>
+      string(13) "83TKTLDMZ5T8Q"
+                ["account_status"]=>
+      string(8) "VERIFIED"
+                ["name"]=>
+      array(2) {
+                    ["given_name"]=>
+        string(4) "test"
+                    ["surname"]=>
+        string(5) "buyer"
+      }
+      ["address"]=>
+      array(1) {
+                    ["country_code"]=>
+        string(2) "DE"
+      }
+    }
+  }
+  ["purchase_units"]=>
+  array(1) {
+            [0]=>
+    array(5) {
+                ["reference_id"]=>
+      string(7) "default"
+                ["amount"]=>
+      array(3) {
+                    ["currency_code"]=>
+        string(3) "EUR"
+                    ["value"]=>
+        string(5) "19.99"
+                    ["breakdown"]=>
+        array(0) {
+                    }
+      }
+      ["payee"]=>
+      array(2) {
+                    ["email_address"]=>
+        string(34) "mimo.berlino-facilitator@gmail.com"
+                    ["merchant_id"]=>
+        string(13) "AYU5HA5V7X8XA"
+      }
+      ["shipping"]=>
+      array(2) {
+                    ["name"]=>
+        array(1) {
+                        ["full_name"]=>
+          string(10) "test buyer"
+        }
+        ["address"]=>
+        array(5) {
+                        ["address_line_1"]=>
+          string(12) "ESpachstr. 1"
+                        ["admin_area_2"]=>
+          string(8) "Freiburg"
+                        ["admin_area_1"]=>
+          string(5) "Empty"
+                        ["postal_code"]=>
+          string(5) "79111"
+                        ["country_code"]=>
+          string(2) "DE"
+        }
+      }
+      ["supplementary_data"]=>
+      array(1) {
+                    ["tax_nexus"]=>
+        array(0) {
+                    }
+      }
+    }
+  }
+  ["payer"]=>
+  array(4) {
+            ["name"]=>
+    array(2) {
+                ["given_name"]=>
+      string(4) "test"
+                ["surname"]=>
+      string(5) "buyer"
+    }
+    ["email_address"]=>
+    string(28) "mimo.berlino-buyer@gmail.com"
+            ["payer_id"]=>
+    string(13) "83TKTLDMZ5T8Q"
+            ["address"]=>
+    array(1) {
+                ["country_code"]=>
+      string(2) "DE"
+    }
+  }
+  ["create_time"]=>
+  string(20) "2026-01-20T19:01:53Z"
+        ["links"]=>
+  array(3) {
+            [0]=>
+    array(3) {
+                ["href"]=>
+      string(67) "https://api.sandbox.paypal.com/v2/checkout/orders/48T39167XS4059908"
+                ["rel"]=>
+      string(4) "self"
+                ["method"]=>
+      string(3) "GET"
+    }
+    [1]=>
+    array(3) {
+                ["href"]=>
+      string(67) "https://api.sandbox.paypal.com/v2/checkout/orders/48T39167XS4059908"
+                ["rel"]=>
+      string(6) "update"
+                ["method"]=>
+      string(5) "PATCH"
+    }
+    [2]=>
+    array(3) {
+                ["href"]=>
+      string(75) "https://api.sandbox.paypal.com/v2/checkout/orders/48T39167XS4059908/capture"
+                ["rel"]=>
+      string(7) "capture"
+                ["method"]=>
+      string(4) "POST"
+    }
+  }
+}*/
+
+
+
+
+
+
+
+// payload capture
+        /*array(6) {
+        ["id"]=>
+  string(17) "3YL29616VW409601N"
+        ["status"]=>
+  string(9) "COMPLETED"
+        ["payment_source"]=>
+  array(1) {
+            ["paypal"]=>
+    array(5) {
+                ["email_address"]=>
+      string(28) "mimo.berlino-buyer@gmail.com"
+                ["account_id"]=>
+      string(13) "83TKTLDMZ5T8Q"
+                ["account_status"]=>
+      string(8) "VERIFIED"
+                ["name"]=>
+      array(2) {
+                    ["given_name"]=>
+        string(4) "test"
+                    ["surname"]=>
+        string(5) "buyer"
+      }
+      ["address"]=>
+      array(1) {
+                    ["country_code"]=>
+        string(2) "DE"
+      }
+    }
+  }
+  ["purchase_units"]=>
+  array(1) {
+            [0]=>
+    array(3) {
+                ["reference_id"]=>
+      string(7) "default"
+                ["shipping"]=>
+      array(2) {
+                    ["name"]=>
+        array(1) {
+                        ["full_name"]=>
+          string(10) "test buyer"
+        }
+        ["address"]=>
+        array(5) {
+                        ["address_line_1"]=>
+          string(12) "ESpachstr. 1"
+                        ["admin_area_2"]=>
+          string(8) "Freiburg"
+                        ["admin_area_1"]=>
+          string(5) "Empty"
+                        ["postal_code"]=>
+          string(5) "79111"
+                        ["country_code"]=>
+          string(2) "DE"
+        }
+      }
+      ["payments"]=>
+      array(1) {
+                    ["captures"]=>
+        array(1) {
+                        [0]=>
+          array(9) {
+                            ["id"]=>
+            string(17) "1ET279177Y156763B"
+                            ["status"]=>
+            string(9) "COMPLETED"
+                            ["amount"]=>
+            array(2) {
+                                ["currency_code"]=>
+              string(3) "EUR"
+                                ["value"]=>
+              string(5) "19.99"
+            }
+            ["final_capture"]=>
+            bool(true)
+            ["seller_protection"]=>
+            array(2) {
+                                ["status"]=>
+              string(8) "ELIGIBLE"
+                                ["dispute_categories"]=>
+              array(2) {
+                                    [0]=>
+                string(17) "ITEM_NOT_RECEIVED"
+                                    [1]=>
+                string(24) "UNAUTHORIZED_TRANSACTION"
+              }
+            }
+            ["seller_receivable_breakdown"]=>
+            array(3) {
+                                ["gross_amount"]=>
+              array(2) {
+                                    ["currency_code"]=>
+                string(3) "EUR"
+                                    ["value"]=>
+                string(5) "19.99"
+              }
+              ["paypal_fee"]=>
+              array(2) {
+                                    ["currency_code"]=>
+                string(3) "EUR"
+                                    ["value"]=>
+                string(4) "0.73"
+              }
+              ["net_amount"]=>
+              array(2) {
+                                    ["currency_code"]=>
+                string(3) "EUR"
+                                    ["value"]=>
+                string(5) "19.26"
+              }
+            }
+            ["links"]=>
+            array(3) {
+                                [0]=>
+              array(3) {
+                                    ["href"]=>
+                string(69) "https://api.sandbox.paypal.com/v2/payments/captures/1ET279177Y156763B"
+                                    ["rel"]=>
+                string(4) "self"
+                                    ["method"]=>
+                string(3) "GET"
+              }
+              [1]=>
+              array(3) {
+                                    ["href"]=>
+                string(76) "https://api.sandbox.paypal.com/v2/payments/captures/1ET279177Y156763B/refund"
+                                    ["rel"]=>
+                string(6) "refund"
+                                    ["method"]=>
+                string(4) "POST"
+              }
+              [2]=>
+              array(3) {
+                                    ["href"]=>
+                string(67) "https://api.sandbox.paypal.com/v2/checkout/orders/3YL29616VW409601N"
+                                    ["rel"]=>
+                string(2) "up"
+                                    ["method"]=>
+                string(3) "GET"
+              }
+            }
+            ["create_time"]=>
+            string(20) "2026-01-20T19:17:33Z"
+                            ["update_time"]=>
+            string(20) "2026-01-20T19:17:33Z"
+          }
+        }
+      }
+    }
+  }
+  ["payer"]=>
+  array(4) {
+            ["name"]=>
+    array(2) {
+                ["given_name"]=>
+      string(4) "test"
+                ["surname"]=>
+      string(5) "buyer"
+    }
+    ["email_address"]=>
+    string(28) "mimo.berlino-buyer@gmail.com"
+            ["payer_id"]=>
+    string(13) "83TKTLDMZ5T8Q"
+            ["address"]=>
+    array(1) {
+                ["country_code"]=>
+      string(2) "DE"
+    }
+  }
+  ["links"]=>
+  array(1) {
+            [0]=>
+    array(3) {
+                ["href"]=>
+      string(67) "https://api.sandbox.paypal.com/v2/checkout/orders/3YL29616VW409601N"
+                ["rel"]=>
+      string(4) "self"
+                ["method"]=>
+      string(3) "GET"
+    }
+  }
+}*/
+
+
+
+
+
+
+
+
+
+
+
+string(32) "App\Controller\PaymentController"
+array(6) {
+  ["id"]=>
+  string(17) "4VM52504JJ0360801"
+  ["status"]=>
+  string(9) "COMPLETED"
+  ["payment_source"]=>
+  array(1) {
+    ["paypal"]=>
+    array(5) {
+      ["email_address"]=>
+      string(28) "mimo.berlino-buyer@gmail.com"
+      ["account_id"]=>
+      string(13) "83TKTLDMZ5T8Q"
+      ["account_status"]=>
+      string(8) "VERIFIED"
+      ["name"]=>
+      array(2) {
+        ["given_name"]=>
+        string(4) "test"
+        ["surname"]=>
+        string(5) "buyer"
+      }
+      ["address"]=>
+      array(1) {
+        ["country_code"]=>
+        string(2) "DE"
+      }
+    }
+  }
+  ["purchase_units"]=>
+  array(1) {
+    [0]=>
+    array(3) {
+      ["reference_id"]=>
+      string(7) "default"
+      ["shipping"]=>
+      array(2) {
+        ["name"]=>
+        array(1) {
+          ["full_name"]=>
+          string(10) "test buyer"
+        }
+        ["address"]=>
+        array(5) {
+          ["address_line_1"]=>
+          string(12) "ESpachstr. 1"
+          ["admin_area_2"]=>
+          string(8) "Freiburg"
+          ["admin_area_1"]=>
+          string(5) "Empty"
+          ["postal_code"]=>
+          string(5) "79111"
+          ["country_code"]=>
+          string(2) "DE"
+        }
+      }
+      ["payments"]=>
+      array(1) {
+        ["captures"]=>
+        array(1) {
+          [0]=>
+          array(9) {
+            ["id"]=>
+            string(17) "0TM53071EG994600P"
+            ["status"]=>
+            string(9) "COMPLETED"
+            ["amount"]=>
+            array(2) {
+              ["currency_code"]=>
+              string(3) "EUR"
+              ["value"]=>
+              string(5) "19.99"
+            }
+            ["final_capture"]=>
+            bool(true)
+            ["seller_protection"]=>
+            array(2) {
+              ["status"]=>
+              string(8) "ELIGIBLE"
+              ["dispute_categories"]=>
+              array(2) {
+                [0]=>
+                string(17) "ITEM_NOT_RECEIVED"
+                [1]=>
+                string(24) "UNAUTHORIZED_TRANSACTION"
+              }
+            }
+            ["seller_receivable_breakdown"]=>
+            array(3) {
+              ["gross_amount"]=>
+              array(2) {
+                ["currency_code"]=>
+                string(3) "EUR"
+                ["value"]=>
+                string(5) "19.99"
+              }
+              ["paypal_fee"]=>
+              array(2) {
+                ["currency_code"]=>
+                string(3) "EUR"
+                ["value"]=>
+                string(4) "0.73"
+              }
+              ["net_amount"]=>
+              array(2) {
+                ["currency_code"]=>
+                string(3) "EUR"
+                ["value"]=>
+                string(5) "19.26"
+              }
+            }
+            ["links"]=>
+            array(3) {
+              [0]=>
+              array(3) {
+                ["href"]=>
+                string(69) "https://api.sandbox.paypal.com/v2/payments/captures/0TM53071EG994600P"
+                ["rel"]=>
+                string(4) "self"
+                ["method"]=>
+                string(3) "GET"
+              }
+              [1]=>
+              array(3) {
+                ["href"]=>
+                string(76) "https://api.sandbox.paypal.com/v2/payments/captures/0TM53071EG994600P/refund"
+                ["rel"]=>
+                string(6) "refund"
+                ["method"]=>
+                string(4) "POST"
+              }
+              [2]=>
+              array(3) {
+                ["href"]=>
+                string(67) "https://api.sandbox.paypal.com/v2/checkout/orders/4VM52504JJ0360801"
+                ["rel"]=>
+                string(2) "up"
+                ["method"]=>
+                string(3) "GET"
+              }
+            }
+            ["create_time"]=>
+            string(20) "2026-01-21T14:39:02Z"
+            ["update_time"]=>
+            string(20) "2026-01-21T14:39:02Z"
+          }
+        }
+      }
+    }
+  }
+  ["payer"]=>
+  array(4) {
+    ["name"]=>
+    array(2) {
+      ["given_name"]=>
+      string(4) "test"
+      ["surname"]=>
+      string(5) "buyer"
+    }
+    ["email_address"]=>
+    string(28) "mimo.berlino-buyer@gmail.com"
+    ["payer_id"]=>
+    string(13) "83TKTLDMZ5T8Q"
+    ["address"]=>
+    array(1) {
+      ["country_code"]=>
+      string(2) "DE"
+    }
+  }
+  ["links"]=>
+  array(1) {
+    [0]=>
+    array(3) {
+      ["href"]=>
+      string(67) "https://api.sandbox.paypal.com/v2/checkout/orders/4VM52504JJ0360801"
+      ["rel"]=>
+      string(4) "self"
+      ["method"]=>
+      string(3) "GET"
+    }
+  }
+}
+
