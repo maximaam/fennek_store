@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
-use App\Entity\Order;
+use App\Entity\Purchase;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Order>
+ * @extends ServiceEntityRepository<Purchase>
  */
-class OrderRepository extends ServiceEntityRepository
+class PurchaseRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Order::class);
+        parent::__construct($registry, Purchase::class);
     }
 
     //    /**

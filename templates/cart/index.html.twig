@@ -56,17 +56,17 @@
                     <tfoot>
                         <tr>
                             <td colspan="7"></td>
-                            <td class="font-weight-bold">{{ 'order.total_excl_tax'|trans }}</td>
+                            <td class="font-weight-bold">{{ 'purchase.total_excl_tax'|trans }}</td>
                             <td>{{ (totals.excl_tax / 100)|format_currency('EUR') }}</td>
                         </tr>
                         <tr>
                             <td colspan="7"></td>
-                            <td class="font-weight-bold">{{ 'order.vat'|trans }}</td>
+                            <td class="font-weight-bold">{{ 'purchase.vat'|trans }}</td>
                             <td>{{ (totals.vat / 100)|format_currency('EUR') }}</td>
                         </tr>
                         <tr>
                             <td colspan="7"></td>
-                            <td class="font-weight-bold">{{ 'order.total_incl_tax'|trans }}</td>
+                            <td class="font-weight-bold">{{ 'purchase.total_incl_tax'|trans }}</td>
                             <td>{{ (totals.total / 100)|format_currency('EUR') }}</td>
                         </tr>
                     <tr>
@@ -78,7 +78,7 @@
                             <script>
                                 paypal.Buttons({
                                     createOrder: () => {
-                                        return fetch('{{ path("app_order_create") }}', {
+                                        return fetch('{{ path("app_purchase_create") }}', {
                                             method: 'POST'
                                         })
                                             .then(res => res.json())
@@ -86,7 +86,7 @@
                                     },
 
                                     onApprove: (data) => {
-                                        return fetch(`/de/order/capture/${data.orderID}`, {
+                                        return fetch(`/de/purchase/capture/${data.orderID}`, {
                                             method: 'POST'
                                         })
                                             .then(res => res.json())

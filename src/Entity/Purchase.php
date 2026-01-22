@@ -5,13 +5,16 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Enum\PayPalStatus;
-use App\Repository\OrderRepository;
+use App\Repository\PurchaseRepository;
+use App\Traits\TimestampableTrait;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: OrderRepository::class)]
-#[ORM\Table(name: '`order`')]
-class Order
+#[ORM\Entity(repositoryClass: PurchaseRepository::class)]
+#[ORM\HasLifecycleCallbacks]
+class Purchase
 {
+    use TimestampableTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

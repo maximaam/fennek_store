@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Entity\Order;
+use App\Entity\Purchase;
 use App\Enum\PayPalStatus;
 use App\Helper\ProductHelper;
 use App\Service\PayPalClient;
@@ -16,8 +16,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/{_locale}/order', name: 'app_order_')]
-final class OrderController extends AbstractController
+#[Route('/{_locale}/purchase', name: 'app_purchase_')]
+final class PurchaseController extends AbstractController
 {
     public function __construct(private readonly EntityManagerInterface $entityManager)
     {
@@ -31,17 +31,17 @@ final class OrderController extends AbstractController
         }
 
         $cart = ProductHelper::computeCard($cart);
-        $orderRequest = $paypal->createOrder($cart['totals']['total']);
+        $order = $paypal->createOrder($cart['totals']['total']);
 
-        $order = new Order()
+        $purchase = new Purchase()
             ->setProduct($cart)
-            ->setOrderId($orderRequest['id'])
+            ->setOrderId($order['id'])
             ->setStatus(PayPalStatus::CREATED)
-            ->setPayload($orderRequest);
-        $this->entityManager->persist($order);
+            ->setPayload($order);
+        $this->entityManager->persist($purchase);
         $this->entityManager->flush();
 
-        return $this->json($orderRequest);
+        return $this->json($order);
     }
 
     #[Route('/capture/{orderId}', name: 'capture', methods: [Request::METHOD_POST])]
@@ -53,10 +53,10 @@ final class OrderController extends AbstractController
             throw new \LogicException('Payment status is not COMPLETED');
         }
 
-        $order = $this->entityManager->getRepository(Order::class)
-            ->findOneBy(['orderId' => $orderId]);
+        $purchase = $this->entityManager->getRepository(Purchase::class)
+            ->findOneBy(['orderId' => $orderId]) ?? throw new \RuntimeException('No purchase found');
 
-        $order->setStatus(PayPalStatus::COMPLETED)
+        $purchase->setStatus(PayPalStatus::COMPLETED)
             ->setPayload($payment);
         $this->entityManager->flush();
 

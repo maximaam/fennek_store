@@ -107,12 +107,21 @@ msg:
     email_sent: Eine Email wurde an %buyer_email% gesendet mit der gesamten Übersicht.
     error_cart_params: Fehler! Bitte korrigieren Sie Ihr Auswhal (Farbe, Größe, Menge...)
 
-order:
+purchase:
+    singular: Bestellung
+    plural: Bestellungen
+    id: Bestellnummer
     price_unit: Einzelnpreis
     price_total: Gesamtpreis
     total_excl_tax: Summe
     total_incl_tax: Zwischensumme (inlc. MwSt.)
     vat: MwSt.
+    status:
+        completed: Abgeschlossen
+        created: Erstellt
+    payer:
+        email: Käufer Email
+        name: Käufer Name
 
 payment:
     email_subject: Ihre Bestellung bei Fennek-Store

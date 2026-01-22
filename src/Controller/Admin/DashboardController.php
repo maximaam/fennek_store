@@ -7,6 +7,7 @@ namespace App\Controller\Admin;
 use App\Entity\Category;
 use App\Entity\Page;
 use App\Entity\Product;
+use App\Entity\Purchase;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
@@ -75,5 +76,6 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('page.plural', 'fas fa-box', Page::class);
         yield MenuItem::linkToCrud('category.plural', 'fas fa-tags', Category::class);
         yield MenuItem::linkToCrud('product.plural', 'fas fa-box', Product::class);
+        yield MenuItem::linkToCrud('purchase.plural', 'fas fa-box', Purchase::class);
     }
 }
