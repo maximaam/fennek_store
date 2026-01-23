@@ -120,8 +120,13 @@ purchase:
         completed: Abgeschlossen
         created: Erstellt
     payer:
+        singular: Käufer
         email: Käufer Email
         name: Käufer Name
+    delivery:
+        singular: Lieferung
+        address: Lieferadresse
+        name: Lieferant
 
 payment:
     email_subject: Ihre Bestellung bei Fennek-Store

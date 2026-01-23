@@ -1,0 +1,37 @@
+<table class="table table-striped">
+    <tr>
+        <th>{{ 'product.singular'|trans }}</th>
+        <th>{{ 'product.item_number'|trans }}</th>
+        <th>{{ 'product.color'|trans }}</th>
+        <th>{{ 'product.size'|trans }}</th>
+        <th>{{ 'product.quantity'|trans }}</th>
+        <th>{{ 'product.price'|trans }}</th>
+        <th class="">{{ 'product.price_total'|trans }}</th>
+    </tr>
+
+    {% for key,product in field.value.products %}
+        <tr>
+            <td>
+                <!--
+                <img
+                    src="{{ asset('uploads/images/' ~ product.image) | imagine_filter('product_thumbnail') }}"
+                    alt="{{ product.title }}"
+                    width="100"
+                >
+                -->
+                <a href="{{ product.item_url }}" target="_blank">{{ product.title }}</a>
+            </td>
+            <td>{{ product.item_number ?? ''}}</td>
+            <td>{{ ('product.colors_list.' ~ product.color)|trans }}</td>
+            <td>{{ product.size ?? ''}}</td>
+            <td>{{ product.quantity }}</td>
+            <td>{{ (product.price / 100)|format_currency('EUR') }}</td>
+            <td>{{ (product.full_price / 100)|format_currency('EUR') }}</td>
+        </tr>
+    {% endfor %}
+
+    <tr>
+        <th colspan="6">{{ 'product.price_total'|trans }}</th>
+        <td colspan="2">{{ (field.value.totals.total / 100)|format_currency('EUR') }}</td>
+    </tr>
+</table>

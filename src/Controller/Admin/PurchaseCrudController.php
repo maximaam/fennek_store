@@ -6,7 +6,6 @@ namespace App\Controller\Admin;
 
 use App\Entity\Product;
 use App\Entity\Purchase;
-use App\Helper\PurchaseEaCrudHelper;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -51,7 +50,7 @@ final class PurchaseCrudController extends AbstractCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
-            ->setEntityLabelInSingular('purchase.action.create_new')
+            ->setEntityLabelInSingular('purchase.singular')
             ->setPaginatorPageSize(25);
     }
 
@@ -64,7 +63,6 @@ final class PurchaseCrudController extends AbstractCrudController
         return match ($pageName) {
             Crud::PAGE_INDEX => $this->getIndexFields(),
             Crud::PAGE_DETAIL => $this->getDetailFields(),
-            default => [],
         };
     }
 
@@ -84,19 +82,29 @@ final class PurchaseCrudController extends AbstractCrudController
      */
     private function getDetailFields(): iterable
     {
-        yield FormField::addColumn(6);
+        yield FormField::addColumn(12);
         yield FormField::addFieldset('purchase.singular');
         yield DateField::new('createdAt', 'date.created_at');
         yield TextField::new('orderId', 'purchase.id');
-        yield TextField::new('orderId', 'purchase.payer.name')
-            ->formatValue(fn (string $o, Purchase $purchase) => PurchaseEaCrudHelper::getAmount($purchase->getPayload()));
+        yield ArrayField::new('product', 'product.plural')
+            ->setTemplatePath('admin/fields/purchase_product.html.twig');
 
+        yield FormField::addColumn(12);
+        yield FormField::addFieldset('purchase.payer.singular');
+        yield ArrayField::new('payload', 'purchase.payer.name')
+            ->setTemplatePath('admin/fields/purchase_payload.html.twig')
+            ->setCustomOption('target', 'payer_name');
+        yield ArrayField::new('payload', 'purchase.payer.email')
+            ->setTemplatePath('admin/fields/purchase_payload.html.twig')
+            ->setCustomOption('target', 'payer_email');
 
-        yield FormField::addColumn(6);
-        yield FormField::addFieldset('purchase.buyer');
-        yield TextField::new('orderId', 'purchase.payer.name')
-            ->formatValue(fn (string $o, Purchase $purchase) => PurchaseEaCrudHelper::getPayerName($purchase->getPayload()));
-        yield TextField::new('orderId', 'purchase.payer.email')
-            ->formatValue(fn (string $o, Purchase $purchase) => PurchaseEaCrudHelper::getPayerEmail($purchase->getPayload()));
+        yield FormField::addColumn(12);
+        yield FormField::addFieldset('purchase.delivery.singular');
+        yield ArrayField::new('payload', 'purchase.delivery.name')
+            ->setTemplatePath('admin/fields/purchase_payload.html.twig')
+            ->setCustomOption('target', 'delivery_name');
+        yield ArrayField::new('payload', 'purchase.delivery.address')
+            ->setTemplatePath('admin/fields/purchase_payload.html.twig')
+            ->setCustomOption('target', 'delivery_address');
     }
 }
