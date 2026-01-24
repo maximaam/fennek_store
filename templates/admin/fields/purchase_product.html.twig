@@ -1,24 +1,17 @@
 <table class="table table-striped">
     <tr>
-        <th>{{ 'product.singular'|trans }}</th>
+        <th></th>
         <th>{{ 'product.item_number'|trans }}</th>
         <th>{{ 'product.color'|trans }}</th>
         <th>{{ 'product.size'|trans }}</th>
         <th>{{ 'product.quantity'|trans }}</th>
         <th>{{ 'product.price'|trans }}</th>
-        <th class="">{{ 'product.price_total'|trans }}</th>
+        <th>{{ 'product.price_total'|trans }}</th>
     </tr>
 
     {% for key,product in field.value.products %}
         <tr>
             <td>
-                <!--
-                <img
-                    src="{{ asset('uploads/images/' ~ product.image) | imagine_filter('product_thumbnail') }}"
-                    alt="{{ product.title }}"
-                    width="100"
-                >
-                -->
                 <a href="{{ product.item_url }}" target="_blank">{{ product.title }}</a>
             </td>
             <td>{{ product.item_number ?? ''}}</td>
@@ -31,7 +24,16 @@
     {% endfor %}
 
     <tr>
-        <th colspan="6">{{ 'product.price_total'|trans }}</th>
+        <th colspan="6" class="text-end">{{ 'purchase.total_excl_tax'|trans }}</th>
+        <td colspan="2">{{ (field.value.totals.excl_tax / 100)|format_currency('EUR') }}</td>
+    </tr>
+    <tr>
+        <th colspan="6" class="text-end">{{ 'purchase.vat'|trans }}</th>
+        <td colspan="2">{{ (field.value.totals.vat / 100)|format_currency('EUR') }}</td>
+    </tr>
+    <tr>
+        <th colspan="6" class="text-end">{{ 'purchase.total_incl_tax'|trans }}</th>
         <td colspan="2">{{ (field.value.totals.total / 100)|format_currency('EUR') }}</td>
     </tr>
+
 </table>

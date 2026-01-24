@@ -115,9 +115,11 @@ purchase:
     price_total: Gesamtpreis
     total_excl_tax: Summe
     total_incl_tax: Zwischensumme (inlc. MwSt.)
+    total_amount: Gesamtsumme
     vat: MwSt.
     status:
-        completed: Abgeschlossen
+        singular: Status
+        completed: Bezahlt
         created: Erstellt
     payer:
         singular: Käufer
@@ -127,6 +129,9 @@ purchase:
         singular: Lieferung
         address: Lieferadresse
         name: Lieferant
+        delivered: Versandt
+        delivered_help: Als versandt markieren
+    page_edit_title: "Details für Bestellung '%item%'"
 
 payment:
     email_subject: Ihre Bestellung bei Fennek-Store

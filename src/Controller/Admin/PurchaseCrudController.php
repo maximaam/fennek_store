@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Entity\Category;
 use App\Entity\Product;
 use App\Entity\Purchase;
+use App\Enum\PayPalStatus;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -13,9 +15,13 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\MoneyField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Filter\ChoiceFilter;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
@@ -37,13 +43,21 @@ final class PurchaseCrudController extends AbstractCrudController
     public function configureActions(Actions $actions): Actions
     {
         return $actions
-            ->add(Crud::PAGE_INDEX, Action::DETAIL);
+            ->add(Crud::PAGE_INDEX, Action::DETAIL)
+            ->disable(Action::DELETE, Action::NEW);
     }
 
     #[\Override]
     public function configureFilters(Filters $filters): Filters
     {
-        return $filters->add('orderId');
+        return $filters
+            ->add(
+                ChoiceFilter::new('status')
+                    ->setChoices(array_combine(
+                        array_map(fn (string $s) => $this->translator->trans('purchase.status.'.strtolower($s)), PayPalStatus::values()),
+                        PayPalStatus::values(),
+                    ))
+            );
     }
 
     #[\Override]
@@ -51,7 +65,10 @@ final class PurchaseCrudController extends AbstractCrudController
     {
         return $crud
             ->setEntityLabelInSingular('purchase.singular')
-            ->setPaginatorPageSize(25);
+            ->showEntityActionsInlined()
+            ->setPaginatorPageSize(25)
+            ->setPageTitle(Crud::PAGE_DETAIL, fn (Purchase $p) => $this->translator->trans('purchase.page_edit_title', ['%item%' => $p->getOrderId()]))
+            ->setDefaultSort(['createdAt' => 'DESC', 'status' => 'DESC']);
     }
 
     /**
@@ -63,18 +80,39 @@ final class PurchaseCrudController extends AbstractCrudController
         return match ($pageName) {
             Crud::PAGE_INDEX => $this->getIndexFields(),
             Crud::PAGE_DETAIL => $this->getDetailFields(),
+            Crud::PAGE_EDIT => $this->getEditFields(),
+            default => [],
         };
     }
+
+    /*
+    public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): QueryBuilder
+    {
+        $appliedFilters = $searchDto->getAppliedFilters();
+        $qb = parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
+        if (!\array_key_exists('status', $appliedFilters)) {
+            $qb
+                ->andWhere('entity.status = :status')
+                ->setParameter('status', PayPalStatus::COMPLETED->value);
+        }
+
+        return $qb;
+    }
+    */
 
     /**
      * @return iterable<FieldInterface|string>
      */
     private function getIndexFields(): iterable
     {
-        yield DateField::new('createdAt', 'date.created_at');
-        yield TextField::new('orderId', 'purchase.id');
-        yield TextField::new('status.value', 'purchase.status')
+        yield DateTimeField::new('createdAt', 'date.created_at');
+        yield TextField::new('status.value', 'purchase.status.singular')
             ->formatValue(fn (string $status) => $this->translator->trans('purchase.status.'.strtolower($status)));
+        yield TextField::new('buyerFullName', 'purchase.payer.name');
+        yield MoneyField::new('totalAmount', 'purchase.total_amount')
+            ->setCurrency('EUR');
+        yield BooleanField::new('delivered', 'purchase.delivery.delivered')
+            ->renderAsSwitch(false);
     }
 
     /**
@@ -84,8 +122,10 @@ final class PurchaseCrudController extends AbstractCrudController
     {
         yield FormField::addColumn(12);
         yield FormField::addFieldset('purchase.singular');
-        yield DateField::new('createdAt', 'date.created_at');
+        yield DateTimeField::new('createdAt', 'date.created_at');
         yield TextField::new('orderId', 'purchase.id');
+        yield MoneyField::new('totalAmount', 'purchase.total_amount')
+            ->setCurrency('EUR');
         yield ArrayField::new('product', 'product.plural')
             ->setTemplatePath('admin/fields/purchase_product.html.twig');
 
@@ -106,5 +146,11 @@ final class PurchaseCrudController extends AbstractCrudController
         yield ArrayField::new('payload', 'purchase.delivery.address')
             ->setTemplatePath('admin/fields/purchase_payload.html.twig')
             ->setCustomOption('target', 'delivery_address');
+    }
+
+    private function getEditFields(): iterable
+    {
+        yield BooleanField::new('delivered', 'purchase.delivery.delivered')
+            ->setHelp('purchase.delivery.delivered_help');
     }
 }

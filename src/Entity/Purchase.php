@@ -7,6 +7,7 @@ namespace App\Entity;
 use App\Enum\PayPalStatus;
 use App\Repository\PurchaseRepository;
 use App\Traits\TimestampableTrait;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PurchaseRepository::class)]
@@ -15,9 +16,7 @@ class Purchase
 {
     use TimestampableTrait;
 
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Id, ORM\GeneratedValue, ORM\Column]
     private ?int $id = null;
 
     #[ORM\Column(length: 32)]
@@ -31,6 +30,9 @@ class Purchase
 
     #[ORM\Column]
     private array $product = [];
+
+    #[ORM\Column(type: Types::BOOLEAN, options: ['default' => false])]
+    private bool $delivered = false;
 
     public function getId(): ?int
     {
@@ -83,5 +85,36 @@ class Purchase
         $this->product = $product;
 
         return $this;
+    }
+
+    public function isDelivered(): bool
+    {
+        return $this->delivered;
+    }
+
+    public function setDelivered(bool $delivered): static
+    {
+        $this->delivered = $delivered;
+
+        return $this;
+    }
+
+    // ───────────────────────────────────────────────
+    // Extra Entity Methods - For easyadmin rendering
+    // ───────────────────────────────────────────────
+
+    public function getTotalAmount(): int
+    {
+        return $this->getProduct()['totals']['total'];
+    }
+
+    public function getBuyerFullName(): ?string
+    {
+        $payer = $this->getPayload()['payer'] ?? null;
+        if (null === $payer) {
+            return null;
+        }
+
+        return \sprintf('%s %s', $payer['name']['given_name'], $payer['name']['surname']);
     }
 }

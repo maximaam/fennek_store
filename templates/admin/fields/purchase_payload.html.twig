@@ -1,22 +1,25 @@
 {%  set target =  field.customOptions.get('target') %}
 {%  set payload =  field.value %}
 
-{% if target == 'payer_name' %}
-    {{ payload.payer.name.given_name ~ ' ' ~ payload.payer.name.surname }}
-{% elseif target == 'payer_email' %}
-    {{ payload.payer.email_address }}
-{% elseif target == 'delivery_name' %}
-    {{ payload.purchase_units[0].shipping.name.full_name }}
-{% elseif target == 'delivery_address' %}
-    {%  set address =  payload.purchase_units[0].shipping.address %}
-    <address>
-        {{ address.address_line_1 }}
-        <br>
-        {{ address.postal_code }}
-        {{ address.admin_area_1 == '' or address.admin_area_1 == 'Empty' ? '' :  address.admin_area_1 }}
-        {{ address.admin_area_2 }}
-        <br>
-        {{ address.country_code }}
-    </address>
+
+{% if payload.payer is defined %}
+    {% if target == 'payer_name' %}
+        {{ payload.payer.name.given_name ~ ' ' ~ payload.payer.name.surname }}
+    {% elseif target == 'payer_email' %}
+        {{ payload.payer.email_address }}
+    {% elseif target == 'delivery_name' %}
+        {{ payload.purchase_units[0].shipping.name.full_name }}
+    {% elseif target == 'delivery_address' %}
+        {%  set address =  payload.purchase_units[0].shipping.address %}
+        <address>
+            {{ address.address_line_1 }}
+            <br>
+            {{ address.postal_code }}
+            {{ address.admin_area_1 == '' or address.admin_area_1 == 'Empty' ? '' :  address.admin_area_1 }}
+            {{ address.admin_area_2 }}
+            <br>
+            {{ address.country_code }}
+        </address>
+    {% endif %}
 {% endif %}
 
