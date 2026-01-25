@@ -36,18 +36,12 @@ final class PurchaseController extends AbstractController
 
         $cart = ProductHelper::computeCard($cart);
         $order = $payPalClient->createOrder($cart['totals']['total']);
-
-        $payload = $this->normalizer->normalize($order);
-        if (!\is_array($payload)) {
-            throw new \LogicException('Normalized payment payload must be an array');
-        }
-
-        $purchase = new Purchase()
-            ->setProduct($cart)
-            ->setOrderId($order->id)
-            ->setStatus(PayPalStatus::CREATED)
-            ->setPayload($payload);
-        $this->entityManager->persist($purchase);
+        $this->entityManager->persist(
+            new Purchase()
+                ->setProduct($cart)
+                ->setOrderId($order->id)
+                ->setStatus(PayPalStatus::CREATED)
+        );
         $this->entityManager->flush();
 
         return $this->json($order);
@@ -56,24 +50,23 @@ final class PurchaseController extends AbstractController
     #[Route('/capture/{orderId}', name: 'capture', methods: [Request::METHOD_POST])]
     public function capture(PayPalClient $payPalClient, string $orderId): JsonResponse
     {
-        $payment = $payPalClient->captureOrder($orderId);
-        if (PayPalStatus::COMPLETED->value !== $payment->status) {
+        $orderCapture = $payPalClient->captureOrder($orderId);
+        if (PayPalStatus::COMPLETED->value !== $orderCapture->status) {
             throw new \LogicException('Payment status is not COMPLETED');
         }
 
         $purchase = $this->entityManager->getRepository(Purchase::class)
             ->findOneBy(['orderId' => $orderId]) ?? throw new \RuntimeException('No purchase found');
 
-        $payload = $this->normalizer->normalize($payment);
-        if (!\is_array($payload)) {
+        $payment = $this->normalizer->normalize($orderCapture);
+        if (!\is_array($payment)) {
             throw new \LogicException('Normalized payment payload must be an array');
         }
 
         $purchase->setStatus(PayPalStatus::COMPLETED)
-            ->setPayload($payload);
+            ->setPayment($payment);
         $this->entityManager->flush();
 
-        // TODO: persist payment status
-        return $this->json($payment);
+        return $this->json($orderCapture);
     }
 }

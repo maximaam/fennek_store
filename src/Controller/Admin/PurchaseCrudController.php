@@ -129,19 +129,19 @@ final class PurchaseCrudController extends AbstractCrudController
         yield FormField::addColumn(12);
         yield FormField::addFieldset('purchase.payer.singular');
         yield ArrayField::new('payload', 'purchase.payer.name')
-            ->setTemplatePath('admin/fields/purchase_payload.html.twig')
+            ->setTemplatePath('admin/fields/purchase_payment.html.twig')
             ->setCustomOption('target', 'payer_name');
         yield ArrayField::new('payload', 'purchase.payer.email')
-            ->setTemplatePath('admin/fields/purchase_payload.html.twig')
+            ->setTemplatePath('admin/fields/purchase_payment.html.twig')
             ->setCustomOption('target', 'payer_email');
 
         yield FormField::addColumn(12);
         yield FormField::addFieldset('purchase.shipping.singular');
         yield ArrayField::new('payload', 'purchase.shipping.name')
-            ->setTemplatePath('admin/fields/purchase_payload.html.twig')
+            ->setTemplatePath('admin/fields/purchase_payment.html.twig')
             ->setCustomOption('target', 'shipping_name');
         yield ArrayField::new('payload', 'purchase.shipping.address')
-            ->setTemplatePath('admin/fields/purchase_payload.html.twig')
+            ->setTemplatePath('admin/fields/purchase_payment.html.twig')
             ->setCustomOption('target', 'shipping_address');
     }
 

@@ -25,9 +25,9 @@ class Purchase
     #[ORM\Column(length: 32)]
     private PayPalStatus $status;
 
-    /** @var array<int|string, mixed> $payload */
+    /** @var array<int|string, mixed> $payment */
     #[ORM\Column]
-    private array $payload = [];
+    private array $payment = [];
 
     /** @var array<int|string, mixed> $product */
     #[ORM\Column]
@@ -66,15 +66,15 @@ class Purchase
     }
 
     /** @return array<int|string, mixed> */
-    public function getPayload(): array
+    public function getPayment(): array
     {
-        return $this->payload;
+        return $this->payment;
     }
 
-    /** @param  array<int|string, mixed> $payload */
-    public function setPayload(array $payload): static
+    /** @param  array<int|string, mixed> $payment */
+    public function setPayment(array $payment): static
     {
-        $this->payload = $payload;
+        $this->payment = $payment;
 
         return $this;
     }
@@ -116,7 +116,7 @@ class Purchase
 
     public function getBuyerFullName(): ?string
     {
-        $payer = $this->getPayload()['payer'] ?? null;
+        $payer = $this->getPayment()['payer'] ?? null;
         if (null === $payer) {
             return null;
         }

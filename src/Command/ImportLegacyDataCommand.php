@@ -8,6 +8,7 @@ use App\Entity\Category;
 use App\Entity\MediaImage;
 use App\Entity\Page;
 use App\Entity\Product;
+use App\Entity\Purchase;
 use App\Enum\MediaImageOwner;
 use App\Helper\EntityHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -53,6 +54,7 @@ class ImportLegacyDataCommand extends Command
             'product' => $this->product($io),
             'category' => $this->category($io),
             'page' => $this->page($io),
+            'payment' => $this->payment($io),
             default => throw new \RuntimeException("Unknown table '$table'"),
         };
 
@@ -225,6 +227,31 @@ class ImportLegacyDataCommand extends Command
                 ->setDescriptionEn($row[6])
                 ->setAliasDe($row[7])
                 ->setAliasEn($row[8]);
+
+            $this->entityManager->persist($page);
+        }
+
+        $this->entityManager->flush();
+        $this->entityManager->clear();
+    }
+
+    /**
+     * @throws \DateMalformedStringException
+     */
+    private function payment(SymfonyStyle $io): void
+    {
+        $payments = $this->loadCsv(__METHOD__);
+        foreach ($payments as $i => $row) {
+            if ($row === [null] || !\is_array($row)) {
+                continue;
+            }
+            $row = array_map(trim(...), $row);
+
+            $io->writeln(\sprintf('%d - Importing payment : %s', $i, $row[3]));
+
+            $page = new Purchase()
+                ->setCreatedAtLegacy($row[1])
+                ->setUpdatedAtLegacy($row[2]);
 
             $this->entityManager->persist($page);
         }

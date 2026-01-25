@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20260125184215 extends AbstractMigration
+final class Version20260125221333 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -24,7 +24,7 @@ final class Version20260125184215 extends AbstractMigration
         $this->addSql('CREATE TABLE media_image (id INT AUTO_INCREMENT NOT NULL, image_name VARCHAR(255) DEFAULT NULL, owner VARCHAR(255) NOT NULL, created_at DATETIME NOT NULL, updated_at DATETIME DEFAULT NULL, product_id INT DEFAULT NULL, page_id INT DEFAULT NULL, INDEX IDX_DA24C0EE4584665A (product_id), INDEX IDX_DA24C0EEC4663E4 (page_id), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4');
         $this->addSql('CREATE TABLE page (id INT AUTO_INCREMENT NOT NULL, title_de VARCHAR(255) NOT NULL, alias_de VARCHAR(255) NOT NULL, description_de LONGTEXT NOT NULL, title_en VARCHAR(255) NOT NULL, alias_en VARCHAR(255) NOT NULL, description_en LONGTEXT NOT NULL, created_at DATETIME NOT NULL, updated_at DATETIME DEFAULT NULL, PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4');
         $this->addSql('CREATE TABLE product (id INT AUTO_INCREMENT NOT NULL, item_number VARCHAR(128) DEFAULT NULL, title_de VARCHAR(255) NOT NULL, title_en VARCHAR(255) NOT NULL, title_de_slug VARCHAR(255) NOT NULL, title_en_slug VARCHAR(255) NOT NULL, description_de LONGTEXT NOT NULL, description_en LONGTEXT NOT NULL, colors JSON NOT NULL, sizes JSON DEFAULT NULL, price INT NOT NULL, top_item TINYINT DEFAULT 0 NOT NULL, created_at DATETIME NOT NULL, updated_at DATETIME DEFAULT NULL, category_id INT NOT NULL, INDEX IDX_D34A04AD12469DE2 (category_id), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4');
-        $this->addSql('CREATE TABLE purchase (id INT AUTO_INCREMENT NOT NULL, order_id VARCHAR(32) NOT NULL, status VARCHAR(32) NOT NULL, payload JSON NOT NULL, product JSON NOT NULL, shipped TINYINT DEFAULT 0 NOT NULL, created_at DATETIME NOT NULL, updated_at DATETIME DEFAULT NULL, PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4');
+        $this->addSql('CREATE TABLE purchase (id INT AUTO_INCREMENT NOT NULL, order_id VARCHAR(32) NOT NULL, status VARCHAR(32) NOT NULL, payment JSON NOT NULL, product JSON NOT NULL, shipped TINYINT DEFAULT 0 NOT NULL, created_at DATETIME NOT NULL, updated_at DATETIME DEFAULT NULL, PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4');
         $this->addSql('CREATE TABLE messenger_messages (id BIGINT AUTO_INCREMENT NOT NULL, body LONGTEXT NOT NULL, headers LONGTEXT NOT NULL, queue_name VARCHAR(190) NOT NULL, created_at DATETIME NOT NULL, available_at DATETIME NOT NULL, delivered_at DATETIME DEFAULT NULL, INDEX IDX_75EA56E0FB7336F0E3BD61CE16BA31DBBF396750 (queue_name, available_at, delivered_at, id), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4');
         $this->addSql('ALTER TABLE category ADD CONSTRAINT FK_64C19C1727ACA70 FOREIGN KEY (parent_id) REFERENCES category (id)');
         $this->addSql('ALTER TABLE media_image ADD CONSTRAINT FK_DA24C0EE4584665A FOREIGN KEY (product_id) REFERENCES product (id)');
