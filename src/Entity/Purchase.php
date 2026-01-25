@@ -34,7 +34,7 @@ class Purchase
     private array $product = [];
 
     #[ORM\Column(type: Types::BOOLEAN, options: ['default' => false])]
-    private bool $delivered = false;
+    private bool $shipped = false;
 
     public function getId(): ?int
     {
@@ -93,14 +93,14 @@ class Purchase
         return $this;
     }
 
-    public function isDelivered(): bool
+    public function isShipped(): bool
     {
-        return $this->delivered;
+        return $this->shipped;
     }
 
-    public function setDelivered(bool $delivered): static
+    public function setShipped(bool $shipped): static
     {
-        $this->delivered = $delivered;
+        $this->shipped = $shipped;
 
         return $this;
     }

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\Dto\PayPal\OrderCaptureDto;
-use App\Dto\PayPal\OrderDto;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
@@ -13,7 +11,7 @@ use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-final class PayPalClient
+final class PayPalClient2
 {
     private const string ORDERS_ENDPOINT = '/v2/checkout/orders';
     private const string TOKEN_ENDPOINT = '/v1/oauth2/token';
@@ -21,6 +19,10 @@ final class PayPalClient
     private ?string $accessToken = null;
     private ?int $accessTokenExpiresAt = null;
 
+    /**
+     * @throws DecodingExceptionInterface
+     * @throws TransportExceptionInterface
+     */
     public function __construct(
         private readonly HttpClientInterface $client,
         #[Autowire('%env(PAYPAL_CLIENT_ID)%')]
@@ -32,13 +34,20 @@ final class PayPalClient
     ) {
     }
 
-    public function createOrder(int $amountCents): OrderDto
+    /** @return array<string, mixed> */
+    public function createOrder(int $amountCents): array
     {
-        $data = $this->request(
+        return $this->request(
             Request::METHOD_POST,
             self::ORDERS_ENDPOINT,
             [
                 'intent' => 'CAPTURE',
+                /*
+                'application_context' => [
+                    'return_url' => 'https://127.0.0.1:8001/de/catalogue/sommerwaren',
+                    'cancel_url' => 'https://127.0.0.1:8001/de/catalogue/winterwaren',
+                ],
+                */
                 'purchase_units' => [[
                     'amount' => [
                         'currency_code' => 'EUR',
@@ -47,18 +56,32 @@ final class PayPalClient
                 ]],
             ]
         );
-
-        return PayPalMapper::mapOrder($data);
     }
 
-    public function captureOrder(string $orderId): OrderCaptureDto
+    /** @return array<string, mixed> */
+    public function captureOrder(string $orderId): array
     {
-        $data = $this->request(
-            Request::METHOD_POST,
-            \sprintf('%s/%s/capture', self::ORDERS_ENDPOINT, $orderId),
+        /*
+        $order = $this->request(
+            'GET',
+            "/v2/checkout/orders/{$orderId}"
         );
+        */
 
-        return PayPalMapper::mapCapture($data);
+        /*if (($order['intent'] ?? null) !== 'CAPTURE') {
+            throw new \LogicException('Order intent is not CAPTURE');
+        }
+
+        if (($order['status'] ?? null) !== 'APPROVED') {
+            throw new \LogicException(
+                sprintf('Order not approved, status: %s', $order['status'] ?? 'unknown')
+            );
+        }*/
+
+        return $this->request(
+            Request::METHOD_POST,
+            \sprintf('%s/%s/capture', self::ORDERS_ENDPOINT, $orderId)
+        );
     }
 
     /**
@@ -75,7 +98,6 @@ final class PayPalClient
                 [
                     'headers' => [
                         'Authorization' => 'Bearer '.$this->getAccessToken(),
-                        'Content-Type' => 'application/json',
                     ],
                     'json' => $json,
                 ]

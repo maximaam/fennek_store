@@ -40,8 +40,8 @@ final class PurchaseCrudController extends AbstractCrudController
     public function configureActions(Actions $actions): Actions
     {
         return $actions
-            ->add(Crud::PAGE_INDEX, Action::DETAIL)
-            ->disable(Action::DELETE, Action::NEW);
+            ->add(Crud::PAGE_INDEX, Action::DETAIL);
+        // ->disable(Action::DELETE, Action::NEW);
     }
 
     #[\Override]
@@ -108,7 +108,7 @@ final class PurchaseCrudController extends AbstractCrudController
         yield TextField::new('buyerFullName', 'purchase.payer.name');
         yield MoneyField::new('totalAmount', 'purchase.total_amount')
             ->setCurrency('EUR');
-        yield BooleanField::new('delivered', 'purchase.delivery.delivered')
+        yield BooleanField::new('shipped', 'purchase.shipping.shipped')
             ->renderAsSwitch(false);
     }
 
@@ -136,13 +136,13 @@ final class PurchaseCrudController extends AbstractCrudController
             ->setCustomOption('target', 'payer_email');
 
         yield FormField::addColumn(12);
-        yield FormField::addFieldset('purchase.delivery.singular');
-        yield ArrayField::new('payload', 'purchase.delivery.name')
+        yield FormField::addFieldset('purchase.shipping.singular');
+        yield ArrayField::new('payload', 'purchase.shipping.name')
             ->setTemplatePath('admin/fields/purchase_payload.html.twig')
-            ->setCustomOption('target', 'delivery_name');
-        yield ArrayField::new('payload', 'purchase.delivery.address')
+            ->setCustomOption('target', 'shipping_name');
+        yield ArrayField::new('payload', 'purchase.shipping.address')
             ->setTemplatePath('admin/fields/purchase_payload.html.twig')
-            ->setCustomOption('target', 'delivery_address');
+            ->setCustomOption('target', 'shipping_address');
     }
 
     /**
@@ -150,7 +150,7 @@ final class PurchaseCrudController extends AbstractCrudController
      */
     private function getEditFields(): iterable
     {
-        yield BooleanField::new('delivered', 'purchase.delivery.delivered')
-            ->setHelp('purchase.delivery.delivered_help');
+        yield BooleanField::new('shipped', 'purchase.shipping.shipped')
+            ->setHelp('purchase.shipping.shipped_help');
     }
 }

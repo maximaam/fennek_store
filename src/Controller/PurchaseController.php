@@ -15,29 +15,33 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
 #[Route('/{_locale}/purchase', name: 'app_purchase_')]
 final class PurchaseController extends AbstractController
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+        private readonly SerializerInterface $serializer,
+    ) {
     }
 
     #[Route('/create', name: 'create', methods: [Request::METHOD_POST])]
-    public function create(PayPalClient $paypal, SessionInterface $session): RedirectResponse|JsonResponse
+    public function create(PayPalClient $payPalClient, SessionInterface $session): RedirectResponse|JsonResponse
     {
         if ([] === $cart = $session->get('cart', [])) {
             return $this->redirectToRoute('app_index_index');
         }
 
         $cart = ProductHelper::computeCard($cart);
-        $order = $paypal->createOrder($cart['totals']['total']);
+        $order = $payPalClient->createOrder($cart['totals']['total']);
+        $payload = $this->serializer->normalize($order);
 
         $purchase = new Purchase()
             ->setProduct($cart)
-            ->setOrderId($order['id'])
+            ->setOrderId($order->id)
             ->setStatus(PayPalStatus::CREATED)
-            ->setPayload($order);
+            ->setPayload($payload);
         $this->entityManager->persist($purchase);
         $this->entityManager->flush();
 
@@ -45,19 +49,19 @@ final class PurchaseController extends AbstractController
     }
 
     #[Route('/capture/{orderId}', name: 'capture', methods: [Request::METHOD_POST])]
-    public function capture(PayPalClient $paypal, string $orderId): JsonResponse
+    public function capture(PayPalClient $payPalClient, string $orderId): JsonResponse
     {
-        $payment = $paypal->captureOrder($orderId);
-
-        if (PayPalStatus::COMPLETED->value !== $payment['status']) {
+        $payment = $payPalClient->captureOrder($orderId);
+        if (PayPalStatus::COMPLETED->value !== $payment->status) {
             throw new \LogicException('Payment status is not COMPLETED');
         }
 
         $purchase = $this->entityManager->getRepository(Purchase::class)
             ->findOneBy(['orderId' => $orderId]) ?? throw new \RuntimeException('No purchase found');
 
+        $payload = $this->serializer->normalize($payment);
         $purchase->setStatus(PayPalStatus::COMPLETED)
-            ->setPayload($payment);
+            ->setPayload($payload);
         $this->entityManager->flush();
 
         // TODO: persist payment status

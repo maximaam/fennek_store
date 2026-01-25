@@ -7,9 +7,9 @@
         {{ payload.payer.name.given_name ~ ' ' ~ payload.payer.name.surname }}
     {% elseif target == 'payer_email' %}
         {{ payload.payer.email_address }}
-    {% elseif target == 'delivery_name' %}
+    {% elseif target == 'shipping_name' %}
         {{ payload.purchase_units[0].shipping.name.full_name }}
-    {% elseif target == 'delivery_address' %}
+    {% elseif target == 'shipping_address' %}
         {%  set address =  payload.purchase_units[0].shipping.address %}
         <address>
             {{ address.address_line_1 }}

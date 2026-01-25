@@ -125,12 +125,12 @@ purchase:
         singular: Käufer
         email: Käufer Email
         name: Käufer Name
-    delivery:
+    shipping:
         singular: Lieferung
         address: Lieferadresse
         name: Lieferant
-        delivered: Versandt
-        delivered_help: Als versandt markieren
+        shipped: Versandt
+        shipped_help: Als versandt markieren
     page_edit_title: "Details für Bestellung '%item%'"
 
 payment:
