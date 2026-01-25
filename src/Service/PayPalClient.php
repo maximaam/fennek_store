@@ -115,7 +115,7 @@ final class PayPalClient
     /**
      * @throws DecodingExceptionInterface|TransportExceptionInterface
      */
-    private function getAccessToken(): string
+    private function getAccessToken(): ?string
     {
         if (
             null === $this->accessToken

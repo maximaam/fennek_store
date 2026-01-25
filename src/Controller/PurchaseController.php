@@ -15,14 +15,15 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 #[Route('/{_locale}/purchase', name: 'app_purchase_')]
 final class PurchaseController extends AbstractController
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly SerializerInterface $serializer,
+        private readonly NormalizerInterface&DenormalizerInterface $normalizer,
     ) {
     }
 
@@ -35,7 +36,11 @@ final class PurchaseController extends AbstractController
 
         $cart = ProductHelper::computeCard($cart);
         $order = $payPalClient->createOrder($cart['totals']['total']);
-        $payload = $this->serializer->normalize($order);
+
+        $payload = $this->normalizer->normalize($order);
+        if (!\is_array($payload)) {
+            throw new \LogicException('Normalized payment payload must be an array');
+        }
 
         $purchase = new Purchase()
             ->setProduct($cart)
@@ -59,7 +64,11 @@ final class PurchaseController extends AbstractController
         $purchase = $this->entityManager->getRepository(Purchase::class)
             ->findOneBy(['orderId' => $orderId]) ?? throw new \RuntimeException('No purchase found');
 
-        $payload = $this->serializer->normalize($payment);
+        $payload = $this->normalizer->normalize($payment);
+        if (!\is_array($payload)) {
+            throw new \LogicException('Normalized payment payload must be an array');
+        }
+
         $purchase->setStatus(PayPalStatus::COMPLETED)
             ->setPayload($payload);
         $this->entityManager->flush();
