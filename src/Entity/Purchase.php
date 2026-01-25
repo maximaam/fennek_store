@@ -25,9 +25,11 @@ class Purchase
     #[ORM\Column(length: 32)]
     private PayPalStatus $status;
 
+    /** @var array<int|string, mixed> $payload */
     #[ORM\Column]
     private array $payload = [];
 
+    /** @var array<int|string, mixed> $product */
     #[ORM\Column]
     private array $product = [];
 
@@ -63,11 +65,13 @@ class Purchase
         return $this;
     }
 
+    /** @return array<int|string, mixed> */
     public function getPayload(): array
     {
         return $this->payload;
     }
 
+    /** @param  array<int|string, mixed> $payload */
     public function setPayload(array $payload): static
     {
         $this->payload = $payload;
@@ -75,11 +79,13 @@ class Purchase
         return $this;
     }
 
+    /** @return array<int|string, mixed>*/
     public function getProduct(): array
     {
         return $this->product;
     }
 
+    /** @param array<int|string, mixed> $product */
     public function setProduct(array $product): static
     {
         $this->product = $product;

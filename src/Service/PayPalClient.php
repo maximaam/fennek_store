@@ -6,6 +6,8 @@ namespace App\Service;
 
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class PayPalClient
@@ -13,8 +15,13 @@ final class PayPalClient
     public const string ENDPOINT = '/v2/checkout/orders';
     private string $accessToken;
 
+    /**
+     * @throws DecodingExceptionInterface
+     * @throws TransportExceptionInterface
+     */
     public function __construct(
         private readonly HttpClientInterface $client,
+
         #[Autowire('%env(PAYPAL_CLIENT_ID)%')]
         private readonly string $paypalClientId,
         #[Autowire('%env(PAYPAL_CLIENT_SECRET)%')]
@@ -25,6 +32,7 @@ final class PayPalClient
         $this->authenticate();
     }
 
+    /** @return array<string, mixed> */
     public function createOrder(int $amountCents): array
     {
         return $this->request(
@@ -48,6 +56,7 @@ final class PayPalClient
         );
     }
 
+    /** @return array<string, mixed> */
     public function captureOrder(string $orderId): array
     {
         /*
@@ -73,6 +82,13 @@ final class PayPalClient
         );
     }
 
+    /**
+     * @param array<string, mixed>|null $json
+     *
+     * @throws TransportExceptionInterface|\Exception|DecodingExceptionInterface
+     *
+     * @return array<string, mixed>
+     */
     private function request(string $method, string $uri, array|\stdClass|null $json = null): array
     {
         $response = $this->client->request(
@@ -90,6 +106,9 @@ final class PayPalClient
         return $response->toArray(false);
     }
 
+    /**
+     * @throws \Exception|DecodingExceptionInterface|TransportExceptionInterface
+     */
     private function authenticate(): void
     {
         $response = $this->client->request(
@@ -104,6 +123,9 @@ final class PayPalClient
         $this->accessToken = $response->toArray()['access_token'];
     }
 
+    /**
+     * @throws DecodingExceptionInterface|TransportExceptionInterface
+     */
     private function getAccessToken(): string
     {
         if (!isset($this->accessToken)) {

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
-use App\Entity\Category;
-use App\Entity\Product;
 use App\Entity\Purchase;
 use App\Enum\PayPalStatus;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -16,7 +14,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\MoneyField;
@@ -25,7 +22,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Filter\ChoiceFilter;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * @extends AbstractCrudController<Product>
+ * @extends AbstractCrudController<Purchase>
  */
 final class PurchaseCrudController extends AbstractCrudController
 {
@@ -148,6 +145,9 @@ final class PurchaseCrudController extends AbstractCrudController
             ->setCustomOption('target', 'delivery_address');
     }
 
+    /**
+     * @return iterable<FieldInterface|string>
+     */
     private function getEditFields(): iterable
     {
         yield BooleanField::new('delivered', 'purchase.delivery.delivered')
