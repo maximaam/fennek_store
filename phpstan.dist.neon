@@ -6,6 +6,8 @@ parameters:
         - public/
         - src/
         - tests/
+    ignoreErrors:
+           - message: '#Method App\\Controller\\Admin\\ProductCrudController::getRedirectResponseAfterSave\(\) has parameter \$context with generic class EasyCorp\\Bundle\\EasyAdminBundle\\Context\\AdminContext#'
 
 includes:
     - vendor/phpstan/phpstan-doctrine/extension.neon
