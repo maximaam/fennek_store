@@ -45,11 +45,12 @@ img.logo {
         padding: 0;
         letter-spacing: 1px;
         transition: all .2s ease-in-out;
+        color: var(--bs-white);
     }
 }
 .navbar-nav a.nav-link:hover,
 .nav-item.current a.nav-link {
-    color: var(--bs-white) !important;
+    color: var(--bs-info) !important;
 }
 .navbar-cart {
     position: relative;

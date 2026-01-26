@@ -73,7 +73,7 @@ product:
     darkblue: Dunkelblau
     green: Grün
     lightgreen: Hellgrün
-    burlywood: Hellbraun
+    burlywood: Naturbraun
     brown: Braun
     maroon: Bordeaux
     darkred: Dunkelrot
@@ -142,3 +142,30 @@ payment:
     email_msg_part5: Ihr Fennek-Store-Team
 
 copyright: Copyright Fennek-Store - Alle Rechte vorbehalten
+
+
+
+colors_list_de:
+    Weiss: white
+    Silber: silver
+    Grau: gray
+    Schwarz: black
+    Beige: beige
+    Gelb: yellow
+    Gold: gold
+    Orange: orange
+    Rot: red
+    Rosa: pink
+    Violett: violet
+    Fuchsia: fuchsia
+    Lila: purple
+    Hellblau: lightblue
+    Blau: blue
+    Dunkelblau: darkblue
+    Grün: green
+    Hellgrün: lightgreen
+    Hellbraun: burlywood
+    Naturbraun: burlywood
+    Braun: brown
+    Bordeaux: maroon
+    Dunkelrot: darkred

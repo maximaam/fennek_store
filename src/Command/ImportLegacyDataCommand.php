@@ -10,7 +10,9 @@ use App\Entity\Page;
 use App\Entity\Product;
 use App\Entity\Purchase;
 use App\Enum\MediaImageOwner;
+use App\Enum\PayPalStatus;
 use App\Helper\EntityHelper;
+use App\Helper\ProductHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -19,6 +21,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[AsCommand(
     name: 'app:import-legacy-data',
@@ -29,6 +32,7 @@ class ImportLegacyDataCommand extends Command
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly EntityHelper $entityHelper,
+        private readonly TranslatorInterface $translator,
         #[Autowire('%kernel.project_dir%')]
         private readonly string $rootDir,
     ) {
@@ -240,24 +244,174 @@ class ImportLegacyDataCommand extends Command
      */
     private function payment(SymfonyStyle $io): void
     {
-        $payments = $this->loadCsv(__METHOD__);
+        $payments = $this->loadCsv(__FUNCTION__);
         foreach ($payments as $i => $row) {
             if ($row === [null] || !\is_array($row)) {
                 continue;
             }
             $row = array_map(trim(...), $row);
 
-            $io->writeln(\sprintf('%d - Importing payment : %s', $i, $row[3]));
+            $products = $this->createPurchaseProduct($row);
+            $payments = $this->createPurchasePayment($row);
 
-            $page = new Purchase()
+            $io->writeln(\sprintf('%d - Importing payment : %s', $i, $row[5]));
+
+            $purchase = new Purchase()
                 ->setCreatedAtLegacy($row[1])
-                ->setUpdatedAtLegacy($row[2]);
+                ->setUpdatedAtLegacy($row[2])
+                ->setStatus('2' === $row[3] ? PayPalStatus::COMPLETED : PayPalStatus::CREATED)
+                ->setShipped('1' === $row[4])
+                ->setOrderId($row[5])
+                ->setProduct($products)
+                ->setPayment($payments);
 
-            $this->entityManager->persist($page);
+            $this->entityManager->persist($purchase);
         }
 
         $this->entityManager->flush();
         $this->entityManager->clear();
+    }
+
+    private function createPurchaseProduct(array $row): array
+    {
+        libxml_use_internal_errors(true);
+        $dom = new \DOMDocument('1.0', 'UTF-8');
+        $dom->loadHTML('<?xml encoding="UTF-8">'.$row[12], \LIBXML_HTML_NOIMPLIED | \LIBXML_HTML_NODEFDTD);
+        $items = [];
+        foreach ($dom->getElementsByTagName('li') as $li) {
+            $link = $li->getElementsByTagName('a')->item(0);
+            $title = $link?->textContent ?? '';
+            $meta = str_replace($title, '', trim(str_replace("\n", '', $li->textContent)));
+
+            $resultMeta = [];
+            foreach (explode('|', $meta) as $part) {
+                if (!str_contains($part, ':')) {
+                    continue;
+                }
+
+                [$key, $value] = array_map('trim', explode(':', $part, 2));
+                $key = $this->normalizeKey($key);
+
+                $resultMeta[$key] = $value;
+            }
+
+            $items[uniqid()] = [
+                'title' => $title,
+                'url' => $link?->getAttribute('href'),
+                'meta' => $resultMeta,
+            ];
+        }
+        libxml_clear_errors();
+
+        $data = [];
+        $amount = (int) bcmul($row[8], '100', 0);
+        $exclTax = round($amount / ((ProductHelper::VAT / 100) + 1), 2);
+        $vat = round($amount - $exclTax, 2);
+
+        $data['totals'] = [
+            'vat' => $vat,
+            'total' => $amount,
+            'excl_tax' => $exclTax,
+        ];
+        $data['products'] = [];
+        $productsIds = str_contains($row[11], ',') ? explode(',', $row[11]) : [$row[11]];
+
+        $i = 0;
+        foreach ($items as $key => $item) {
+            $product = $this->entityManager->getRepository(Product::class)
+                ->findOneBy(['titleDe' => $item['title']]);
+
+            if (!isset($productsIds[$i])) {
+                dd($productsIds);
+            }
+
+            $data['products'][$key] = [
+                'id' => $productsIds[$i],
+                'title' => $item['title'],
+                'quantity' => $item['meta']['menge'] ?? null,
+                'color' => isset($item['meta']['farbe']) ? $this->translator->trans('colors_list_de.'.$item['meta']['farbe']) : null,
+                'size' => $item['meta']['groesse'] ?? null,
+                'image' => $product ? $product->getImages()[0]->getImageName() : null,
+                'item_url' => $item['url'],
+                'item_number' => $product ? $product->getItemNumber() : null,
+                'price' => $product ? $product->getPrice() : null,
+                'full_price' => $product ? $product->getPrice() * ($item['meta']['menge'] ?? 1) : null,
+            ];
+
+            ++$i;
+        }
+
+        return $data;
+    }
+
+    private function createPurchasePayment(array $row): array
+    {
+        $paymentRow = unserialize($row[10]);
+
+        $data = [
+            'id' => $paymentRow['cart'],
+            'links' => [],
+            'status' => '2' === $row[3] ? PayPalStatus::COMPLETED->value : PayPalStatus::CREATED->value,
+            'payer' => [
+                'name' => [
+                    'given_name' => $paymentRow['payer']['payer_info']['first_name'],
+                    'surname' => $paymentRow['payer']['payer_info']['last_name'],
+                ],
+                'address' => [
+                    'country_code' => $paymentRow['payer']['payer_info']['country_code'],
+                ],
+                'payer_id' => $paymentRow['payer']['payer_info']['payer_id'],
+                'email_address' => $paymentRow['payer']['payer_info']['email'],
+            ],
+            'payment_source' => [
+                'paypal' => [
+                    'name' => [
+                        'given_name' => $paymentRow['payer']['payer_info']['first_name'],
+                        'surname' => $paymentRow['payer']['payer_info']['last_name'],
+                    ],
+                    'address' => [
+                        'country_code' => $paymentRow['payer']['payer_info']['country_code'],
+                    ],
+                    'account_id' => $paymentRow['payer']['payer_info']['payer_id'],
+                    'email_address' => $paymentRow['payer']['payer_info']['email'],
+                    'account_status' => $paymentRow['payer']['status'],
+                ],
+            ],
+            'purchase_units' => [
+                [
+                    'payments' => [
+                        'captures' => [
+                            [
+                                'id' => $paymentRow['id'],
+                                'links' => [],
+                                'amount' => [
+                                    'value' => $paymentRow['transactions'][0]['amount']['total'],
+                                    'currency_code' => $paymentRow['transactions'][0]['amount']['currency'],
+                                ],
+                                'status' => '2' === $row[3] ? PayPalStatus::COMPLETED->value : PayPalStatus::CREATED->value,
+                                'created_time' => $paymentRow['create_time'],
+                                'update_time' => $paymentRow['create_time'],
+                                'final_capture' => true,
+                            ],
+                        ],
+                    ],
+                    'shipping' => [
+                        'name' => [
+                            'full_name' => $paymentRow['payer']['payer_info']['shipping_address']['recipient_name'],
+                        ],
+                        'address' => [
+                            'address_line_1' => $paymentRow['payer']['payer_info']['shipping_address']['line1'],
+                            'admin_area_2' => $paymentRow['payer']['payer_info']['shipping_address']['city'],
+                            'admin_area_1' => $paymentRow['payer']['payer_info']['shipping_address']['state'] ?? null,
+                            'postal_code' => $paymentRow['payer']['payer_info']['shipping_address']['postal_code'],
+                            'country_code' => $paymentRow['payer']['payer_info']['shipping_address']['country_code'],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        return $data;
     }
 
     /**
@@ -290,5 +444,14 @@ class ImportLegacyDataCommand extends Command
         );
 
         return $file;
+    }
+
+    private function normalizeKey(string $key): string
+    {
+        return str_replace(
+            ['ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü'],
+            ['ae', 'oe', 'ue', 'ss', 'ae', 'oe', 'ue'],
+            mb_strtolower($key)
+        );
     }
 }
