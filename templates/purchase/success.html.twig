@@ -1,23 +1,19 @@
 {% extends 'base.html.twig' %}
 
-{% block js_head %}
-    <script src="https://www.paypal.com/sdk/js?client-id={{ paypal_client_id }}&currency=EUR"></script>
-{% endblock %}
-
 {% block body %}
+    {% for type, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ type }} m-2">
+                {{ message|trans }}
+            </div>
+        {% endfor %}
+    {% endfor %}
     <div class="container">
         <div class="row">
-
-            {% if cart is not defined or cart|length <= 0  %}
-                <div class="alert alert-warning">
-                    {{ 'cart.empty'|trans }}
-                </div>
-            {% endif %}
-
-            {% set products = cart.products %}
-            {% set totals = cart.totals %}
+            {% set products = purchase.product.products %}
+            {% set totals = purchase.product.totals %}
             <div class="table-responsive">
-                <h1 class="text-center">{{ 'cart.my_cart'|trans }}</h1>
+                <h1 class="text-center">{{ 'purchase.my_purchase'|trans }}</h1>
                 <table class="table table-stripped">
                     <thead>
                     <tr>
@@ -29,7 +25,6 @@
                         <th>{{ 'product.quantity'|trans }}</th>
                         <th>{{ 'purchase.price_unit'|trans }}</th>
                         <th>{{ 'purchase.price_total'|trans }}</th>
-                        <th></th>
                     </tr>
                     </thead>
 
@@ -44,11 +39,6 @@
                             <td>{{ product.quantity }}</td>
                             <td>{{ (product.price / 100)|format_currency('EUR') }}</td>
                             <td>{{ (product.full_price / 100)|format_currency('EUR') }}</td>
-                            <td>
-                                <a href="{{ path('app_cart_remove', {'itemKey': itemKey}) }}" title="{{ 'label.delete'|trans }}" rel="nofollow" class="btn btn-danger">
-                                    {{ ea_ux_icon('bi:trash-fill', {class: 'basic-icon'}) }}
-                                </a>
-                            </td>
                         </tr>
                     {% endfor %}
                     </tbody>
@@ -69,36 +59,6 @@
                             <td class="font-weight-bold">{{ 'purchase.total_incl_tax'|trans }}</td>
                             <td>{{ (totals.total / 100)|format_currency('EUR') }}</td>
                         </tr>
-                    <tr>
-                        <td colspan="7">
-                            <a href="#">{{ 'cart.continue-shopping'|trans }}</a>
-                        </td>
-                        <td colspan="2">
-                            <div id="paypal-button-container"></div>
-                            <script>
-                                paypal.Buttons({
-                                    createOrder: () => {
-                                        return fetch('{{ path("app_purchase_create") }}', {
-                                            method: 'POST'
-                                        })
-                                            .then(res => res.json())
-                                            .then(data => data.id);
-                                    },
-                                    onApprove: (data) => {
-                                        const orderId = data.orderID;
-                                        return fetch(`/de/purchase/capture/${orderId}`, {
-                                            method: 'POST'
-                                        })
-                                            .then(res => res.json())
-                                            .then(() => {
-                                                console.log('Payment successful!');
-                                                window.location.href = `/de/purchase/success?orderId=${orderId}&paymentStatus=success`;
-                                            });
-                                    }
-                                }).render('#paypal-button-container');
-                            </script>
-                        </td>
-                    </tr>
                     </tfoot>
                 </table>
             </div>

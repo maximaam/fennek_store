@@ -13,6 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -68,5 +69,25 @@ final class PurchaseController extends AbstractController
         $this->entityManager->flush();
 
         return $this->json($orderCapture);
+    }
+
+    #[Route('/success', name: 'success', methods: [Request::METHOD_GET])]
+    public function success(Request $request): Response
+    {
+        $orderId = $request->query->get('orderId');
+        $paymentStatus = $request->query->get('paymentStatus');
+        $purchase = $this->entityManager->getRepository(Purchase::class)
+            ->findOneBy(['orderId' => $orderId]) ?? throw new \RuntimeException('No purchase found');
+
+        if (null !== $orderId && null !== $paymentStatus) {
+            $this->addFlash('success', 'flashes.purchase_completed');
+            $request->getSession()->remove('cart');
+
+            return $this->redirectToRoute('app_purchase_success', ['orderId' => $orderId]);
+        }
+
+        return $this->render('purchase/success.html.twig', [
+            'purchase' => $purchase,
+        ]);
     }
 }

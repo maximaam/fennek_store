@@ -91,7 +91,7 @@ btn:
     show_details: Details anzeigen
 
 cart:
-    to_cart: In den Warenkorb
+    add_to_cart: In den Warenkorb
     my_cart: Ihr Warenkorb
     pay_now: Jetzt mit PayPal zahlen!
     continue_shopping: Weiter einkaufen
@@ -99,7 +99,8 @@ cart:
     order_overview: Bestellung Übersicht
     paypal_shipping_address: PayPal Liferadresse
 
-msg:
+flashes:
+    purchase_completed: Kauf bestätigt. Danke!
     confirm_delete: Löschen bestätigen?
     no_products_in_category: Zurzeit keine Ware in dieser Kategorie
     no_search_result: 'Keine Treffer gefunden für Ihre Suche nach: %query%'
@@ -132,6 +133,7 @@ purchase:
         shipped: Versandt
         shipped_help: Als versandt markieren
     page_edit_title: "Details für Bestellung '%item%'"
+    my_purchase: Ihre Bestellung
 
 payment:
     email_subject: Ihre Bestellung bei Fennek-Store
