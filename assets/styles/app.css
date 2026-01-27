@@ -30,8 +30,16 @@ a {
     height: 1.5rem;
     color: var(--bs-white);
 }
-aside a {
-    color: var(--bs-dark);
+aside {
+    .sidebar-header {
+        background: var(--bs-dark);
+        position: relative;
+        top: -20px;
+        border-radius: 0 0 .5rem .5rem;
+        a {
+            color: var(--bs-white);
+        }
+    }
 }
 
 img.logo {

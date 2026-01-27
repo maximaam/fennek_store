@@ -9,14 +9,10 @@
     <div class="container">
         <div class="row">
             <aside class="col-md-3 sidebar">
-                <div class="row">
-                    <div class="container">
-                        <h1>{{ category.name(app.request.locale) }}</h1>
-                    </div>
+                <div class="sidebar-header">
+                    {% set subCatMenu = knp_menu_get('subCategory') %}
+                    {{ knp_menu_render(subCatMenu) }}
                 </div>
-                {% set subCatMenu = knp_menu_get('subCategory') %}
-                {{ knp_menu_render(subCatMenu) }}
-
                 <blockquote class="cat-desc">
                     {% if category.parent == null %}
                         <i class="fa fa-quote-right"></i>
@@ -28,10 +24,11 @@
             <div class="col-md-9">
                 {% if products|length == 0 %}
                     <div class="alert alert-warning">
-                        {{ 'msg.no_products_in_category'|trans }}
+                        {{ 'flashes.no_products_in_category'|trans }}
                     </div>
                 {% else %}
                     <div class="row">
+                        <h1>{{ category.name(app.request.locale) }}</h1>
                         {% for product in products %}
                             {% include 'partials/_product_card.html.twig' with {product: product, card_size: 4, img_filter: 'medium'} %}
                         {% endfor %}
