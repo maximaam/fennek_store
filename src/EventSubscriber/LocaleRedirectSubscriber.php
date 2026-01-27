@@ -21,12 +21,10 @@ final class LocaleRedirectSubscriber implements EventSubscriberInterface
     public function onKernelRequest(RequestEvent $event): void
     {
         if (!$event->isMainRequest()) {
-            // return;
+            return;
         }
 
         $request = $event->getRequest();
-
-        // already has locale
         if ($request->attributes->has('_locale')) {
             return;
         }

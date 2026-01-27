@@ -22,13 +22,16 @@ main {
     padding: 20px 0;
 }
 a {
-    color: var(--bs-dark);
+    color: var(--bs-info);
     text-decoration: none;
 }
 .basic-icon {
     width: 1.5rem;
     height: 1.5rem;
     color: var(--bs-white);
+}
+aside a {
+    color: var(--bs-dark);
 }
 
 img.logo {

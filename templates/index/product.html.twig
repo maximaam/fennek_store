@@ -13,13 +13,13 @@
         <div class="row">
             {% if product|length == 0 %}
             <div class="alert alert-info">
-                {{ 'msg.no_products_in_category'|trans }}
+                {{ 'flashes.no_products_in_category'|trans }}
             </div>
             {% else %}
-            <div class="col-md-3">
+            <aside class="col-md-3">
                 {% set subCatMenu = knp_menu_get('subCategory') %}
                 {{ knp_menu_render(subCatMenu) }}
-            </div>
+            </aside>
 
             <div class="col-md-9">
                 {% for message in app.flashes('error') %}
