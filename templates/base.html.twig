@@ -49,13 +49,13 @@
                 {{ knp_menu_render('main') }}
                 <form class="d-flex" role="search" method="get" action="{{ path('app_index_search') }}">
                     <label for="search-query"></label>
-                    <input id="search-query" class="form-control py-1" type="search" name="query" placeholder="{{ 'label.search'|trans }}..." required pattern=".{3,}" title="3 chars minimum" autocomplete="false" value="{{ app.request.get('query') }}">
+                    <input id="search-query" class="form-control py-1" type="search" name="query" placeholder="{{ 'label.search'|trans }}..." required pattern=".{3,}" title="3 chars minimum" autocomplete="false" value="{{ app.request.query.get('query') }}">
                 </form>
                 <div class="d-flex navbar-cart">
                     {% set cartItems = app.session.get('cart')|length %}
                     <a href="{{ path('app_cart_index') }}" title="{{ 'cart.my_cart'|trans }} {{ cartItems }}">
                         <span {{ cartItems > 0 ? 'class="with-items"'}}>{{ cartItems }}</span>
-                        {{ ea_ux_icon('bi:cart-fill', {class: 'basic-icon'}) }}
+                        {{ ux_icon('bi:cart-fill', {class: 'basic-icon'}) }}
                     </a>
                 </div>
             </div>
@@ -92,7 +92,7 @@
                 </div>
                 <div class="col-md-4 socials">
                     <a href="https://www.facebook.com/Rezouani-Leder-ImportExport-Berlin-401470737274935/" target="_blank">
-                        {{ ea_ux_icon('bi:facebook', {class: 'basic-icon'}) }}
+                        {{ ux_icon('bi:facebook', {class: 'basic-icon'}) }}
                     </a>
                 </div>
             </div>

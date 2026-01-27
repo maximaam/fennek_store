@@ -14,6 +14,6 @@ final class DefaultControllerTest extends WebTestCase
         $client = self::createClient();
         $client->request('GET', '/');
 
-        self::assertResponseStatusCodeSame(Response::HTTP_MOVED_PERMANENTLY);
+        self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
     }
 }

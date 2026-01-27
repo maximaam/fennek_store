@@ -17,6 +17,6 @@ final class DefaultController extends AbstractController
     {
         $locale = $request->getPreferredLanguage(['de', 'en']) ?? 'de';
 
-        return $this->redirectToRoute('app_index_index', ['_locale' => $locale], Response::HTTP_MOVED_PERMANENTLY);
+        return $this->redirectToRoute('app_index_index', ['_locale' => $locale]);
     }
 }

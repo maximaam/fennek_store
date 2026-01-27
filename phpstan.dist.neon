@@ -8,6 +8,8 @@ parameters:
         - tests/
     ignoreErrors:
            - message: '#Method App\\Controller\\Admin\\ProductCrudController::getRedirectResponseAfterSave\(\) has parameter \$context with generic class EasyCorp\\Bundle\\EasyAdminBundle\\Context\\AdminContext#'
+    excludePaths:
+    		- src/Command/ImportLegacyDataCommand.php
 
 includes:
     - vendor/phpstan/phpstan-doctrine/extension.neon

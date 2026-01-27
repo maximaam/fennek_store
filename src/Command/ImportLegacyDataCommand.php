@@ -272,6 +272,11 @@ class ImportLegacyDataCommand extends Command
         $this->entityManager->clear();
     }
 
+    /**
+     * @param array<string, string> $row
+     *
+     * @return array<string, string>
+     */
     private function createPurchaseProduct(array $row): array
     {
         libxml_use_internal_errors(true);
@@ -289,7 +294,7 @@ class ImportLegacyDataCommand extends Command
                     continue;
                 }
 
-                [$key, $value] = array_map('trim', explode(':', $part, 2));
+                [$key, $value] = array_map(trim(...), explode(':', $part, 2));
                 $key = $this->normalizeKey($key);
 
                 $resultMeta[$key] = $value;
@@ -304,7 +309,7 @@ class ImportLegacyDataCommand extends Command
         libxml_clear_errors();
 
         $data = [];
-        $amount = (int) bcmul($row[8], '100', 0);
+        $amount = (int) bcmul((string) $row[8], '100', 0);
         $exclTax = round($amount / ((ProductHelper::VAT / 100) + 1), 2);
         $vat = round($amount - $exclTax, 2);
 
@@ -314,7 +319,7 @@ class ImportLegacyDataCommand extends Command
             'excl_tax' => $exclTax,
         ];
         $data['products'] = [];
-        $productsIds = str_contains($row[11], ',') ? explode(',', $row[11]) : [$row[11]];
+        $productsIds = str_contains((string) $row[11], ',') ? explode(',', (string) $row[11]) : [$row[11]];
 
         $i = 0;
         foreach ($items as $key => $item) {
@@ -331,11 +336,11 @@ class ImportLegacyDataCommand extends Command
                 'quantity' => $item['meta']['menge'] ?? null,
                 'color' => isset($item['meta']['farbe']) ? $this->translator->trans('colors_list_de.'.$item['meta']['farbe']) : null,
                 'size' => $item['meta']['groesse'] ?? null,
-                'image' => $product ? $product->getImages()[0]->getImageName() : null,
+                'image' => $product instanceof Product ? $product->getImages()[0]->getImageName() : null,
                 'item_url' => $item['url'],
-                'item_number' => $product ? $product->getItemNumber() : null,
-                'price' => $product ? $product->getPrice() : null,
-                'full_price' => $product ? $product->getPrice() * ($item['meta']['menge'] ?? 1) : null,
+                'item_number' => $product instanceof Product ? $product->getItemNumber() : null,
+                'price' => $product instanceof Product ? $product->getPrice() : null,
+                'full_price' => $product instanceof Product ? $product->getPrice() * ($item['meta']['menge'] ?? 1) : null,
             ];
 
             ++$i;
@@ -344,11 +349,16 @@ class ImportLegacyDataCommand extends Command
         return $data;
     }
 
+    /**
+     * @param array<string, string> $row
+     *
+     * @return array<string, string>
+     */
     private function createPurchasePayment(array $row): array
     {
         $paymentRow = unserialize($row[10]);
 
-        $data = [
+        return [
             'id' => $paymentRow['cart'],
             'links' => [],
             'status' => '2' === $row[3] ? PayPalStatus::COMPLETED->value : PayPalStatus::CREATED->value,
@@ -410,8 +420,6 @@ class ImportLegacyDataCommand extends Command
                 ],
             ],
         ];
-
-        return $data;
     }
 
     /**

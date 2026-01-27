@@ -25,3 +25,6 @@ liip_imagine:
             quality: 80
             filters:
                 thumbnail: { size: [ 600, 600 ], mode: inset }
+
+    twig:
+        mode: lazy
