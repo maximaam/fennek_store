@@ -9,8 +9,8 @@
 
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="keywords" content="Fennek-Store, lederwaren, Sommerwaren, Winterwaren, Kopfbedeckung, Berlin">
-    <meta name="description" content="Lederwaren, Saisonwaren & Geschenkartikel in Berlin.">
+    <meta name="keywords" content="{{ 'meta.keywords'|trans }}">
+    <meta name="description" content="{{ 'meta.description'|trans }}">
     <meta name="robots" content="index,follow">
     <meta name="author" content="{{ app_name }}">
     <meta name="title" content="{{ title }}!">
@@ -18,7 +18,7 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://{{ app.request.host ~ app.request.pathInfo }}">
     <meta property="og:title" content="{{ title }}!">
-    <meta property="og:description" content="Lederwaren, Saisonwaren & Geschenkartikel in Berlin.">
+    <meta property="og:description" content="{{ 'meta.description'|trans }}">
 
     <link href="https://{{ app.request.host ~ app.request.pathInfo }}" rel="canonical">
     <link rel="icon" type="image/x-icon" href="{{ asset('images/favicon.png') }}" />
@@ -53,7 +53,7 @@
                 </form>
                 <div class="d-flex navbar-cart">
                     {% set cartItems = app.session.get('cart')|length %}
-                    <a href="{{ path('app_cart_index') }}" title="{{ 'cart.my-cart'|trans }} {{ cartItems }}">
+                    <a href="{{ path('app_cart_index') }}" title="{{ 'cart.my_cart'|trans }} {{ cartItems }}">
                         <span {{ cartItems > 0 ? 'class="with-items"'}}>{{ cartItems }}</span>
                         {{ ea_ux_icon('bi:cart-fill', {class: 'basic-icon'}) }}
                     </a>
@@ -73,15 +73,15 @@
                 <div class="col-md-4">
                     <ul>
                         <li>
-                            <a href="/de" title="Deutsch">
+                            <a href="/de" title="{{ 'label.german'|trans }}">
                                 <img src="{{ asset('images/de.png') }}" alt="{{ app_name }} Logo" title="{{ app_name }}" width="32" height="32">
-                                Deutsch
+                                {{ 'label.german'|trans }}
                             </a>
                         </li>
                         <li>
-                            <a href="/en" title="English">
+                            <a href="/en" title="{{ 'label.english'|trans }}">
                                 <img src="{{ asset('images/en.png') }}" alt="{{ app_name }} Logo" title="{{ app_name }}" width="32" height="32">
-                                English
+                                {{ 'label.english'|trans }}
                             </a>
                         </li>
                     </ul>
