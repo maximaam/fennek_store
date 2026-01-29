@@ -1,0 +1,5 @@
+<h2>{{ 'email.purchase.success.template.title'|trans }}</h2>
+
+<p>{{ 'email.purchase.success.template.body'|trans({
+        '%purchase_link%': '<a href="' ~ purchase_link ~ '">' ~ purchase_link ~ '</a>'
+    })|raw }}</p>

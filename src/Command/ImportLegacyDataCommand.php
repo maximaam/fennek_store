@@ -371,7 +371,7 @@ class ImportLegacyDataCommand extends Command
                     'country_code' => $paymentRow['payer']['payer_info']['country_code'],
                 ],
                 'payer_id' => $paymentRow['payer']['payer_info']['payer_id'],
-                'email_address' => $paymentRow['payer']['payer_info']['email'],
+                'email_address' => $paymentRow['payer']['payer_info']['emails'],
             ],
             'payment_source' => [
                 'paypal' => [
@@ -383,7 +383,7 @@ class ImportLegacyDataCommand extends Command
                         'country_code' => $paymentRow['payer']['payer_info']['country_code'],
                     ],
                     'account_id' => $paymentRow['payer']['payer_info']['payer_id'],
-                    'email_address' => $paymentRow['payer']['payer_info']['email'],
+                    'email_address' => $paymentRow['payer']['payer_info']['emails'],
                     'account_status' => $paymentRow['payer']['status'],
                 ],
             ],

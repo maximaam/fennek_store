@@ -1,7 +1,9 @@
 {% extends 'base.html.twig' %}
 
+{% set locale = app.request.attributes.get('_locale') %}
+
 {% block js_head %}
-    <script src="https://www.paypal.com/sdk/js?client-id={{ paypal_client_id }}&currency=EUR"></script>
+    <script src="https://www.paypal.com/sdk/js?client-id={{ paypal_client_id }}&currency=EUR&disable-funding=card"></script>
 {% endblock %}
 
 {% block body %}
@@ -78,6 +80,7 @@
                         <td colspan="2">
                             <div id="paypal-button-container"></div>
                             <script>
+                                const locale = '{{ app.request.locale }}';
                                 paypal.Buttons({
                                     createOrder: () => {
                                         return fetch('{{ path("app_purchase_create") }}', {
@@ -88,13 +91,13 @@
                                     },
                                     onApprove: (data) => {
                                         const orderId = data.orderID;
-                                        return fetch(`/de/purchase/capture/${orderId}`, {
+                                        return fetch(`/${locale}/purchase/capture/${orderId}`, {
                                             method: 'POST'
                                         })
                                             .then(res => res.json())
                                             .then(() => {
                                                 console.log('Payment successful!');
-                                                window.location.href = `/de/purchase/success?orderId=${orderId}&paymentStatus=success`;
+                                                window.location.href = `/${locale}/purchase/complete/${orderId}`;
                                             });
                                     }
                                 }).render('#paypal-button-container');

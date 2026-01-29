@@ -132,7 +132,7 @@ final class PurchaseCrudController extends AbstractCrudController
         yield ArrayField::new('payment', 'purchase.payer.name')
             ->setTemplatePath('admin/fields/purchase_payment.html.twig')
             ->setCustomOption('target', 'payer_name');
-        yield ArrayField::new('payment', 'purchase.payer.email')
+        yield ArrayField::new('payment', 'purchase.payer.emails')
             ->setTemplatePath('admin/fields/purchase_payment.html.twig')
             ->setCustomOption('target', 'payer_email');
 

@@ -149,6 +149,18 @@ meta:
     keywords: Fennek-Store, lederwaren, Sommerwaren, Winterwaren, Kopfbedeckung, Berlin
     description: Lederwaren, Saisonwaren & Geschenkartikel in Berlin.
 
+email:
+    team: Fennek-Store Team
+    purchase:
+        success:
+            subject: Bestellung bei Fennek-Store - Bezahlt!
+            template:
+                title: Vielen Dank für Ihren Kauf!
+                body: |
+                    Wir werden Ihre Bestellung schnell bearbeiten.
+                    Details zur Bestellung hier aufrufbar: %purchase_link%
+
+                    Ihr Fennek-Store Team
 
 colors_list_de:
     Weiss: white

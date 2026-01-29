@@ -1,9 +1,9 @@
 {% set data = payment.paypalPaymentDetails.payer.payer_info.shipping_address %}
 
-<h3>{{ 'payment.email-msg-part1'|trans({'%buyer_name%': data.recipient_name}) }}</h3>
-<p>{{ 'payment.email-msg-part2'|trans }}</p>
+<h3>{{ 'payment.emails-msg-part1'|trans({'%buyer_name%': data.recipient_name}) }}</h3>
+<p>{{ 'payment.emails-msg-part2'|trans }}</p>
 
-<h5>{{ 'payment.email-msg-part3'|trans }}</h5>
+<h5>{{ 'payment.emails-msg-part3'|trans }}</h5>
 
 <table border="1">
     <thead>
@@ -52,11 +52,11 @@
 
 </table>
 
-<h5>{{ 'payment.email-msg-part4'|trans }}</h5>
+<h5>{{ 'payment.emails-msg-part4'|trans }}</h5>
 <address>
     {{ data.line1 }}<br>
     {{ data.postal_code }} {{ data.city }}<br>
     {{ data.country_code }}<br>
 </address>
 
-<p>{{ 'payment.email-msg-part5'|trans }}</p>
+<p>{{ 'payment.emails-msg-part5'|trans }}</p>

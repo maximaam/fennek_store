@@ -37,7 +37,7 @@ final readonly class NavBuilder
                 'routeParameters' => [
                     'catAlias' => $category->getAlias($locale),
                 ],
-            ]);
+            ])->setExtra('translation_domain', false);
         }
 
         return $menu;
@@ -90,7 +90,7 @@ final readonly class NavBuilder
                 'routeParameters' => [
                     'alias' => $page->getAlias($locale),
                 ],
-            ]);
+            ])->setExtra('translation_domain', false);
         }
 
         return $menu;

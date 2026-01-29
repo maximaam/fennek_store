@@ -10,6 +10,7 @@ parameters:
     products_dir: 'uploads/images'
     pages_dir: 'uploads/images'
     app_name: 'Fennek Store'
+    app_mailer_from: 'app@fennek-store.de'
 
 services:
     # default configuration for services in *this* file

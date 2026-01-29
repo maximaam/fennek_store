@@ -6,7 +6,9 @@ namespace App\Controller;
 
 use App\Entity\Purchase;
 use App\Enum\PayPalStatus;
+use App\Factory\EmailFactory;
 use App\Helper\ProductHelper;
+use App\Service\Mailer;
 use App\Service\PayPalClient;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,7 +17,10 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
@@ -64,27 +69,31 @@ final class PurchaseController extends AbstractController
             throw new \LogicException('Normalized payment payload must be an array');
         }
 
-        $purchase->setStatus(PayPalStatus::COMPLETED)
-            ->setPayment($payment);
+        $purchase->setStatus(PayPalStatus::COMPLETED)->setPayment($payment);
         $this->entityManager->flush();
 
         return $this->json($orderCapture);
     }
 
-    #[Route('/success', name: 'success', methods: [Request::METHOD_GET])]
-    public function success(Request $request): Response
+    #[Route('/complete/{orderId}', name: 'complete', methods: [Request::METHOD_GET])]
+    public function complete(SessionInterface $session, Mailer $mailer, EmailFactory $emailFactory, string $orderId): RedirectResponse
     {
-        $orderId = $request->query->get('orderId');
-        $paymentStatus = $request->query->get('paymentStatus');
         $purchase = $this->entityManager->getRepository(Purchase::class)
-            ->findOneBy(['orderId' => $orderId]) ?? throw new \RuntimeException('No purchase found');
+            ->findOneBy(['orderId' => $orderId]) ?? throw new NotFoundHttpException('No purchase found');
+        $this->addFlash('success', 'flashes.purchase_completed');
+        $session->remove('cart');
 
-        if (null !== $orderId && null !== $paymentStatus) {
-            $this->addFlash('success', 'flashes.purchase_completed');
-            $request->getSession()->remove('cart');
+        $email = $emailFactory->purchaseSuccess($purchase);
+        $mailer->send($email);
 
-            return $this->redirectToRoute('app_purchase_success', ['orderId' => $orderId]);
-        }
+        return $this->redirectToRoute('app_purchase_success', ['orderId' => $orderId]);
+    }
+
+    #[Route('/success/{orderId}', name: 'success', methods: [Request::METHOD_GET])]
+    public function success(string $orderId): Response
+    {
+        $purchase = $this->entityManager->getRepository(Purchase::class)
+            ->findOneBy(['orderId' => $orderId]) ?? throw new NotFoundHttpException('No purchase found');
 
         return $this->render('purchase/success.html.twig', [
             'purchase' => $purchase,
