@@ -41,11 +41,12 @@ final class CartController extends AbstractController
         $quantity = $request->request->getInt('quantity');
         $color = $request->request->get('color');
         $size = $request->request->get('size');
+        $attachedMessage = $request->request->get('message');
 
         if ($quantity <= 0 || !\in_array($color, Color::values(), true)) {
             $this->addFlash(
                 'error',
-                $translator->trans('msg.error_cart_params')
+                $translator->trans('flashes.error_cart_params')
             );
 
             return $this->redirectToRoute('app_index_catalogue', [
@@ -76,6 +77,7 @@ final class CartController extends AbstractController
             'full_price' => $product->getPrice() * $quantity,
             'item_url' => $itemUrl,
             'image' => $product->getImages()[0]?->getImageName(),
+            'message' => $attachedMessage,
         ];
 
         $session->set('cart', $cart);

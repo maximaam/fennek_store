@@ -52,6 +52,13 @@
                                 </a>
                             </td>
                         </tr>
+                        {% if product.message is not empty %}
+                        <tr>
+                            <td colspan="9" style="background-color: #dee2e6">
+                                {{ product.message }}
+                            </td>
+                        </tr>
+                        {% endif %}
                     {% endfor %}
                     </tbody>
 

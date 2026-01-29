@@ -54,6 +54,7 @@ product:
   price: Preis
   price_total: Preis Total
   quantity: Menge
+  attach_message: Nachricht hinzufügen...
   colors_list:
     white: Weiss
     silver: Silber
