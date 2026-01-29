@@ -62,7 +62,6 @@ final class PurchaseCrudController extends AbstractCrudController
     {
         return $crud
             ->setEntityLabelInSingular('purchase.singular')
-            ->showEntityActionsInlined()
             ->setPaginatorPageSize(25)
             ->setPageTitle(Crud::PAGE_INDEX, 'purchase.plural')
             ->setPageTitle(Crud::PAGE_DETAIL, fn (Purchase $p) => $this->translator->trans('purchase.page_edit_title', ['%item%' => $p->getOrderId()]))

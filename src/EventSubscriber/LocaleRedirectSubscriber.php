@@ -34,6 +34,10 @@ final class LocaleRedirectSubscriber implements EventSubscriberInterface
             return;
         }
 
+        if (str_starts_with($request->getPathInfo(), '/admin')) {
+            return;
+        }
+
         $event->setResponse(
             new RedirectResponse('/'.$request->getDefaultLocale().$request->getPathInfo())
         );

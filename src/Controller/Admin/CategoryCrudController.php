@@ -62,7 +62,7 @@ final class CategoryCrudController extends AbstractCrudController
             ->setPageTitle(Crud::PAGE_NEW, 'category.singular')
             ->setPageTitle(Crud::PAGE_EDIT, fn (Category $c) => $this->translator->trans('label.crud_title.page_edit', ['%item%' => $c->getNameDe()]))
             ->setPageTitle(Crud::PAGE_DETAIL, fn (Category $c) => $this->translator->trans('label.crud_title.page_index', ['%item%' => $c->getNameDe()]))
-            ->showEntityActionsInlined()
+            // ->showEntityActionsInlined()
             ->setPaginatorPageSize(25);
     }
 

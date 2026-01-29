@@ -26,6 +26,8 @@ export default class extends Controller {
     }
 
     update() {
+        if (!this.hasTrackTarget) return;
+
         const width = this.element.clientWidth;
         this.trackTarget.style.transform = `translateX(-${this.index * width}px)`;
     }

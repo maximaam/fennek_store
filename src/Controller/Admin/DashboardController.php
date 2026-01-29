@@ -58,7 +58,7 @@ class DashboardController extends AbstractDashboardController
 
         return Dashboard::new()
             ->setFaviconPath('/images/favicon.png')
-            ->setTitle('<img src="../../../assets/images/logo.webp" alt="Logo"> FS Admin');
+            ->setTitle('FS Admin');
     }
 
     #[\Override]

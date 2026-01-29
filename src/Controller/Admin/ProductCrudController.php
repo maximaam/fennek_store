@@ -78,7 +78,7 @@ final class ProductCrudController extends AbstractCrudController
             ->setPageTitle(Crud::PAGE_NEW, 'product.singular')
             ->setPageTitle(Crud::PAGE_EDIT, fn (Product $p) => $this->translator->trans('label.crud_title.page_edit', ['%item%' => $p->getTitleDe()]))
             ->setPageTitle(Crud::PAGE_DETAIL, fn (Product $p) => $this->translator->trans('label.crud_title.page_index', ['%item%' => $p->getTitleDe()]))
-            ->showEntityActionsInlined()
+            // ->showEntityActionsInlined()
             ->setPaginatorPageSize(25);
     }
 

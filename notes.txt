@@ -1,1 +1,2 @@
 - before import, check createdAt and updatedAt trait
+- before import in prod, copy images to /public/uploads/images
