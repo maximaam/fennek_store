@@ -40,6 +40,7 @@
         <div class="container">
             <a class="navbar-brand" href="/de">
                 <img src="{{ asset('images/logo.webp') }}" alt="{{ app_name }} Logo" title="{{ app_name }}" width="40" height="40" class="logo rounded-circle">
+                <span>{{ app_name }}</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -47,7 +48,7 @@
 
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 {{ knp_menu_render('main') }}
-                <form class="d-flex" role="search" method="get" action="{{ path('app_index_search') }}">
+                <form class="search-form d-flex" role="search" method="get" action="{{ path('app_index_search') }}">
                     <label for="search-query"></label>
                     <input id="search-query" class="form-control py-1" type="search" name="query" placeholder="{{ 'label.search'|trans }}..." required pattern=".{3,}" title="3 chars minimum" autocomplete="false" value="{{ app.request.query.get('query') }}">
                 </form>
@@ -64,29 +65,26 @@
 </header>
     <main>{% block body %}{% endblock %}</main>
 
-    <footer class="main-footer text-muted">
+    <footer class="main-footer">
         <div class="container">
             <div class="row">
                 <div class="col-md-4">
                     {{ knp_menu_render('footer') }}
                 </div>
                 <div class="col-md-4">
-                    <ul>
-                        <li>
-                            <a href="/de" title="{{ 'label.german'|trans }}">
-                                <img src="{{ asset('images/de.png') }}" alt="{{ app_name }} Logo" title="{{ app_name }}" width="32" height="32">
-                                {{ 'label.german'|trans }}
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/en" title="{{ 'label.english'|trans }}">
-                                <img src="{{ asset('images/en.png') }}" alt="{{ app_name }} Logo" title="{{ app_name }}" width="32" height="32">
-                                {{ 'label.english'|trans }}
-                            </a>
-                        </li>
-                    </ul>
-
-                    <p class="copyright text-white">
+                    <p>
+                    <a href="/de" title="{{ 'label.german'|trans }}">
+                        <img src="{{ asset('images/de.png') }}" alt="{{ app_name }} Logo" title="{{ app_name }}" width="16" height="16">
+                        {{ 'label.german'|trans }}
+                    </a>
+                    </p>
+                    <p>
+                    <a href="/en" title="{{ 'label.english'|trans }}">
+                        <img src="{{ asset('images/en.png') }}" alt="{{ app_name }} Logo" title="{{ app_name }}" width="16" height="16">
+                        {{ 'label.english'|trans }}
+                    </a>
+                    </p>
+                    <p class="text-white">
                         <small>&copy; {{ "now"|date('Y') }} {{ 'copyright'|trans }}</small>
                     </p>
                 </div>
