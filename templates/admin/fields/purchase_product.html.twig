@@ -1,4 +1,4 @@
-<table class="table table-striped">
+<table class="table table-striped table-bordered">
     <tr>
         <th></th>
         <th>{{ 'product.item_number'|trans }}</th>
@@ -13,6 +13,11 @@
         <tr>
             <td>
                 <a href="{{ product.item_url }}" target="_blank">{{ product.title }}</a>
+                {% if product.message is not empty%}
+                    <p title="{{ 'label.message'|trans }}">
+                        {{ ux_icon('bi:envelope-at', {class: 'basic-icon white-bg'}) }} {{ product.message }}
+                    </p>
+                {% endif %}
             </td>
             <td>{{ product.item_number ?? ''}}</td>
             <td>{{ ('product.colors_list.' ~ product.color)|trans }}</td>

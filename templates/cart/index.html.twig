@@ -20,7 +20,7 @@
             {% set totals = cart.totals %}
             <div class="table-responsive">
                 <h1 class="text-center">{{ 'cart.my_cart'|trans }}</h1>
-                <table class="table table-stripped">
+                <table class="table table-stripped table-hover">
                     <thead>
                     <tr>
                         <th></th>
@@ -38,7 +38,7 @@
                     <tbody>
                     {% for itemKey,product in products %}
                         <tr>
-                            <td><img src="{{ asset('uploads/images/' ~ product.image) | imagine_filter('product_thumbnail') }}" alt="" width="120"></td>
+                            <td rowspan="2"><img src="{{ asset('uploads/images/' ~ product.image) | imagine_filter('product_thumbnail') }}" alt="" width="120"></td>
                             <td><a href="{{ product.item_url }}">{{ product.title }}</a></td>
                             <td>{{ product.item_number }}</td>
                             <td>{{ ('product.colors_list.' ~ product.color)|trans }}</td>
@@ -48,17 +48,17 @@
                             <td>{{ (product.full_price / 100)|format_currency('EUR') }}</td>
                             <td>
                                 <a href="{{ path('app_cart_remove', {'itemKey': itemKey}) }}" title="{{ 'label.delete'|trans }}" rel="nofollow" class="btn btn-danger">
-                                    {{ ea_ux_icon('bi:trash-fill', {class: 'basic-icon'}) }}
+                                    {{ ux_icon('bi:trash-fill', {class: 'basic-icon'}) }}
                                 </a>
                             </td>
                         </tr>
-                        {% if product.message is not empty %}
                         <tr>
-                            <td colspan="9" style="background-color: #dee2e6">
-                                {{ product.message }}
+                            <td colspan="8" title="{{ 'label.message'|trans }}">
+                                {% if product.message is not empty %}
+                                    {{ ux_icon('bi:envelope-at', {class: 'basic-icon white-bg'}) }} {{ product.message }}
+                                {% endif %}
                             </td>
                         </tr>
-                        {% endif %}
                     {% endfor %}
                     </tbody>
 

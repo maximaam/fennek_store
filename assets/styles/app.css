@@ -30,6 +30,9 @@ a {
     width: 1.5rem;
     height: 1.5rem;
     color: var(--bs-white);
+    &.white-bg {
+        color: var(--bs-dark);
+    }
 }
 aside {
     .sidebar-header {
