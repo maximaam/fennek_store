@@ -10,68 +10,11 @@
     {% endfor %}
     <div class="container">
         <div class="row">
-            {% set products = purchase.product.products %}
-            {% set totals = purchase.product.totals %}
-            <div class="table-responsive">
-                <h1 class="text-center">{{ 'purchase.my_purchase'|trans }}</h1>
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th></th>
-                        <th>{{ 'product.singular'|trans }}</th>
-                        <th>{{ 'product.item_number'|trans }}</th>
-                        <th>{{ 'product.color'|trans }}</th>
-                        <th>{{ 'product.size'|trans }}</th>
-                        <th>{{ 'product.quantity'|trans }}</th>
-                        <th>{{ 'purchase.price_unit'|trans }}</th>
-                        <th>{{ 'purchase.price_total'|trans }}</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-
-                    <tbody>
-                    {% for itemKey,product in products %}
-                        <tr>
-                            <td rowspan="2"><img src="{{ asset('uploads/images/' ~ product.image) | imagine_filter('product_thumbnail') }}" alt="" width="120"></td>
-                            <td><a href="{{ product.item_url }}">{{ product.title }}</a></td>
-                            <td>{{ product.item_number }}</td>
-                            <td>{{ ('product.colors_list.' ~ product.color)|trans }}</td>
-                            <td>{{ product.size|length > 0 ? product.size : '-' }}</td>
-                            <td>{{ product.quantity }}</td>
-                            <td>{{ (product.price / 100)|format_currency('EUR') }}</td>
-                            <td>{{ (product.full_price / 100)|format_currency('EUR') }}</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td colspan="8" title="{{ 'label.message'|trans }}">
-                                {% if product.message is not empty %}
-                                    {{ ux_icon('bi:envelope-at', {class: 'basic-icon white-bg'}) }} {{ product.message }}
-                                {% endif %}
-                            </td>
-                        </tr>
-
-                    {% endfor %}
-                    </tbody>
-
-                    <tfoot>
-                        <tr>
-                            <td colspan="7"></td>
-                            <td class="font-weight-bold">{{ 'purchase.total_excl_tax'|trans }}</td>
-                            <td>{{ (totals.excl_tax / 100)|format_currency('EUR') }}</td>
-                        </tr>
-                        <tr>
-                            <td colspan="7"></td>
-                            <td class="font-weight-bold">{{ 'purchase.vat'|trans }}</td>
-                            <td>{{ (totals.vat / 100)|format_currency('EUR') }}</td>
-                        </tr>
-                        <tr>
-                            <td colspan="7"></td>
-                            <td class="font-weight-bold">{{ 'purchase.total_incl_tax'|trans }}</td>
-                            <td>{{ (totals.total / 100)|format_currency('EUR') }}</td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
+            {% include 'partials/_products_table.html.twig' with {
+                'products': purchase.product.products,
+                'totals': purchase.product.totals,
+                'h1_title': 'purchase.my_purchase'|trans
+            } %}
         </div>
     </div>
 

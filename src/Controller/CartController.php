@@ -21,12 +21,8 @@ final class CartController extends AbstractController
     #[Route('/', name: 'index', methods: [Request::METHOD_GET])]
     public function index(SessionInterface $session): Response
     {
-        if ([] === $cart = $session->get('cart', [])) {
-            return $this->redirectToRoute('app_index_index');
-        }
-
         return $this->render('cart/index.html.twig', [
-            'cart' => ProductHelper::computeCard($cart),
+            'cart' => ProductHelper::computeCard($session->get('cart', [])),
             'paypal_client_id' => $_ENV['PAYPAL_CLIENT_ID'],
         ]);
     }
