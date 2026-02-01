@@ -5,7 +5,18 @@ security:
 
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
-        users_in_memory: { memory: null }
+        # users_in_memory: { memory: null }
+        admin_provider:
+            memory:
+                users:
+                    admin:
+                        password: '%env(ADMIN_PASSWORD)%'
+                        roles: [ROLE_ADMIN]
+                    sadmin:
+                        password: '%env(SUPER_ADMIN_PASSWORD)%'
+                        roles: [ ROLE_SUPER_ADMIN ]
+    role_hierarchy:
+        ROLE_SUPER_ADMIN: ROLE_ADMIN
 
     firewalls:
         dev:
@@ -14,7 +25,16 @@ security:
             security: false
         main:
             lazy: true
-            provider: users_in_memory
+            provider: admin_provider
+            form_login:
+                login_path: app_security_login
+                check_path: app_security_login
+                default_target_path: /admin
+            logout:
+                path: app_security_logout
+                target: app_index_index
+            # anonymous: true
+            # provider: users_in_memory
 
             # Activate different ways to authenticate:
             # https://symfony.com/doc/current/security.html#the-firewall
@@ -24,6 +44,7 @@ security:
 
     # Note: Only the *first* matching rule is applied
     access_control:
+        - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
 

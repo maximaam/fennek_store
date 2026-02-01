@@ -1,0 +1,23 @@
+AddDefaultCharset utf-8
+Header unset X-Powered-By
+#Header set Strict-Transport-Security "max-age=16070400"
+
+RewriteEngine On
+RewriteCond 	%{HTTPS} off
+RewriteRule 	(.*) https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+RewriteCond 	%{HTTP_HOST} !^www\. [NC]
+RewriteRule 	(.*) https://www.%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ index.php [QSA,L]
+
+SetOutputFilter DEFLATE
+FileETag MTime Size
+
+ExpiresActive On
+ExpiresByType text/css "access plus 1 weeks"
+ExpiresByType application/javascript "access plus 1 weeks"
+ExpiresByType application/x-javascript "access plus 1 weeks"
+ExpiresByType image/gif "access plus 1 months"
+ExpiresByType image/jpeg "access plus 1 months"
+ExpiresByType image/png "access plus 1 months"
+ExpiresByType image/x-icon "access plus 1 months"
