@@ -8,7 +8,7 @@
     <a href="{{ itemUrl }}" class="a-single-item">
         <div class="card single-item">
             <div class="img-container">
-                <img src="{{ asset('uploads/images/' ~ product.images[0].imageName) | imagine_filter('product_' ~ img_filter ?? 'thumbnail') }}" alt="">
+                <img src="{{ asset('uploads/images/' ~ product.images[0].imageName) | imagine_filter('product_' ~ (img_filter ?? 'thumbnail')) }}" alt="">
             </div>
 
             <div class="card-body">

@@ -12,6 +12,7 @@ use App\Service\CatalogueResolver;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(
@@ -23,6 +24,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class IndexController extends AbstractController
 {
     #[Route('/', name: 'index', methods: [Request::METHOD_GET])]
+    #[Cache(expires: 'tomorrow', public: true)]
     public function index(Request $request, ProductRepository $productRepo): Response
     {
         return $this->render('index/index.html.twig', [
@@ -31,6 +33,7 @@ final class IndexController extends AbstractController
     }
 
     #[Route('/page/{alias}', name: 'page', methods: [Request::METHOD_GET])]
+    #[Cache(expires: 'tomorrow', public: true)]
     public function page(PageRepository $pageRepo, string $alias, string $_locale): Response
     {
         $aliasI18n = 'alias'.ucfirst($_locale);
@@ -43,7 +46,7 @@ final class IndexController extends AbstractController
         return $this->render('index/page.html.twig', ['page' => $page]);
     }
 
-    #[Route('/search', name: 'search', methods: [Request::METHOD_POST])]
+    #[Route('/search', name: 'search', methods: [Request::METHOD_GET])]
     public function search(Request $request, ProductRepository $productRepo): Response
     {
         $query = trim($request->query->get('query', ''));
@@ -60,11 +63,11 @@ final class IndexController extends AbstractController
         ]);
     }
 
-    #[Route('/catalogue/{catAlias}/{subCatAlias?}/{itemId?}', name: 'catalogue', methods: [Request::METHOD_GET])]
-    // #[Cache(expires: 'tomorrow', public: true)]
-    public function catalogue(CatalogueResolver $resolver, string $_locale, string $catAlias, ?string $subCatAlias = null, ?int $itemId = null): Response
+    #[Route('/catalogue/{catAlias}/{subCatAlias?}/{productId?}', name: 'catalogue', methods: [Request::METHOD_GET])]
+    #[Cache(expires: 'tomorrow', public: true)]
+    public function catalogue(CatalogueResolver $resolver, string $_locale, string $catAlias, ?string $subCatAlias = null, ?int $productId = null): Response
     {
-        $requestDTO = new CatalogueRequestDto($_locale, $catAlias, $subCatAlias, $itemId);
+        $requestDTO = new CatalogueRequestDto($_locale, $catAlias, $subCatAlias, $productId);
         $result = $resolver->resolve($requestDTO);
 
         return $this->render($result->template, [

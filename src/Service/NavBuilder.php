@@ -70,7 +70,7 @@ final readonly class NavBuilder
                     'catAlias' => $currentCategory->getAlias($locale),
                     'subCatAlias' => $category->getAlias($locale),
                 ],
-            ]);
+            ])->setExtra('translation_domain', false);
         }
 
         return $menu;

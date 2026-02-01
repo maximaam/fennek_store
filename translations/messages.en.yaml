@@ -1,0 +1,166 @@
+dashboard: Dashboard
+label:
+    german: German
+    english: English
+    name:
+        all: Name
+        de: Name (German)
+        en: Name (English)
+    title:
+        all: Title
+        de: Title (German)
+        en: Title (English)
+    description:
+        all: Description
+        de: Description (German)
+        en: Description (English)
+    images: Images
+    image: Image
+    search: Search
+    more: More
+    delete: Delete
+    message: Message
+    welcome:
+        title: Welcome to Fennek-Store!
+        sub-title: Leather goods, seasonal products & gift items in Berlin.
+        desc: |
+            Fennek-Store is a company based in Berlin that specializes in the production and marketing of leather goods.
+            Whether women’s wallets, men’s wallets, bags, or gloves – Fennek-Store offers high-quality leather with excellent craftsmanship.
+    crud_title:
+        page_edit: "Edit '%item%'"
+        page_index: "Details for '%item%'"
+    about_us: About us
+    make_order: Order product
+    login: Login
+
+date:
+    created_at: Created at
+
+category:
+    singular: Category
+    plural: Categories
+    list: Category list
+    parent: Parent category
+
+product:
+    singular: Product
+    plural: Products
+    list: Product list
+    top_item: Top product
+    item_number: Item number
+    color: Color
+    colors: Colors
+    sizes: Sizes
+    size: Size
+    price: Price
+    price_total: Total price
+    quantity: Quantity
+    attach_message: Add message...
+    colors_list:
+        white: White
+        silver: Silver
+        gray: Gray
+        black: Black
+        beige: Beige
+        yellow: Yellow
+        gold: Gold
+        orange: Orange
+        red: Red
+        pink: Pink
+        violet: Violet
+        fuchsia: Fuchsia
+        purple: Purple
+        lightblue: Light blue
+        blue: Blue
+        darkblue: Dark blue
+        green: Green
+        lightgreen: Light green
+        burlywood: Natural brown
+        brown: Brown
+        maroon: Maroon
+        darkred: Dark red
+
+page:
+    plural: Pages
+    singular: Page
+    list: Page list
+
+routes:
+    about_us: about-us
+
+btn:
+    create_new: Create new
+    show_details: Show details
+
+cart:
+    add_to_cart: Add to cart
+    my_cart: Your cart
+    pay_now: Pay now with PayPal!
+    continue_shopping: Continue shopping
+    empty: Your cart is empty
+    order_overview: Order overview
+    paypal_shipping_address: PayPal shipping address
+
+flashes:
+    purchase_completed: Purchase confirmed. Thank you!
+    confirm_delete: Confirm deletion?
+    no_products_in_category: No products available in this category at the moment
+    no_search_result: 'No results found for your search: %query%'
+    thanks_for_order: Thank you very much for your order
+    email_sent: An email has been sent to %buyer_email% with the full overview.
+    error_cart_params: Error! Please correct your selection (color, size, quantity...)
+    search_result: 'Search for: %query%'
+
+purchase:
+    singular: Order
+    plural: Orders
+    id: Order number
+    price_unit: Unit price
+    price_total: Total price
+    total_excl_tax: Subtotal
+    total_incl_tax: Subtotal (incl. VAT)
+    total_amount: Total amount
+    vat: VAT
+    status:
+        singular: Status
+        completed: Paid
+        created: Created
+    payer:
+        singular: Buyer
+        email: Buyer email
+        name: Buyer name
+    shipping:
+        singular: Shipping
+        address: Shipping address
+        name: Shipper
+        shipped: Shipped
+        shipped_help: Mark as shipped
+    page_edit_title: "Details for order '%item%'"
+    my_purchase: Your order
+
+payment:
+    email_subject: Your order at Fennek-Store
+    email_msg_part1: Hello %buyer_name%,
+    email_msg_part2: Thank you for your purchase!
+    email-msg_part3: 'Order overview:'
+    email_msg_part4: 'Shipping address:'
+    email_msg_part5: Your Fennek-Store team
+
+copyright: Copyright Fennek-Store - All rights reserved
+
+meta:
+    keywords: Fennek-Store, leather goods, summer products, winter products, headwear, Berlin
+    description: Leather goods, seasonal products & gift items in Berlin.
+
+email:
+    team: Fennek-Store Team
+    purchase:
+        success:
+            subject: Order at Fennek-Store - Paid!
+            template:
+                title: Thank you for your purchase!
+                body: |
+                    We will process your order as quickly as possible.
+                    Order details can be viewed here: %purchase_link%
+
+                    Your Fennek-Store Team

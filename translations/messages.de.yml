@@ -110,6 +110,8 @@ flashes:
     thanks_for_order: Vielen Dank für Ihre Bestellung
     email_sent: Eine Email wurde an %buyer_email% gesendet mit der gesamten Übersicht.
     error_cart_params: Fehler! Bitte korrigieren Sie Ihr Auswhal (Farbe, Größe, Menge...)
+    search_result: 'Suche für: %query%'
+
 
 purchase:
     singular: Bestellung

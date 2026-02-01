@@ -1,9 +1,31 @@
-{% extends '../base.html.twig' %}
-
-{% block body %}
-    {{ page.titleDe }}
-{% endblock %}
+{% extends 'base.html.twig' %}
 
 {% block title %}
+    {{ 'flashes.search_result'|trans({'%query%': query}) }} -
+    {{ parent() }}
+{% endblock %}
 
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <h1 class="mb-3">{{ 'flashes.search_result'|trans({'%query%': query}) }}</h1>
+            <div class="col-md-12">
+                {% if products|length == 0 %}
+                    <div class="alert alert-warning">
+                        {{ 'flashes.no_search_result'|trans({'%query%': query}) }}
+                    </div>
+
+                {% else %}
+
+                    <div class="row">
+                        {% for product in products %}
+                            {% include 'partials/_product_card.html.twig' with {product: product} %}
+                        {% endfor %}
+                    </div>
+
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
 {% endblock %}
