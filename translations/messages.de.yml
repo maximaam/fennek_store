@@ -30,6 +30,7 @@ label:
       page_index: "Details für '%item%'"
   about_us: Über uns
   make_order: Produkt Bestellen
+  login: Anmelden
 
 date:
     created_at: Erstellt am
