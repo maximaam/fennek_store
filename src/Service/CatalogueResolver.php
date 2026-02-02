@@ -24,6 +24,7 @@ final readonly class CatalogueResolver
 
     public function resolve(CatalogueRequestDto $dto): CatalogueResultDto
     {
+        /*
         $cacheKey = \sprintf(
             'catalogue_%s_%s_%s_%s',
             $dto->locale,
@@ -33,6 +34,7 @@ final readonly class CatalogueResolver
         );
 
         $this->cache->delete($cacheKey);
+        */
 
         return $this->doResolve($dto);
 

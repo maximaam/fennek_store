@@ -57,8 +57,8 @@ class DashboardController extends AbstractDashboardController
         // $logo = \sprintf('%s../assets/images/logo.webp', '');
 
         return Dashboard::new()
-            ->setFaviconPath('/images/favicon.png')
-            ->setTitle('FS Admin');
+            ->setFaviconPath('/images/favicon.ico')
+            ->setTitle('<img src="/images/logo.webp" alt="Logo" class="rounded-circle" title="Fennek Store Admin"> FS Admin');
     }
 
     #[\Override]

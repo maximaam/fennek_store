@@ -1,7 +1,7 @@
 {% set itemUrl = path('app_index_catalogue', {
     catAlias: product.category.parent.alias(app.request.locale),
     subCatAlias: product.category.alias(app.request.locale),
-    itemId: product.id
+    productId: product.id
 }) %}
 
 <div class="col-lg-{{ card_size ?? 3}}">

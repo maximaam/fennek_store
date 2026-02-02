@@ -48,7 +48,7 @@ final class CartController extends AbstractController
             return $this->redirectToRoute('app_index_catalogue', [
                 'catAlias' => $product->getCategory()->getParent(),
                 'subCatAlias' => $product->getCategory(),
-                'itemId' => $product->getId(),
+                'productId' => $product->getId(),
             ]);
         }
 
@@ -58,7 +58,7 @@ final class CartController extends AbstractController
             [
                 'catAlias' => $product->getCategory()->getParent()?->getAlias($request->getLocale()),
                 'subCatAlias' => $product->getCategory()->getAlias($request->getLocale()),
-                'itemId' => $product->getId()],
+                'productId' => $product->getId()],
             UrlGeneratorInterface::ABSOLUTE_URL
         );
 
