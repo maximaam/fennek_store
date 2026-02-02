@@ -1,2 +1,49 @@
 - before import, check createdAt and updatedAt trait
 - before import in prod, copy images to /public/uploads/images
+
+
+Display App Name
+REZOUANI_APP_SANDBOX
+
+Client ID
+AdUVhh-zVXp_IJDgJo9VWWOd5q4PRQ8-CHL5mPtP4uxmg1TTyJh_Xq2JSRf_fExRD6Lqv3MT2Oa4T8ad
+
+Secret key 1
+EO6PLQX7zMYGPQqofGzxEkTFpHbRTX4WHmSFmkdnJcSto9ZeZyCpIKG0msIL9PjQtBHydq2s2uVXLLSY
+
+Sandbox account info
+View details
+Sandbox URL
+https://sandbox.paypal.com
+
+Sandbox Region
+DE
+Email
+sb-xbm594029548@business.example.com
+
+Password
+1w))Nfqk
+ ------------------
+
+ Display App Name
+ Default Application
+
+ Client ID
+ AepgAx8J2Wl2TGt_xo5AOk_gG2eFvKmEGgmJsI1lMpWSEQbFHC1K-8M1YPAWxQDl06-Gm9omrxlGRHkk
+
+ Secret key 1
+ EAuXrobsJOJQJFz4RHRZjysTvT65qBL9M76paZm_CtIIqi_XUt7mJyGLZFWEH01DJy0jGa4CPahQwEPn
+
+
+------------
+
+Display App Name
+REZOUANI_APP_PROD
+
+Client ID
+AY5Js6weY-E4vW_ANJPkOctMNNw4l6MaPRKaW-tgMcw2Hw-aLunnPf2Mn66hlaNHdN-r1VFJAkpHpUu6
+
+Secret key 1
+EGy5Ta2oKu1GcOPr28-Z1i0iDR1ICDoH6xTdY04hlSuLxH9xVVcnxbZ8BESa33Sz0bMbw01O5p4Q_fVA
+
+
