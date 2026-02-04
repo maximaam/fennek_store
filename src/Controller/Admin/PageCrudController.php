@@ -39,6 +39,7 @@ final class PageCrudController extends AbstractCrudController
     {
         return $actions
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
+            ->setPermission(Action::DELETE, 'ROLE_SUPER_ADMIN')
             ->update(
                 Crud::PAGE_INDEX,
                 Action::NEW,

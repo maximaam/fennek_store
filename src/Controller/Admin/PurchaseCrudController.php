@@ -40,7 +40,8 @@ final class PurchaseCrudController extends AbstractCrudController
     public function configureActions(Actions $actions): Actions
     {
         return $actions
-            ->add(Crud::PAGE_INDEX, Action::DETAIL);
+            ->add(Crud::PAGE_INDEX, Action::DETAIL)
+            ->setPermission(Action::DELETE, 'ROLE_SUPER_ADMIN');
         // ->disable(Action::DELETE, Action::NEW);
     }
 
