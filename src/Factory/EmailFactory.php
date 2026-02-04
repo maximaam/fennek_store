@@ -6,6 +6,7 @@ namespace App\Factory;
 
 use App\Dto\EmailMessageDto;
 use App\Entity\Purchase;
+use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -26,13 +27,14 @@ final readonly class EmailFactory
         );
 
         return new EmailMessageDto(
-            to: $purchase->getPayment()['payer']['email_address'],
+            to: new Address($purchase->getPayment()['payer']['email_address']),
             subject: $this->translator->trans('email.purchase.success.subject'),
             template: 'emails/purchase_success.html.twig',
             context: [
                 'purchase' => $purchase,
                 'purchase_link' => $purchaseLink,
-            ]
+            ],
+            bcc: [new Address('m.rezouani@hotmail.com')],
         );
     }
 }

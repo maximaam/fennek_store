@@ -162,9 +162,9 @@ email:
             template:
                 title: Vielen Dank für Ihren Kauf!
                 body: |
-                    Wir werden Ihre Bestellung schnell bearbeiten.
-                    Details zur Bestellung hier aufrufbar: %purchase_link%
-
+                    Wir werden Ihre Bestellung schnell bearbeiten.<br>
+                    Details zur Bestellung sind hier aufrufbar: %purchase_link%
+                    <br><br>
                     Ihr Fennek-Store Team
 
 colors_list_de:

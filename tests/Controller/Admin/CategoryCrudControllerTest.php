@@ -35,7 +35,7 @@ final class CategoryCrudControllerTest extends WebTestCase
         $this->cleanUp();
     }
 
-    public function testIndexPageSuccessfull(): void
+    public function testIndexPageSuccessful(): void
     {
         $this->client->request('GET', '/admin/category');
 

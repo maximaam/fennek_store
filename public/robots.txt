@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /login/
+Disallow: /de/cart/
+Disallow: /en/cart/
+Sitemap: https://www.fennek-store.de/sitemap.xml

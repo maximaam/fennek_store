@@ -22,7 +22,7 @@ final class SecurityController extends AbstractController
     }
 
     #[Route('/logout', name: 'logout')]
-    public function logout(): void
+    public function logout(): never
     {
         throw new \LogicException('This method is intercepted by the firewall.');
     }

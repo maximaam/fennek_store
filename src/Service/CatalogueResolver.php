@@ -18,7 +18,7 @@ final readonly class CatalogueResolver
     public function __construct(
         private CategoryRepository $categoryRepository,
         private ProductRepository $productRepository,
-        private CacheInterface $cache,
+        // private CacheInterface $cache,
     ) {
     }
 
