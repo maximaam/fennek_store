@@ -266,6 +266,14 @@ class Product
         };
     }
 
+    public function getTitleSlug(string $locale): string
+    {
+        return match ($locale) {
+            'en' => $this->titleEnSlug,
+            default => $this->titleDeSlug,
+        };
+    }
+
     public function getDescription(string $locale): string
     {
         return match ($locale) {

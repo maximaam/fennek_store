@@ -11,6 +11,7 @@ final readonly class CatalogueRequestDto
         public string $categoryAlias,
         public ?string $subCategoryAlias,
         public ?int $productId,
+        public ?string $productAlias,
     ) {
     }
 

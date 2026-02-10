@@ -63,11 +63,11 @@ final class IndexController extends AbstractController
         ]);
     }
 
-    #[Route('/catalogue/{catAlias}/{subCatAlias?}/{productId?}', name: 'catalogue', methods: [Request::METHOD_GET])]
+    #[Route('/catalogue/{catAlias}/{subCatAlias?}/{productId?}/{productAlias?}', name: 'catalogue', methods: [Request::METHOD_GET])]
     #[Cache(expires: 'tomorrow', public: true)]
-    public function catalogue(CatalogueResolver $resolver, string $_locale, string $catAlias, ?string $subCatAlias = null, ?int $productId = null): Response
+    public function catalogue(CatalogueResolver $resolver, string $_locale, string $catAlias, ?string $subCatAlias = null, ?int $productId = null, ?string $productAlias = null): Response
     {
-        $requestDTO = new CatalogueRequestDto($_locale, $catAlias, $subCatAlias, $productId);
+        $requestDTO = new CatalogueRequestDto($_locale, $catAlias, $subCatAlias, $productId, $productAlias);
         $result = $resolver->resolve($requestDTO);
 
         return $this->render($result->template, [
