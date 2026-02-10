@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class DefaultController extends AbstractController
 {
     #[Route('/', name: 'index', methods: [Request::METHOD_GET])]
-    public function index(Request $request, string $token): Response
+    public function index(Request $request): Response
     {
         $locale = $request->getPreferredLanguage(['de', 'en']) ?? 'de';
 
