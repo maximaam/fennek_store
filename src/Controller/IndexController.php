@@ -75,10 +75,12 @@ final class IndexController extends AbstractController
          * return 304 response instead of 200.
          * Otherwise, the #[Cache is enough.
          */
+        /*
         $lastModified = $result->product?->getUpdatedAt()
             ?? $result->category?->getUpdatedAt()
             ?? $result->category?->getParent()?->getUpdatedAt()
             ?? new \DateTimeImmutable();
+        */
         /*
         $etag = md5(
             ($result->product?->getId() ?? '')
@@ -86,6 +88,16 @@ final class IndexController extends AbstractController
             .$_locale
         );
         */
+
+        $dates = array_filter([
+            $result->product?->getUpdatedAt(),
+            $result->category?->getUpdatedAt(),
+            $result->category?->getParent()?->getUpdatedAt(),
+        ]);
+
+        $lastModified = !empty($dates)
+            ? max($dates)
+            : new \DateTimeImmutable();
 
         $response = new Response()
             ->setPublic()
