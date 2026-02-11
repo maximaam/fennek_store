@@ -39,6 +39,8 @@ trait TimestampableTrait
     }
 
     /**
+     * Used by the import command.
+     *
      * @throws \DateMalformedStringException
      */
     public function setCreatedAtLegacy(string $date): self

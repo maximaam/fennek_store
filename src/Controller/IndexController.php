@@ -64,16 +64,44 @@ final class IndexController extends AbstractController
     }
 
     #[Route('/catalogue/{catAlias}/{subCatAlias?}/{productId?}/{productAlias?}', name: 'catalogue', methods: [Request::METHOD_GET])]
-    #[Cache(maxage: 86400, smaxage: 86400, public: true)]
-    public function catalogue(CatalogueResolver $resolver, string $_locale, string $catAlias, ?string $subCatAlias = null, ?int $productId = null, ?string $productAlias = null): Response
+    // #[Cache(maxage: 86400, smaxage: 86400, public: true, etag: 'response.getContent()')]
+    public function catalogue(Request $request, CatalogueResolver $resolver, string $_locale, string $catAlias, ?string $subCatAlias = null, ?int $productId = null, ?string $productAlias = null): Response
     {
         $requestDTO = new CatalogueRequestDto($_locale, $catAlias, $subCatAlias, $productId, $productAlias);
         $result = $resolver->resolve($requestDTO);
+
+        /**
+         * The goal here is to make reload of the page
+         * return 304 response instead of 200.
+         * Otherwise, the #[Cache is enough.
+         */
+        $lastModified = $result->product?->getUpdatedAt()
+            ?? $result->category?->getUpdatedAt()
+            ?? $result->category?->getParent()?->getUpdatedAt()
+            ?? new \DateTimeImmutable();
+        /*
+        $etag = md5(
+            ($result->product?->getId() ?? '')
+            .($lastModified?->getTimestamp() ?? '')
+            .$_locale
+        );
+        */
+
+        $response = new Response()
+            ->setPublic()
+            ->setMaxAge(86400)
+            ->setSharedMaxAge(86400)
+            // ->setEtag($etag, true)
+            ->setLastModified($lastModified);
+
+        if ($response->isNotModified($request)) {
+            return $response;
+        }
 
         return $this->render($result->template, [
             'category' => $result->category,
             'products' => $result->products,
             'product' => $result->product,
-        ]);
+        ], $response);
     }
 }
