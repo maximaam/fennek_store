@@ -24,8 +24,8 @@ use Symfony\Component\Routing\Attribute\Route;
 final class IndexController extends AbstractController
 {
     #[Route('/', name: 'index', methods: [Request::METHOD_GET])]
-    #[Cache(expires: 'tomorrow', public: true)]
-    public function index(Request $request, ProductRepository $productRepo): Response
+    #[Cache(maxage: 86400, smaxage: 86400, public: true)]
+    public function index(ProductRepository $productRepo): Response
     {
         return $this->render('index/index.html.twig', [
             'products' => $productRepo->findBy(['topItem' => true], ['updatedAt' => 'DESC'], 20),
@@ -33,7 +33,7 @@ final class IndexController extends AbstractController
     }
 
     #[Route('/page/{alias}', name: 'page', methods: [Request::METHOD_GET])]
-    #[Cache(expires: 'tomorrow', public: true)]
+    #[Cache(maxage: 86400, smaxage: 86400, public: true)]
     public function page(PageRepository $pageRepo, string $alias, string $_locale): Response
     {
         $aliasI18n = 'alias'.ucfirst($_locale);
@@ -64,7 +64,7 @@ final class IndexController extends AbstractController
     }
 
     #[Route('/catalogue/{catAlias}/{subCatAlias?}/{productId?}/{productAlias?}', name: 'catalogue', methods: [Request::METHOD_GET])]
-    #[Cache(expires: 'tomorrow', public: true)]
+    #[Cache(maxage: 86400, smaxage: 86400, public: true)]
     public function catalogue(CatalogueResolver $resolver, string $_locale, string $catAlias, ?string $subCatAlias = null, ?int $productId = null, ?string $productAlias = null): Response
     {
         $requestDTO = new CatalogueRequestDto($_locale, $catAlias, $subCatAlias, $productId, $productAlias);

@@ -32,6 +32,8 @@
 
     {% block js_head %}
     {% endblock %}
+
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
 </head>
 
 <body>
@@ -52,11 +54,16 @@
                     <label for="search-query"></label>
                     <input id="search-query" class="form-control py-1" type="search" name="query" placeholder="{{ 'label.search'|trans }}..." required pattern=".{3,}" title="3 chars minimum" autocomplete="false" value="{{ app.request.query.get('query') }}">
                 </form>
+
                 <div class="d-flex navbar-cart">
-                    {% set cartItems = app.session.get('cart')|length %}
-                    <a href="{{ path('app_cart_index') }}" title="{{ 'cart.my_cart'|trans }} {{ cartItems }}">
-                        <span {{ cartItems > 0 ? 'class="with-items"'}}>{{ cartItems }}</span>
-                        {{ ux_icon('bi:cart-fill', {class: 'basic-icon'}) }}
+                    <a href="{{ path('app_cart_index') }}">
+                        <span
+                            hx-get="{{ path('app_cart_count_items') }}"
+                            hx-trigger="load"
+                            hx-target="this"
+                            hx-swap="outerHTML"
+                        ></span>
+                        {{ ux_icon('bi:cart-fill', { class: 'basic-icon' }) }}
                     </a>
                 </div>
             </div>

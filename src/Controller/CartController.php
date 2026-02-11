@@ -11,7 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\HttpKernel\Attribute\Cache;use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -89,5 +89,16 @@ final class CartController extends AbstractController
         $session->set('cart', $cart);
 
         return $this->redirectToRoute('app_cart_index');
+    }
+
+    #[Route('/_fragment/count-items', name: 'count_items', methods: ['GET'])]
+    #[Cache(maxage: 0, public: false)]
+    public function countItems(Request $request): Response
+    {
+        $cart = $request->getSession()->get('cart', []);
+
+        return $this->render('partials/_cart_fragment.html.twig', [
+            'count' => \count($cart),
+        ]);
     }
 }
