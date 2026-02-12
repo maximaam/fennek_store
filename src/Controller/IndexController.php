@@ -86,7 +86,7 @@ final class IndexController extends AbstractController
             $result->category?->getParent()?->getUpdatedAt(),
         ]);
 
-        $lastModified = !empty($dates)
+        $lastModified = ([] !== $dates)
             ? max($dates)
             : new \DateTimeImmutable();
 
