@@ -22,33 +22,6 @@ final readonly class CatalogueResolver
 
     public function resolve(CatalogueRequestDto $dto): CatalogueResultDto
     {
-        /*
-        $cacheKey = \sprintf(
-            'catalogue_%s_%s_%s_%s',
-            $dto->locale,
-            $dto->categoryAlias,
-            $dto->subCategoryAlias ?? 'all',
-            $dto->productId ?? 'list'
-        );
-
-        $this->cache->delete($cacheKey);
-        */
-
-        return $this->doResolve($dto);
-
-        /*
-
-        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($dto) {
-            $item->expiresAfter(600); // 10 minutes
-
-            // 👉 THIS is where it comes from
-            return $this->doResolve($dto);
-        });
-        */
-    }
-
-    private function doResolve(CatalogueRequestDto $dto): CatalogueResultDto
-    {
         // ─────────────────────────────
         // Product page
         // ─────────────────────────────

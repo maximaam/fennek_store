@@ -63,10 +63,15 @@ final class IndexController extends AbstractController
         ]);
     }
 
-    #[Route('/catalogue/{catAlias}/{subCatAlias?}/{productId?}/{productAlias?}', name: 'catalogue', methods: [Request::METHOD_GET])]
-    // #[Cache(maxage: 86400, smaxage: 86400, public: true, etag: 'response.getContent()')]
+    #[Route('/catalogue/{catAlias}/{subCatAlias?}', name: 'catalogue_category', methods: [Request::METHOD_GET])]
+    #[Route('/catalogue/{catAlias}/{subCatAlias}/{productId}/{productAlias}', name: 'catalogue_product', requirements: ['productId' => '\d+'], methods: [Request::METHOD_GET])]
     public function catalogue(Request $request, CatalogueResolver $resolver, string $_locale, string $catAlias, ?string $subCatAlias = null, ?int $productId = null, ?string $productAlias = null): Response
     {
+        // Do not allow to access product page without product alias
+        if (null !== $productId && null === $productAlias) {
+            throw $this->createNotFoundException('Product alias is required');
+        }
+
         $requestDTO = new CatalogueRequestDto($_locale, $catAlias, $subCatAlias, $productId, $productAlias);
         $result = $resolver->resolve($requestDTO);
 
@@ -75,20 +80,6 @@ final class IndexController extends AbstractController
          * return 304 response instead of 200.
          * Otherwise, the #[Cache is enough.
          */
-        /*
-        $lastModified = $result->product?->getUpdatedAt()
-            ?? $result->category?->getUpdatedAt()
-            ?? $result->category?->getParent()?->getUpdatedAt()
-            ?? new \DateTimeImmutable();
-        */
-        /*
-        $etag = md5(
-            ($result->product?->getId() ?? '')
-            .($lastModified?->getTimestamp() ?? '')
-            .$_locale
-        );
-        */
-
         $dates = array_filter([
             $result->product?->getUpdatedAt(),
             $result->category?->getUpdatedAt(),
@@ -103,7 +94,6 @@ final class IndexController extends AbstractController
             ->setPublic()
             ->setMaxAge(86400)
             ->setSharedMaxAge(86400)
-            // ->setEtag($etag, true)
             ->setLastModified($lastModified);
 
         if ($response->isNotModified($request)) {

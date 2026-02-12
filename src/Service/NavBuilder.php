@@ -31,7 +31,7 @@ final readonly class NavBuilder
         $categories = $this->entityManager->getRepository(Category::class)->fetchForTopNavBar();
         foreach ($categories as $category) {
             $menu->addChild($category->getName($locale), [
-                'route' => 'app_index_catalogue',
+                'route' => 'app_index_catalogue_category',
                 'attributes' => ['class' => 'nav-item'],
                 'linkAttributes' => ['class' => 'nav-link'],
                 'routeParameters' => [
@@ -63,7 +63,7 @@ final readonly class NavBuilder
 
         foreach ($subCategories as $category) {
             $menu->addChild($category->getName($locale), [
-                'route' => 'app_index_catalogue',
+                'route' => 'app_index_catalogue_category',
                 'attributes' => ['class' => ''],
                 'linkAttributes' => ['class' => ''],
                 'routeParameters' => [
