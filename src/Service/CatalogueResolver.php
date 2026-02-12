@@ -16,17 +16,14 @@ final readonly class CatalogueResolver
     public function __construct(
         private CategoryRepository $categoryRepository,
         private ProductRepository $productRepository,
-        // private CacheInterface $cache,
     ) {
     }
 
     public function resolve(CatalogueRequestDto $dto): CatalogueResultDto
     {
-        // ─────────────────────────────
-        // Product page
-        // ─────────────────────────────
         if ($dto->isProductView()) {
-            $product = $this->productRepository->find($dto->productId)
+            $titleSlug = \sprintf('title%sSlug', ucfirst($dto->locale));
+            $product = $this->productRepository->findOneBy([$titleSlug => $dto->productAlias])
                 ?? throw new NotFoundHttpException();
 
             return new CatalogueResultDto(
@@ -39,9 +36,6 @@ final readonly class CatalogueResolver
 
         $aliasField = 'alias'.ucfirst($dto->locale);
 
-        // ─────────────────────────────
-        // Main category
-        // ─────────────────────────────
         if ($dto->isMainCategoryView()) {
             $category = $this->categoryRepository
                 ->findOneBy([$aliasField => $dto->categoryAlias])

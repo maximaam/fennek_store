@@ -63,16 +63,11 @@ final class IndexController extends AbstractController
         ]);
     }
 
-    #[Route('/catalogue/{catAlias}/{subCatAlias?}', name: 'catalogue_category', methods: [Request::METHOD_GET])]
-    #[Route('/catalogue/{catAlias}/{subCatAlias}/{productId}/{productAlias}', name: 'catalogue_product', requirements: ['productId' => '\d+'], methods: [Request::METHOD_GET])]
-    public function catalogue(Request $request, CatalogueResolver $resolver, string $_locale, string $catAlias, ?string $subCatAlias = null, ?int $productId = null, ?string $productAlias = null): Response
+    #[Route('/{catAlias}/{subCatAlias?}', name: 'catalogue_category', methods: [Request::METHOD_GET])]
+    #[Route('/{catAlias}/{subCatAlias}/{productAlias}', name: 'catalogue_product', methods: [Request::METHOD_GET])]
+    public function catalogue(Request $request, CatalogueResolver $resolver, string $_locale, string $catAlias, ?string $subCatAlias = null, ?string $productAlias = null): Response
     {
-        // Do not allow to access product page without product alias
-        if (null !== $productId && null === $productAlias) {
-            throw $this->createNotFoundException('Product alias is required');
-        }
-
-        $requestDTO = new CatalogueRequestDto($_locale, $catAlias, $subCatAlias, $productId, $productAlias);
+        $requestDTO = new CatalogueRequestDto($_locale, $catAlias, $subCatAlias, $productAlias);
         $result = $resolver->resolve($requestDTO);
 
         /**
