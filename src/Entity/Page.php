@@ -8,7 +8,6 @@ use App\Repository\PageRepository;
 use App\Traits\TimestampableTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PageRepository::class)]
@@ -20,108 +19,25 @@ class Page
     #[ORM\Id, ORM\GeneratedValue, ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private string $titleDe;
-
-    #[ORM\Column(length: 255)]
-    private string $aliasDe;
-
-    #[ORM\Column(type: Types::TEXT)]
-    private string $descriptionDe;
-
-    #[ORM\Column(length: 255)]
-    private string $titleEn;
-
-    #[ORM\Column(length: 255)]
-    private string $aliasEn;
-
-    #[ORM\Column(type: Types::TEXT)]
-    private string $descriptionEn;
-
     /** @var Collection<int, MediaImage> */
     #[ORM\OneToMany(targetEntity: MediaImage::class, mappedBy: 'page', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $images;
 
+    /**
+     * @var Collection<int, PageTranslation>
+     */
+    #[ORM\OneToMany(targetEntity: PageTranslation::class, mappedBy: 'page', orphanRemoval: true)]
+    private Collection $translations;
+
     public function __construct()
     {
         $this->images = new ArrayCollection();
+        $this->translations = new ArrayCollection();
     }
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getTitleDe(): string
-    {
-        return $this->titleDe;
-    }
-
-    public function setTitleDe(string $titleDe): static
-    {
-        $this->titleDe = $titleDe;
-
-        return $this;
-    }
-
-    public function getAliasDe(): string
-    {
-        return $this->aliasDe;
-    }
-
-    public function setAliasDe(string $aliasDe): static
-    {
-        $this->aliasDe = $aliasDe;
-
-        return $this;
-    }
-
-    public function getDescriptionDe(): string
-    {
-        return $this->descriptionDe;
-    }
-
-    public function setDescriptionDe(string $descriptionDe): static
-    {
-        $this->descriptionDe = $descriptionDe;
-
-        return $this;
-    }
-
-    public function getTitleEn(): string
-    {
-        return $this->titleEn;
-    }
-
-    public function setTitleEn(string $titleEn): static
-    {
-        $this->titleEn = $titleEn;
-
-        return $this;
-    }
-
-    public function getAliasEn(): string
-    {
-        return $this->aliasEn;
-    }
-
-    public function setAliasEn(string $aliasEn): static
-    {
-        $this->aliasEn = $aliasEn;
-
-        return $this;
-    }
-
-    public function getDescriptionEn(): string
-    {
-        return $this->descriptionEn;
-    }
-
-    public function setDescriptionEn(string $descriptionEn): static
-    {
-        $this->descriptionEn = $descriptionEn;
-
-        return $this;
     }
 
     /** @return Collection<int, MediaImage> */
@@ -149,32 +65,31 @@ class Page
         return $this;
     }
 
-    // ─────────────────────────────
-    // Extra Entity Methods
-    // ─────────────────────────────
-
-    public function getTitle(string $locale): string
+    /**
+     * @return Collection<int, PageTranslation>
+     */
+    public function getTranslations(): Collection
     {
-        return match ($locale) {
-            'en' => $this->titleEn,
-            default => $this->titleDe,
-        };
+        return $this->translations;
     }
 
-    public function getAlias(string $locale): string
+    public function addTranslation(PageTranslation $translation): static
     {
-        return match ($locale) {
-            'en' => $this->aliasEn,
-            default => $this->aliasDe,
-        };
+        if (!$this->translations->contains($translation)) {
+            $this->translations->add($translation);
+            $translation->setPage($this);
+        }
+
+        return $this;
     }
 
-    public function getDescription(string $locale): ?string
+    public function removeTranslation(PageTranslation $translation): static
     {
-        return match ($locale) {
-            'de' => $this->descriptionDe,
-            'en' => $this->descriptionEn,
-            default => null,
-        };
+        if ($this->translations->removeElement($translation) && $translation->getPage() === $this) {
+            // set the owning side to null (unless already changed)
+            $translation->setPage(null);
+        }
+
+        return $this;
     }
 }

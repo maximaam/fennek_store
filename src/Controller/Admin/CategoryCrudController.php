@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Entity\Category;
+use App\Entity\CategoryTranslation;
+use App\Form\CategoryTranslationType;
+use App\Helper\EntityHelper;
 use Doctrine\ORM\EntityRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
@@ -13,10 +16,10 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -35,6 +38,18 @@ final class CategoryCrudController extends AbstractCrudController
         return Category::class;
     }
 
+    public function createEntity(string $entityFqcn): Category
+    {
+        $category = new Category();
+        foreach (EntityHelper::LOCALES as $locale) {
+            $translation = new CategoryTranslation();
+            $translation->setLocale($locale);
+            $category->addTranslation($translation);
+        }
+
+        return $category;
+    }
+
     #[\Override]
     public function configureActions(Actions $actions): Actions
     {
@@ -48,11 +63,13 @@ final class CategoryCrudController extends AbstractCrudController
             );
     }
 
+    /*
     #[\Override]
     public function configureFilters(Filters $filters): Filters
     {
         return $filters->add('nameDe');
     }
+    */
 
     #[\Override]
     public function configureCrud(Crud $crud): Crud
@@ -61,8 +78,8 @@ final class CategoryCrudController extends AbstractCrudController
             ->setEntityLabelInSingular('category.create_new')
             ->setPageTitle(Crud::PAGE_INDEX, 'category.list')
             ->setPageTitle(Crud::PAGE_NEW, 'category.singular')
-            ->setPageTitle(Crud::PAGE_EDIT, fn (Category $c) => $this->translator->trans('label.crud_title.page_edit', ['%item%' => $c->getNameDe()]))
-            ->setPageTitle(Crud::PAGE_DETAIL, fn (Category $c) => $this->translator->trans('label.crud_title.page_index', ['%item%' => $c->getNameDe()]))
+            // ->setPageTitle(Crud::PAGE_EDIT, fn (Category $c) => $this->translator->trans('label.crud_title.page_edit', ['%item%' => $c->getNameDe()]))
+            // ->setPageTitle(Crud::PAGE_DETAIL, fn (Category $c) => $this->translator->trans('label.crud_title.page_index', ['%item%' => $c->getNameDe()]))
             // ->showEntityActionsInlined()
             ->setPaginatorPageSize(25);
     }
@@ -94,14 +111,14 @@ final class CategoryCrudController extends AbstractCrudController
             ->renderAsNativeWidget()
             ->setFormTypeOptions([
                 'query_builder' => static fn (EntityRepository $er) => $er->createQueryBuilder('c')
-                    ->andWhere('c.parent IS NULL')
-                    ->orderBy('c.nameDe', 'ASC'),
+                    ->andWhere('c.parent IS NULL'),
+                // ->orderBy('c.nameDe', 'ASC'),
             ]);
 
         // Required/disabled only in edit mode
         if (Crud::PAGE_EDIT === $pageName && $category instanceof Category) {
-            $isTop = !$category->getParent() instanceof Category;
-            $parentCategory->setRequired(!$isTop)->setDisabled($isTop);
+            $isParent = !$category->getParent() instanceof Category;
+            $parentCategory->setRequired(!$isParent)->setDisabled($isParent);
         }
 
         yield FormField::addColumn(6);
@@ -121,17 +138,22 @@ final class CategoryCrudController extends AbstractCrudController
      */
     private function getMainFields(): iterable
     {
-        // German fields
-        yield FormField::addColumn(6);
-        yield FormField::addFieldset('Deutsch');
-        yield TextField::new('nameDe', 'label.name.de');
-        yield TextareaField::new('descriptionDe', 'label.description.de');
-
-        // English fields
-        yield FormField::addColumn(6);
-        yield FormField::addFieldset('English');
-        yield TextField::new('nameEn', 'label.name.en');
-        yield TextareaField::new('descriptionEn', 'label.description.en');
+        yield FormField::addColumn(12);
+        yield CollectionField::new('translations')
+            ->setEntryType(CategoryTranslationType::class)
+            ->setFormTypeOptions([
+                'by_reference' => false,
+                'label' => false,
+                'entry_options' => [
+                    // 'locale' => static fn (CategoryTranslation $value): string => $value->getLocale(),
+                ],
+            ])
+            ->allowAdd(false)
+            ->allowDelete(false)
+            ->setEntryToStringMethod(
+                static fn (CategoryTranslation $value, TranslatorInterface $translator): string => $translator->trans(\sprintf('label.%s', $value->getLocale()))
+            )
+            ->renderExpanded();
     }
 
     /**
@@ -139,7 +161,8 @@ final class CategoryCrudController extends AbstractCrudController
      */
     private function getIndexFields(): iterable
     {
-        yield AssociationField::new('parent')->setLabel('category.parent');
+        yield AssociationField::new('parent')
+            ->setLabel('category.parent');
         yield TextField::new('nameDe', 'Name');
         yield IntegerField::new('position');
     }

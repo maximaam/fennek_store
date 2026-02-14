@@ -4,39 +4,21 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Helper\EntityHelper;
 use App\Repository\CategoryRepository;
 use App\Traits\TimestampableTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-class Category implements \Stringable
+class Category
 {
     use TimestampableTrait;
 
     #[ORM\Id, ORM\GeneratedValue, ORM\Column]
     private ?int $id = null;
-
-    #[ORM\Column(length: 128, unique: true)]
-    private string $nameDe;
-
-    #[ORM\Column(length: 128, unique: true)]
-    private string $nameEn;
-
-    #[ORM\Column(length: 128, unique: true)]
-    private string $aliasDe;
-
-    #[ORM\Column(length: 128, unique: true)]
-    private string $aliasEn;
-
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $descriptionDe = null;
-
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $descriptionEn = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $position = null;
@@ -56,87 +38,22 @@ class Category implements \Stringable
     #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'category', orphanRemoval: true)]
     private Collection $products;
 
+    /**
+     * @var Collection<int, CategoryTranslation>
+     */
+    #[ORM\OneToMany(targetEntity: CategoryTranslation::class, mappedBy: 'category', cascade: ['persist', 'remove'], fetch: 'EAGER', orphanRemoval: true)]
+    private Collection $translations;
+
     public function __construct()
     {
         $this->children = new ArrayCollection();
         $this->products = new ArrayCollection();
+        $this->translations = new ArrayCollection();
     }
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getNameDe(): string
-    {
-        return $this->nameDe;
-    }
-
-    public function setNameDe(string $nameDe): static
-    {
-        $this->nameDe = $nameDe;
-
-        return $this;
-    }
-
-    public function getNameEn(): string
-    {
-        return $this->nameEn;
-    }
-
-    public function setNameEn(string $nameEn): static
-    {
-        $this->nameEn = $nameEn;
-
-        return $this;
-    }
-
-    public function getAliasDe(): string
-    {
-        return $this->aliasDe;
-    }
-
-    public function setAliasDe(string $aliasDe): static
-    {
-        $this->aliasDe = $aliasDe;
-
-        return $this;
-    }
-
-    public function getAliasEn(): string
-    {
-        return $this->aliasEn;
-    }
-
-    public function setAliasEn(string $aliasEn): static
-    {
-        $this->aliasEn = $aliasEn;
-
-        return $this;
-    }
-
-    public function getDescriptionDe(): ?string
-    {
-        return $this->descriptionDe;
-    }
-
-    public function setDescriptionDe(?string $descriptionDe): static
-    {
-        $this->descriptionDe = $descriptionDe;
-
-        return $this;
-    }
-
-    public function getDescriptionEn(): ?string
-    {
-        return $this->descriptionEn;
-    }
-
-    public function setDescriptionEn(?string $descriptionEn): static
-    {
-        $this->descriptionEn = $descriptionEn;
-
-        return $this;
     }
 
     public function getPosition(): ?int
@@ -198,35 +115,56 @@ class Category implements \Stringable
         return $this->products;
     }
 
-    // ### Extra entity methods ###//
+    /**
+     * @return Collection<int, CategoryTranslation>
+     */
+    public function getTranslations(): Collection
+    {
+        return $this->translations;
+    }
+
+    public function addTranslation(CategoryTranslation $translation): static
+    {
+        if (!$this->translations->contains($translation)) {
+            $this->translations->add($translation);
+            $translation->setCategory($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTranslation(CategoryTranslation $translation): static
+    {
+        if ($this->translations->removeElement($translation) && $translation->getCategory() === $this) {
+            // set the owning side to null (unless already changed
+            $translation->setCategory(null);
+        }
+
+        return $this;
+    }
+
+    // | Extra methods | \\
+    // ----------------- \\
+
+    public function getTranslationByLocale(string $locale): ?CategoryTranslation
+    {
+        foreach ($this->translations as $translation) {
+            if ($translation->getLocale() === $locale) {
+                return $translation;
+            }
+        }
+
+        return null;
+    }
 
     public function __toString(): string
     {
         return $this->getNameDe();
     }
 
-    public function getName(string $locale): string
+    public function getNameDe(): ?string
     {
-        return match ($locale) {
-            'en' => $this->nameEn,
-            default => $this->nameDe,
-        };
-    }
-
-    public function getAlias(string $locale): string
-    {
-        return match ($locale) {
-            'en' => $this->aliasEn,
-            default => $this->aliasDe,
-        };
-    }
-
-    public function getDescription(string $locale): ?string
-    {
-        return match ($locale) {
-            'de' => $this->descriptionDe,
-            'en' => $this->descriptionEn,
-            default => null,
-        };
+        return $this->getTranslationByLocale(EntityHelper::LOCALE_DE)
+            ?->getName();
     }
 }

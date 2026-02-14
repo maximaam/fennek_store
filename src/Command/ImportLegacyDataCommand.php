@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\Entity\Category;
-use App\Entity\MediaImage;
+use App\Entity\CategoryTranslation;use App\Entity\MediaImage;
 use App\Entity\Page;
 use App\Entity\Product;
 use App\Entity\Purchase;
@@ -29,6 +29,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 )]
 class ImportLegacyDataCommand extends Command
 {
+    public const array LOCALES = ['de', 'en'];
+
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly EntityHelper $entityHelper,
@@ -114,7 +116,7 @@ class ImportLegacyDataCommand extends Command
                 throw new \RuntimeException("Parent category $parentId not found.");
 
             $category = $this->createCategoryFromRow($row, $parent);
-            $io->writeln(\sprintf('Importing category : %s', $category->getNameDe()));
+            $io->writeln(\sprintf('Importing category : %s', 'test'));
             $this->entityManager->persist($category);
         }
 
@@ -429,17 +431,27 @@ class ImportLegacyDataCommand extends Command
      */
     private function createCategoryFromRow(array $row, ?Category $parent): Category
     {
-        return new Category()
+        $category = new Category()
             ->setParent($parent)
             ->setCreatedAtLegacy($row[2])
             ->setUpdatedAtLegacy($row[3])
-            ->setNameDe($row[4])
-            ->setNameEn($row[5])
-            ->setAliasDe($row[6])
-            ->setAliasEn($row[7])
-            ->setDescriptionDe($row[8])
-            ->setDescriptionEn($row[9])
             ->setPosition(0);
+
+        $translationDe = new CategoryTranslation()
+            ->setLocale('de')
+            ->setName($row[4])
+            ->setAlias($row[6])
+            ->setDescription($row[8]);
+        $translationEn = new CategoryTranslation()
+            ->setLocale('en')
+            ->setName($row[5])
+            ->setAlias($row[7])
+            ->setDescription($row[9]);
+
+        $category->addTranslation($translationDe);
+        $category->addTranslation($translationEn);
+
+        return $category;
     }
 
     private function loadCsv(string $filename): \SplFileObject

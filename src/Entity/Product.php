@@ -23,24 +23,6 @@ class Product
     #[ORM\Column(length: 128, nullable: true)]
     private ?string $itemNumber = null;
 
-    #[ORM\Column(length: 255)]
-    private string $titleDe;
-
-    #[ORM\Column(length: 255)]
-    private string $titleEn;
-
-    #[ORM\Column(length: 255)]
-    private string $titleDeSlug;
-
-    #[ORM\Column(length: 255)]
-    private string $titleEnSlug;
-
-    #[ORM\Column(type: Types::TEXT)]
-    private string $descriptionDe;
-
-    #[ORM\Column(type: Types::TEXT)]
-    private string $descriptionEn;
-
     /** @var array<string> */
     #[ORM\Column(type: Types::JSON)]
     private array $colors = [];
@@ -63,9 +45,13 @@ class Product
     #[ORM\OneToMany(targetEntity: MediaImage::class, mappedBy: 'product', cascade: ['persist', 'remove'], fetch: 'EAGER', orphanRemoval: true)]
     private Collection $images;
 
+    #[ORM\OneToMany(targetEntity: ProductTranslation::class, mappedBy: 'product', cascade: ['persist'], orphanRemoval: true)]
+    private Collection $translations;
+
     public function __construct()
     {
         $this->images = new ArrayCollection();
+        $this->translations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -81,78 +67,6 @@ class Product
     public function setItemNumber(?string $itemNumber): static
     {
         $this->itemNumber = $itemNumber;
-
-        return $this;
-    }
-
-    public function getTitleDe(): string
-    {
-        return $this->titleDe;
-    }
-
-    public function setTitleDe(string $titleDe): static
-    {
-        $this->titleDe = $titleDe;
-
-        return $this;
-    }
-
-    public function getTitleEn(): string
-    {
-        return $this->titleEn;
-    }
-
-    public function setTitleEn(string $titleEn): static
-    {
-        $this->titleEn = $titleEn;
-
-        return $this;
-    }
-
-    public function getTitleDeSlug(): string
-    {
-        return $this->titleDeSlug;
-    }
-
-    public function setTitleDeSlug(string $titleDeSlug): static
-    {
-        $this->titleDeSlug = $titleDeSlug;
-
-        return $this;
-    }
-
-    public function getTitleEnSlug(): string
-    {
-        return $this->titleEnSlug;
-    }
-
-    public function setTitleEnSlug(string $titleEnSlug): static
-    {
-        $this->titleEnSlug = $titleEnSlug;
-
-        return $this;
-    }
-
-    public function getDescriptionDe(): string
-    {
-        return $this->descriptionDe;
-    }
-
-    public function setDescriptionDe(string $descriptionDe): static
-    {
-        $this->descriptionDe = $descriptionDe;
-
-        return $this;
-    }
-
-    public function getDescriptionEn(): string
-    {
-        return $this->descriptionEn;
-    }
-
-    public function setDescriptionEn(string $descriptionEn): static
-    {
-        $this->descriptionEn = $descriptionEn;
 
         return $this;
     }
@@ -254,31 +168,27 @@ class Product
         return $this;
     }
 
-    // ─────────────────────────────
-    // Extra Entity Methods
-    // ─────────────────────────────
-
-    public function getTitle(string $locale): string
+    public function getTranslations(): Collection
     {
-        return match ($locale) {
-            'en' => $this->titleEn,
-            default => $this->titleDe,
-        };
+        return $this->translations;
     }
 
-    public function getTitleSlug(string $locale): string
+    public function addTranslation(ProductTranslation $translation): self
     {
-        return match ($locale) {
-            'en' => $this->titleEnSlug,
-            default => $this->titleDeSlug,
-        };
+        if (!$this->translations->contains($translation)) {
+            $this->translations[] = $translation;
+            $translation->setProduct($this);
+        }
+
+        return $this;
     }
 
-    public function getDescription(string $locale): string
+    public function removeTranslation(ProductTranslation $translation): self
     {
-        return match ($locale) {
-            'en' => $this->descriptionEn,
-            default => $this->descriptionDe,
-        };
+        if ($this->translations->removeElement($translation) && $translation->getProduct() === $this) {
+            $translation->setProduct(null);
+        }
+
+        return $this;
     }
 }

@@ -1,7 +1,9 @@
 dashboard: Dashboard
 label:
     german: German
+    de: German
     english: English
+    en: English
     name:
         all: Name
         de: Name (German)
