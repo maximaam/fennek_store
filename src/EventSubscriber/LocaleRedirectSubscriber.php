@@ -20,34 +20,19 @@ final class LocaleRedirectSubscriber implements EventSubscriberInterface
 
     public function onKernelRequest(RequestEvent $event): void
     {
-        if (!$event->isMainRequest()) {
+        $request = $event->getRequest();
+
+        // Ignore sub-requests and all URLs but the homepage
+        if (!$event->isMainRequest() || \DIRECTORY_SEPARATOR !== $request->getPathInfo()) {
             return;
         }
 
-        $request = $event->getRequest();
         if ($request->attributes->has('_locale')) {
             return;
         }
 
-        // ignore assets
-        if (str_starts_with($request->getPathInfo(), '/_')) {
-            return;
-        }
-
-        if (str_starts_with($request->getPathInfo(), '/admin')) {
-            return;
-        }
-
-        if (str_starts_with($request->getPathInfo(), '/login')) {
-            return;
-        }
-
-        if (str_starts_with($request->getPathInfo(), '/sitemap.xml')) {
-            return;
-        }
-
         $event->setResponse(
-            new RedirectResponse('/'.$request->getDefaultLocale().$request->getPathInfo())
+            new RedirectResponse(\DIRECTORY_SEPARATOR.$request->getDefaultLocale().$request->getPathInfo())
         );
     }
 }

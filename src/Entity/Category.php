@@ -9,7 +9,7 @@ use App\Repository\CategoryRepository;
 use App\Traits\TimestampableTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
+use Doctrine\DBAL\Types\Types;use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -17,10 +17,10 @@ class Category
 {
     use TimestampableTrait;
 
-    #[ORM\Id, ORM\GeneratedValue, ORM\Column]
+    #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: Types::INTEGER)]
     private ?int $id = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(unique: true, nullable: true)]
     private ?int $position = null;
 
     /**
@@ -41,7 +41,7 @@ class Category
     /**
      * @var Collection<int, CategoryTranslation>
      */
-    #[ORM\OneToMany(targetEntity: CategoryTranslation::class, mappedBy: 'category', cascade: ['persist', 'remove'], fetch: 'EAGER', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: CategoryTranslation::class, mappedBy: 'category', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $translations;
 
     public function __construct()
@@ -166,5 +166,49 @@ class Category
     {
         return $this->getTranslationByLocale(EntityHelper::LOCALE_DE)
             ?->getName();
+    }
+
+    public function getNameEn(): ?string
+    {
+        return $this->getTranslationByLocale(EntityHelper::LOCALE_EN)
+            ?->getName();
+    }
+
+    public function getAliasDe(): ?string
+    {
+        return $this->getTranslationByLocale(EntityHelper::LOCALE_DE)
+            ?->getAlias();
+    }
+
+    public function getAliasEn(): ?string
+    {
+        return $this->getTranslationByLocale(EntityHelper::LOCALE_EN)
+            ?->getAlias();
+    }
+
+    public function getDescriptionDe(): ?string
+    {
+        return $this->getTranslationByLocale(EntityHelper::LOCALE_DE)
+            ?->getDescription();
+    }
+
+    public function getDescriptionEn(): ?string
+    {
+        return $this->getTranslationByLocale(EntityHelper::LOCALE_EN)
+            ?->getDescription();
+    }
+
+    public function getName(string $locale): ?string
+    {
+        $method = __FUNCTION__.ucfirst($locale);
+
+        return $this->$method();
+    }
+
+    public function getAlias(string $locale): ?string
+    {
+        $method = __FUNCTION__.ucfirst($locale);
+
+        return $this->$method();
     }
 }

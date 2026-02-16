@@ -8,6 +8,8 @@ label:
         all: Name
         de: Name (German)
         en: Name (English)
+    alias:
+        all: Alias
     title:
         all: Title
         de: Title (German)

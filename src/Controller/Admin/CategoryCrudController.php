@@ -4,17 +4,23 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Controller\Admin\Filter\CategoryNameFilter;
 use App\Entity\Category;
 use App\Entity\CategoryTranslation;
 use App\Form\CategoryTranslationType;
 use App\Helper\EntityHelper;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\QueryBuilder;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
@@ -63,13 +69,22 @@ final class CategoryCrudController extends AbstractCrudController
             );
     }
 
-    /*
     #[\Override]
     public function configureFilters(Filters $filters): Filters
     {
-        return $filters->add('nameDe');
+        return $filters->add(CategoryNameFilter::new('name', 'Name (DE)', 'de'));
     }
-    */
+
+    // This join avoids FETCH::EAGER
+    public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): QueryBuilder
+    {
+        $qb = parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
+        $qb
+            ->leftJoin('entity.translations', 't')
+            ->addSelect('t');
+
+        return $qb;
+    }
 
     #[\Override]
     public function configureCrud(Crud $crud): Crud
@@ -78,8 +93,8 @@ final class CategoryCrudController extends AbstractCrudController
             ->setEntityLabelInSingular('category.create_new')
             ->setPageTitle(Crud::PAGE_INDEX, 'category.list')
             ->setPageTitle(Crud::PAGE_NEW, 'category.singular')
-            // ->setPageTitle(Crud::PAGE_EDIT, fn (Category $c) => $this->translator->trans('label.crud_title.page_edit', ['%item%' => $c->getNameDe()]))
-            // ->setPageTitle(Crud::PAGE_DETAIL, fn (Category $c) => $this->translator->trans('label.crud_title.page_index', ['%item%' => $c->getNameDe()]))
+            ->setPageTitle(Crud::PAGE_EDIT, fn (Category $c) => $this->translator->trans('label.crud_title.page_edit', ['%item%' => $c->getNameDe()]))
+            ->setPageTitle(Crud::PAGE_DETAIL, fn (Category $c) => $this->translator->trans('label.crud_title.page_index', ['%item%' => $c->getNameDe()]))
             // ->showEntityActionsInlined()
             ->setPaginatorPageSize(25);
     }
@@ -141,12 +156,10 @@ final class CategoryCrudController extends AbstractCrudController
         yield FormField::addColumn(12);
         yield CollectionField::new('translations')
             ->setEntryType(CategoryTranslationType::class)
+            ->setEntryIsComplex()
             ->setFormTypeOptions([
                 'by_reference' => false,
                 'label' => false,
-                'entry_options' => [
-                    // 'locale' => static fn (CategoryTranslation $value): string => $value->getLocale(),
-                ],
             ])
             ->allowAdd(false)
             ->allowDelete(false)
@@ -176,16 +189,16 @@ final class CategoryCrudController extends AbstractCrudController
         yield IntegerField::new('position');
         yield DateTimeField::new('createdAt');
 
-        yield FormField::addColumn(6);
-        yield FormField::addFieldset('Deutsch');
-        yield TextField::new('nameDe');
-        yield TextField::new('aliasDe');
-        yield TextField::new('descriptionDe');
+        yield FormField::addColumn(12);
+        yield FormField::addFieldset('label.german');
+        yield TextField::new('nameDe', 'label.name.all');
+        yield TextField::new('aliasDe', 'label.alias.all');
+        yield TextField::new('descriptionDe', 'label.description.all');
 
-        yield FormField::addColumn(6);
-        yield FormField::addFieldset('English');
-        yield TextField::new('nameEn');
-        yield TextField::new('aliasEn');
-        yield TextField::new('descriptionEn');
+        yield FormField::addColumn(12);
+        yield FormField::addFieldset('label.english');
+        yield TextField::new('nameEn', 'label.name.all');
+        yield TextField::new('aliasEn', 'label.alias.all');
+        yield TextField::new('descriptionEn', 'label.description.all');
     }
 }

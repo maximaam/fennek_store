@@ -435,7 +435,7 @@ class ImportLegacyDataCommand extends Command
             ->setParent($parent)
             ->setCreatedAtLegacy($row[2])
             ->setUpdatedAtLegacy($row[3])
-            ->setPosition(0);
+            ->setPosition(null);
 
         $translationDe = new CategoryTranslation()
             ->setLocale('de')
