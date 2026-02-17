@@ -47,6 +47,7 @@ final readonly class CatalogueResolver
                 ->getQuery()
                 ->getResult();
 
+
             return new CatalogueResultDto(
                 category: $category,
                 products: $products,
@@ -59,7 +60,7 @@ final readonly class CatalogueResolver
         // Sub-category
         // ─────────────────────────────
         $category = $this->categoryRepository
-            ->fetchOneInDepthByAlias($dto->categoryAlias, $dto->locale)
+            ->fetchOneInDepthByAlias($dto->subCategoryAlias, $dto->locale)
             ?? throw new NotFoundHttpException();
 
         return new CatalogueResultDto(

@@ -9,7 +9,7 @@ use App\Entity\CategoryTranslation;
 use App\Entity\MediaImage;
 use App\Entity\Page;
 use App\Entity\Product;
-use App\Entity\Purchase;
+use App\Entity\ProductTranslation;use App\Entity\Purchase;
 use App\Enum\MediaImageOwner;
 use App\Enum\PayPalStatus;
 use App\Helper\EntityHelper;
@@ -153,7 +153,7 @@ class ImportLegacyDataCommand extends Command
 
             $category = $this->entityManager
                 ->getRepository(Category::class)
-                ->findOneBy(['aliasDe' => $cats[$row[1]]]) ?? throw new \RuntimeException("Category {$cats[$row[1]]} not found.");
+                ->fetchOneBy(['alias' => $cats[$row[1]]]) ?? throw new \RuntimeException("Category {$cats[$row[1]]} not found.");
 
             $colors = [];
             if (isset($row[10]) && '' !== $row[10] && 'NULL' !== $row[10]) {
@@ -175,14 +175,22 @@ class ImportLegacyDataCommand extends Command
                 ->setCreatedAtLegacy($row[2])
                 ->setUpdatedAtLegacy($row[3])
                 ->setItemNumber($row[4])
-                ->setTitleDe($row[6])
-                ->setTitleEn($row[7])
-                ->setDescriptionDe($row[8])
-                ->setDescriptionEn($row[9])
                 ->setColors($colors)
                 ->setSizes($sizes)
                 ->setPrice((int) bcmul($price, '100', 0))
                 ->setTopItem('1' === $row[13]);
+
+            $translationDe = new ProductTranslation()
+                ->setLocale('de')
+                ->setTitle($row[6])
+                ->setDescription($row[8]);
+            $translationEn = new ProductTranslation()
+                ->setLocale('en')
+                ->setTitle($row[7])
+                ->setDescription($row[9]);
+
+            $product->addTranslation($translationDe);
+            $product->addTranslation($translationEn);
 
             $this->entityHelper->setProductTitleSlug($product);
 

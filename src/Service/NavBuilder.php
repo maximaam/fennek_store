@@ -65,6 +65,8 @@ final readonly class NavBuilder
         /** @var Category|null $category */
         $category = $options['category'] ?? null;
 
+        // Manage top category and sub category page
+        $category = null === $category->getParent() ? $category : $category->getParent();
         $menu
             ->setChildrenAttribute('class', 'navbar-subcategory')
             ->setChildrenAttribute('data-cat-label', \sprintf('--- %s ---', $this->translator->trans('category.plural')));

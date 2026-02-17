@@ -48,8 +48,6 @@ class CategoryRepository extends ServiceEntityRepository
     public function fetchOneBy(array $field): ?Category
     {
         return $this->createQueryBuilder('c')
-            // ->leftJoin('c.translations', 't', 'WITH', \sprintf('t.%s = :target', key($field)))
-            // ->addSelect('t')
             ->leftJoin('c.translations', 't')
             ->andWhere(\sprintf('t.%s = :target', key($field)))
             ->setParameter('target', current($field))

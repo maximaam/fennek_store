@@ -191,4 +191,34 @@ class Product
 
         return $this;
     }
+
+    public function getTranslationByLocale(string $locale): ?ProductTranslation
+    {
+        foreach ($this->translations as $translation) {
+            if ($translation->getLocale() === $locale) {
+                return $translation;
+            }
+        }
+
+        return null;
+    }
+
+    public function getTitleSlug(string $locale): ?string
+    {
+        return $this->getTranslationByLocale($locale)
+            ->getSlug();
+    }
+
+    public function getTitle(string $locale): ?string
+    {
+        return $this->getTranslationByLocale($locale)
+            ->getTitle();
+    }
+
+    public function getDescription(string $locale): ?string
+    {
+        $method = __FUNCTION__.ucfirst($locale);
+
+        return $this->$method();
+    }
 }

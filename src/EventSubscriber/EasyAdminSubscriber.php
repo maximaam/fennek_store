@@ -35,7 +35,6 @@ readonly class EasyAdminSubscriber implements EventSubscriberInterface
         $entity = $event->getEntityInstance();
 
         if ($entity instanceof Category) {
-            $this->entityHelper->setCategoryPosition($entity);
             $this->entityHelper->setCategoryAlias($entity);
         }
 
