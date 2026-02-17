@@ -9,8 +9,10 @@ use App\Entity\Page;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Menu\FactoryInterface;
 use Knp\Menu\ItemInterface;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface as CacheItemInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 final readonly class NavBuilder
@@ -20,6 +22,8 @@ final readonly class NavBuilder
         private EntityManagerInterface $entityManager,
         private RequestStack $requestStack,
         private TranslatorInterface $translator,
+        #[Autowire(service: 'app.navbar_categories')]
+        private CacheInterface $cache,
     ) {
     }
 
@@ -28,7 +32,17 @@ final readonly class NavBuilder
         $menu = $this->factory->createItem('root');
         $menu->setChildrenAttribute('class', 'navbar-nav me-auto mb-lg-0');
         $locale = $this->getLocale();
-        $categories = $this->entityManager->getRepository(Category::class)->fetchForTopNavBar();
+
+        $cacheKey = \sprintf('top_nav_categories_%s', $locale);
+        $categories = $this->cache->get($cacheKey, function (CacheItemInterface $item) use ($locale) {
+            $item->expiresAfter(null);
+            $item->tag(['navbar_categories']);
+
+            return $this->entityManager
+                ->getRepository(Category::class)
+                ->fetchForTopNavBar($locale);
+        });
+
         foreach ($categories as $category) {
             $menu->addChild($category->getName($locale), [
                 'route' => 'app_index_catalogue_category',
@@ -43,32 +57,25 @@ final readonly class NavBuilder
         return $menu;
     }
 
-    public function subCategoryMenu(): ItemInterface
+    public function subCategoryMenu(array $options): ItemInterface
     {
         $locale = $this->getLocale();
         $menu = $this->factory->createItem('root');
+        /** @var Category|null $category */
+        $category = $options['category'] ?? null;
+
         $menu
             ->setChildrenAttribute('class', 'navbar-subcategory')
             ->setChildrenAttribute('data-cat-label', \sprintf('--- %s ---', $this->translator->trans('category.plural')));
 
-        $repository = $this->entityManager->getRepository(Category::class);
-        $currentCategory = $repository
-            ->findOneBy(['alias'.ucfirst($locale) => $this->getRequest()->attributes->get('catAlias')])
-            ?? throw new \RuntimeException('No current category found');
-
-        $subCategories = $repository
-            ->fetchChildren($currentCategory)
-            ->getQuery()
-            ->getResult();
-
-        foreach ($subCategories as $category) {
-            $menu->addChild($category->getName($locale), [
+        foreach ($category->getChildren() as $childCategory) {
+            $menu->addChild($childCategory->getName($locale), [
                 'route' => 'app_index_catalogue_category',
                 'attributes' => ['class' => ''],
                 'linkAttributes' => ['class' => ''],
                 'routeParameters' => [
-                    'catAlias' => $currentCategory->getAlias($locale),
-                    'subCatAlias' => $category->getAlias($locale),
+                    'catAlias' => $category->getAlias($locale),
+                    'subCatAlias' => $childCategory->getAlias($locale),
                 ],
             ])->setExtra('translation_domain', false);
         }

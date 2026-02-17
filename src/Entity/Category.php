@@ -211,4 +211,11 @@ class Category
 
         return $this->$method();
     }
+
+    public function getDescription(string $locale): ?string
+    {
+        $method = __FUNCTION__.ucfirst($locale);
+
+        return $this->$method();
+    }
 }

@@ -20,24 +20,6 @@ final readonly class EntityHelper
     ) {
     }
 
-    /**
-     * Parent categories get a position, used for
-     * sorting the top navigation menu.
-     */
-    /*
-    public function setCategoryPosition(Category $category): void
-    {
-        $lastPosition = $this->em
-            ->getRepository(Category::class)
-            ->findLastCreatedParent();
-        $nextPosition = ($lastPosition?->getPosition() ?? 0) + 1;
-
-        if (!$category->getParent() instanceof Category) {
-            $category->setPosition($nextPosition);
-        }
-    }
-    */
-
     public function setCategoryAlias(Category $category): void
     {
         foreach ($category->getTranslations() as $translation) {
@@ -59,5 +41,13 @@ final readonly class EntityHelper
         $aliasEn = $this->slugger->slug($product->getTitleEn())->lower();
         $product->setTitleDeSlug($aliasDe->toString());
         $product->setTitleEnSlug($aliasEn->toString());
+    }
+
+    /**
+     * @return array<int, int>
+     */
+    public static function getCategoryChildrenIds(Category $category): array
+    {
+        return \array_map(static fn (Category $cat) => $cat->getId(), \iterator_to_array($category->getChildren()));
     }
 }

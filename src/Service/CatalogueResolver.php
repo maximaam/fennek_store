@@ -6,7 +6,7 @@ namespace App\Service;
 
 use App\Dto\CatalogueRequestDto;
 use App\Dto\CatalogueResultDto;
-use App\Entity\Category;
+use App\Helper\EntityHelper;
 use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -23,7 +23,8 @@ final readonly class CatalogueResolver
     {
         if ($dto->isProductView()) {
             $titleSlug = \sprintf('title%sSlug', ucfirst($dto->locale));
-            $product = $this->productRepository->findOneBy([$titleSlug => $dto->productAlias])
+            $product = $this->productRepository
+                ->findOneBy([$titleSlug => $dto->productAlias])
                 ?? throw new NotFoundHttpException();
 
             return new CatalogueResultDto(
@@ -34,14 +35,12 @@ final readonly class CatalogueResolver
             );
         }
 
-        $aliasField = 'alias'.ucfirst($dto->locale);
-
         if ($dto->isMainCategoryView()) {
             $category = $this->categoryRepository
-                ->findOneBy([$aliasField => $dto->categoryAlias])
+                ->fetchOneInDepthByAlias($dto->categoryAlias, $dto->locale)
                 ?? throw new NotFoundHttpException();
 
-            $categoryIds = \array_map(static fn (Category $cat) => $cat->getId(), \iterator_to_array($category->getChildren()));
+            $categoryIds = EntityHelper::getCategoryChildrenIds($category);
             $products = $this->productRepository
                 ->fetchByCategories($categoryIds)
                 ->setMaxResults(12)
@@ -59,17 +58,13 @@ final readonly class CatalogueResolver
         // ─────────────────────────────
         // Sub-category
         // ─────────────────────────────
-        $category = $this->categoryRepository->findOneBy([
-            $aliasField => $dto->subCategoryAlias,
-        ]) ?? throw new NotFoundHttpException();
-
-        $products = $this->productRepository->findBy([
-            'category' => $category,
-        ]);
+        $category = $this->categoryRepository
+            ->fetchOneInDepthByAlias($dto->categoryAlias, $dto->locale)
+            ?? throw new NotFoundHttpException();
 
         return new CatalogueResultDto(
             category: $category,
-            products: $products,
+            products: $this->productRepository->findBy(['category' => $category]),
             product: null,
             template: 'index/products.html.twig',
         );

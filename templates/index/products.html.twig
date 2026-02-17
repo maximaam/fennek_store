@@ -10,7 +10,7 @@
         <div class="row">
             <aside class="col-md-3 sidebar">
                 <div class="sidebar-header">
-                    {% set subCatMenu = knp_menu_get('subCategory') %}
+                    {% set subCatMenu = knp_menu_get('subCategory', [], { category: category }) %}
                     {{ knp_menu_render(subCatMenu) }}
                 </div>
                 <blockquote class="cat-desc">
