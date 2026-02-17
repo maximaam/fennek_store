@@ -86,5 +86,4 @@ class CategoryRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleColumnResult(); // Doctrine >= 2.8
     }
-
 }

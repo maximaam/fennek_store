@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\Entity\Category;
-use App\Entity\CategoryTranslation;use App\Entity\MediaImage;
+use App\Entity\CategoryTranslation;
+use App\Entity\MediaImage;
 use App\Entity\Page;
 use App\Entity\Product;
 use App\Entity\Purchase;

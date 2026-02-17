@@ -47,8 +47,6 @@ final class SitemapController extends AbstractController
         $response->setPublic();
         $response->setMaxAge(86400);
 
-
-
         return $response;
     }
 
