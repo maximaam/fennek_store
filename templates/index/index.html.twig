@@ -11,7 +11,7 @@
         <div class="container">
             <div class="row">
                 {% for product in products %}
-                    {% include 'partials/_product_card.html.twig' with {product: product, isHomepage: true} %}
+                    {% include 'partials/_product_card_array.html.twig' with {product: product, isHomepage: true} %}
                 {% endfor %}
             </div>
         </div>

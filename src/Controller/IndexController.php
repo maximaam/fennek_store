@@ -10,10 +10,13 @@ use App\Repository\PageRepository;
 use App\Repository\ProductRepository;
 use App\Service\CatalogueResolver;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface as CacheItemInterface;
 
 #[Route(
     '/{_locale}',
@@ -23,12 +26,26 @@ use Symfony\Component\Routing\Attribute\Route;
 )]
 final class IndexController extends AbstractController
 {
+    public function __construct(
+        #[Autowire(service: 'app.navbar_categories')]
+        private readonly CacheInterface $cache,
+    ) {
+    }
+
     #[Route('/', name: 'index', methods: [Request::METHOD_GET])]
     #[Cache(maxage: 86400, smaxage: 86400, public: true)]
-    public function index(ProductRepository $productRepo): Response
+    public function index(ProductRepository $productRepo, string $_locale): Response
     {
+        $cacheKey = \sprintf('index_page_products_%s', $_locale);
+        $products = $this->cache->get($cacheKey, static function (CacheItemInterface $item) use ($productRepo, $_locale) {
+            $item->expiresAfter(null);
+            $item->tag(['index_page_products']);
+
+            return $productRepo->fetchForIndexPage($_locale);
+        });
+
         return $this->render('index/index.html.twig', [
-            'products' => $productRepo->findBy(['topItem' => true], ['updatedAt' => 'DESC'], 20),
+            'products' => $products,
         ]);
     }
 

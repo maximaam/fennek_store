@@ -19,6 +19,33 @@ class ProductRepository extends ServiceEntityRepository
         parent::__construct($registry, Product::class);
     }
 
+    public function fetchForIndexPage(string $locale, int $limit = 20): array
+    {
+        return $this->createQueryBuilder('p')
+            ->innerJoin('p.category', 'c')
+            ->innerJoin('p.translations', 'pt', 'WITH', 'pt.locale = :locale')
+            ->innerJoin('c.translations', 'ct', 'WITH', 'ct.locale = :locale')
+            ->leftJoin('c.parent', 'cp')
+            ->leftJoin('cp.translations', 'cpt', 'WITH', 'cpt.locale = :locale')
+            ->leftJoin( // Subquery ti get the first image of the product
+                'p.images',
+                'mi',
+                'WITH',
+                'mi.id = (
+                SELECT MIN(mi2.id)
+                FROM App\Entity\MediaImage mi2
+                WHERE mi2.product = p
+            )'
+            )
+            ->where('p.topItem = true')
+            ->setParameter('locale', $locale)
+            ->orderBy('p.updatedAt', 'DESC')
+            ->setMaxResults($limit)
+            ->select('p.price, pt.title, pt.slug, ct.alias AS sub_cat, cpt.alias AS cat, mi.imageName AS image')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
     /**
      * @param array<int, int|null> $categories
      */

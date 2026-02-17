@@ -4,6 +4,13 @@ framework:
             app.navbar_categories:
                 adapter: cache.app
                 tags: true # Needed for cache invalidation
+
+            app.index_page_products:
+                adapter: cache.app
+                tags: true # Needed for cache invalidation
+
+
+
         # Unique name of your app: used to compute stable namespaces for cache keys.
         #prefix_seed: your_vendor_name/app_name
 
