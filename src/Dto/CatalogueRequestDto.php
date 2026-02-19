@@ -8,24 +8,18 @@ final readonly class CatalogueRequestDto
 {
     public function __construct(
         public string $locale,
-        public string $categoryAlias,
-        public ?string $subCategoryAlias,
-        public ?string $productAlias,
+        public string $category,
+        public ?string $productSlug,
     ) {
     }
 
     public function isProductView(): bool
     {
-        return null !== $this->productAlias;
+        return null !== $this->productSlug;
     }
 
-    public function isMainCategoryView(): bool
+    public function isCategoryView(): bool
     {
-        return null === $this->productAlias && null === $this->subCategoryAlias;
-    }
-
-    public function isSubCategoryView(): bool
-    {
-        return null === $this->productAlias && null !== $this->subCategoryAlias;
+        return null === $this->productSlug;
     }
 }

@@ -46,11 +46,11 @@ final readonly class NavBuilder
 
         foreach ($categories as $category) {
             $menu->addChild($category->getName($locale), [
-                'route' => 'app_index_catalogue_category',
+                'route' => 'app_index_catalogue',
                 'attributes' => ['class' => 'nav-item'],
                 'linkAttributes' => ['class' => 'nav-link'],
                 'routeParameters' => [
-                    'catAlias' => $category->getAlias($locale),
+                    'category' => $category->getAlias($locale),
                 ],
             ])->setExtra('translation_domain', false);
         }
@@ -60,25 +60,19 @@ final readonly class NavBuilder
 
     public function subCategoryMenu(array $options): ItemInterface
     {
-        $locale = $this->getLocale();
         $menu = $this->factory->createItem('root');
-        /** @var Category|null $category */
-        $category = $options['category'] ?? null;
-
-        // Manage top category and sub category page
-        $category = null === $category->getParent() ? $category : $category->getParent();
+        $subCategories = $options['sub_categories'] ?? null;
         $menu
             ->setChildrenAttribute('class', 'navbar-subcategory')
             ->setChildrenAttribute('data-cat-label', \sprintf('--- %s ---', $this->translator->trans('category.plural')));
 
-        foreach ($category->getChildren() as $childCategory) {
-            $menu->addChild($childCategory->getName($locale), [
-                'route' => 'app_index_catalogue_category',
+        foreach ($subCategories as $subCategory) {
+            $menu->addChild($subCategory['name'], [
+                'route' => 'app_index_catalogue',
                 'attributes' => ['class' => ''],
                 'linkAttributes' => ['class' => ''],
                 'routeParameters' => [
-                    'catAlias' => $category->getAlias($locale),
-                    'subCatAlias' => $childCategory->getAlias($locale),
+                    'category' => $subCategory['alias'],
                 ],
             ])->setExtra('translation_domain', false);
         }

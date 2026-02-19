@@ -1,0 +1,2 @@
+{% set subCatMenu = knp_menu_get('subCategory', [], {category: category, sub_categories: sub_categories}) %}
+{{ knp_menu_render(subCatMenu) }}

@@ -15,14 +15,14 @@ trait TimestampableTrait
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    # #[ORM\PrePersist]
+    #[ORM\PrePersist]
     public function setCreatedAtValue(): void
     {
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
     }
 
-    # #[ORM\PreUpdate]
+    #[ORM\PreUpdate]
     public function setUpdatedAtValue(): void
     {
         $this->updatedAt = new \DateTimeImmutable();

@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Entity\Category;
-use App\Entity\Product;
-use App\Enum\Color;
+use App\Entity\CategoryTranslation;use App\Entity\Product;
+use App\Entity\ProductTranslation;use App\Enum\Color;
 use App\Enum\Size;
-use App\Form\MediaImageType;
-use Doctrine\ORM\EntityRepository;
+use App\Form\CategoryTranslationType;use App\Form\MediaImageType;
+use App\Form\ProductTranslationType;use Doctrine\ORM\EntityRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -65,8 +65,8 @@ final class ProductCrudController extends AbstractCrudController
     public function configureFilters(Filters $filters): Filters
     {
         return $filters
-            ->add('titleDe')
-            ->add('titleEn')
+            //->add('titleDe')
+            //->add('titleEn')
             ->add('topItem');
     }
 
@@ -129,9 +129,10 @@ final class ProductCrudController extends AbstractCrudController
             ->renderAsNativeWidget()
             ->setFormTypeOptions([
                 'query_builder' => static fn (EntityRepository $er) => $er->createQueryBuilder('c')
+                    ->leftJoin('c.translations', 'ct')
                     ->andWhere('c.parent IS NOT NULL')
                     ->orderBy('c.parent', 'ASC')
-                    ->addOrderBy('c.nameDe', 'ASC'),
+                    ->addOrderBy('ct.name', 'ASC'),
                 'choice_label' => static function (Category $c) {
                     if ($c->getParent() instanceof Category) {
                         return \sprintf('%s → %s', $c->getParent()->getNameDe(), $c->getNameDe());
@@ -147,15 +148,20 @@ final class ProductCrudController extends AbstractCrudController
         yield FormField::addColumn(6);
         yield TextField::new('itemNumber', 'product.item_number');
 
-        yield FormField::addColumn(6);
-        yield FormField::addFieldset('label.german');
-        yield TextField::new('titleDe', 'label.title.de');
-        yield TextareaField::new('descriptionDe', 'label.description.de');
-
-        yield FormField::addColumn(6);
-        yield FormField::addFieldset('label.english');
-        yield TextField::new('titleEn', 'label.title.en');
-        yield TextareaField::new('descriptionEn', 'label.description.en');
+        yield FormField::addColumn(12);
+        yield CollectionField::new('translations')
+            ->setEntryType(ProductTranslationType::class)
+            ->setEntryIsComplex()
+            ->setFormTypeOptions([
+                'by_reference' => false,
+                'label' => false,
+            ])
+            ->allowAdd(false)
+            ->allowDelete(false)
+            ->setEntryToStringMethod(
+                static fn (ProductTranslation $value, TranslatorInterface $translator): string => $translator->trans(\sprintf('label.%s', $value->getLocale()))
+            )
+            ->renderExpanded();
 
         yield FormField::addColumn(12);
         yield ChoiceField::new('colors')

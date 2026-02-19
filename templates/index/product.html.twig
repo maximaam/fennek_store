@@ -3,7 +3,7 @@
 {% set locale = app.request.locale %}
 
 {% block title %}
-    {{ product.category.name(locale) }} -
+    {{ category.name }} -
     {{ product.title(locale) }} -
     {{ parent() }}
 {% endblock %}
@@ -18,8 +18,7 @@
             {% else %}
             <aside class="col-md-3 sidebar">
                 <div class="sidebar-header">
-                    {% set subCatMenu = knp_menu_get('subCategory') %}
-                    {{ knp_menu_render(subCatMenu) }}
+                    {% include 'partials/_sub_categories.html.twig' %}
                 </div>
             </aside>
             <div class="col-md-9">

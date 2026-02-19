@@ -80,11 +80,10 @@ final class IndexController extends AbstractController
         ]);
     }
 
-    #[Route('/{catAlias}/{subCatAlias?}', name: 'catalogue_category', methods: [Request::METHOD_GET])]
-    #[Route('/{catAlias}/{subCatAlias}/{productAlias}', name: 'catalogue_product', methods: [Request::METHOD_GET])]
-    public function catalogue(Request $request, CatalogueResolver $resolver, string $_locale, string $catAlias, ?string $subCatAlias = null, ?string $productAlias = null): Response
+    #[Route('/{category}/{productSlug?}', name: 'catalogue', methods: [Request::METHOD_GET])]
+    public function catalogue(Request $request, CatalogueResolver $resolver, string $_locale, string $category, ?string $productSlug = null): Response
     {
-        $requestDTO = new CatalogueRequestDto($_locale, $catAlias, $subCatAlias, $productAlias);
+        $requestDTO = new CatalogueRequestDto($_locale, $category, $productSlug);
         $result = $resolver->resolve($requestDTO);
 
         /**
@@ -92,12 +91,16 @@ final class IndexController extends AbstractController
          * return 304 response instead of 200.
          * Otherwise, the #[Cache is enough.
          */
+
+        /*
         $dates = array_filter([
             $result->product?->getUpdatedAt(),
             $result->category?->getUpdatedAt(),
             $result->category?->getParent()?->getUpdatedAt(),
         ]);
+        */
 
+        $dates = [];
         $lastModified = ([] !== $dates)
             ? max($dates)
             : new \DateTimeImmutable();
@@ -114,6 +117,7 @@ final class IndexController extends AbstractController
 
         return $this->render($result->template, [
             'category' => $result->category,
+            'sub_categories' => $result->subCategories,
             'products' => $result->products,
             'product' => $result->product,
         ], $response);

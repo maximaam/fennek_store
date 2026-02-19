@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Repository\ProductRepository;
+use App\Helper\EntityHelper;use App\Repository\ProductRepository;
 use App\Traits\TimestampableTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -203,6 +203,30 @@ class Product
         return null;
     }
 
+    public function getTitleDe(): ?string
+    {
+        return $this->getTranslationByLocale(EntityHelper::LOCALE_DE)
+            ->getTitle();
+    }
+
+    public function getTitleEn(): ?string
+    {
+        return $this->getTranslationByLocale(EntityHelper::LOCALE_EN)
+            ->getTitle();
+    }
+
+    public function getDescriptionDe(): ?string
+    {
+        return $this->getTranslationByLocale(EntityHelper::LOCALE_DE)
+            ->getDescription();
+    }
+
+    public function getDescriptionEn(): ?string
+    {
+        return $this->getTranslationByLocale(EntityHelper::LOCALE_EN)
+            ->getDescription();
+    }
+
     public function getTitleSlug(string $locale): ?string
     {
         return $this->getTranslationByLocale($locale)
@@ -211,8 +235,9 @@ class Product
 
     public function getTitle(string $locale): ?string
     {
-        return $this->getTranslationByLocale($locale)
-            ->getTitle();
+        $method = __FUNCTION__.ucfirst($locale);
+
+        return $this->$method();
     }
 
     public function getDescription(string $locale): ?string

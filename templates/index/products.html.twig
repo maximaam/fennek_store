@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
-    {{ category.name(app.request.locale) }} -
+    {{ category.name }} -
     {{ parent() }}
 {% endblock %}
 
@@ -10,13 +10,12 @@
         <div class="row">
             <aside class="col-md-3 sidebar">
                 <div class="sidebar-header">
-                    {% set subCatMenu = knp_menu_get('subCategory', [], { category: category }) %}
-                    {{ knp_menu_render(subCatMenu) }}
+                    {% include 'partials/_sub_categories.html.twig' %}
                 </div>
                 <blockquote class="cat-desc">
-                    {% if category.parent == null %}
+                    {% if sub_categories != null %}
                         <i class="fa fa-quote-right"></i>
-                        <p>{{ category.description(app.request.locale)|nl2br }}</p>
+                        <p>{{ category.description|nl2br }}</p>
                     {% endif %}
                 </blockquote>
             </aside>
@@ -28,9 +27,9 @@
                     </div>
                 {% else %}
                     <div class="row">
-                        <h1>{{ category.name(app.request.locale) }}</h1>
+                        <h1>{{ category.name }}</h1>
                         {% for product in products %}
-                            {% include 'partials/_product_card.html.twig' with {product: product, card_size: 4, img_filter: 'medium'} %}
+                            {% include 'partials/_product_card_array.html.twig' with {product: product, category: category, card_size: 4, img_filter: 'medium'} %}
                         {% endfor %}
                     </div>
                 {% endif %}

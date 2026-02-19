@@ -6,7 +6,7 @@ namespace App\Repository;
 
 use App\Entity\Category;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\AbstractQuery;use Doctrine\ORM\Query;use Doctrine\ORM\QueryBuilder;use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<Category>
@@ -55,20 +55,43 @@ class CategoryRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
-    public function fetchOneInDepthByAlias(string $alias, string $locale): ?Category
+    public function fetchOneFlatByAlias(string $alias, string $locale): array
+    {
+        return $this->baseQuery($locale)
+            ->leftJoin('c.children', 'child')
+            ->andWhere('ct.alias = :alias')
+            ->setParameter('alias', $alias)
+            ->select('
+                c.id,
+                c.updatedAt,
+                ct.alias,
+                ct.name,
+                ct.description,
+                IDENTITY(c.parent) AS parent_id,
+                CASE WHEN COUNT(child.id) > 0 THEN true ELSE false END AS is_parent
+            ')
+            ->groupBy('c.id, ct.alias, ct.name, ct.description')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult(AbstractQuery::HYDRATE_ARRAY);
+    }
+
+    public function fetchSubCategoriesByParentId(int $id, string $locale): array
+    {
+        return $this->baseQuery($locale)
+            ->select('c.id, ct.alias, ct.name')
+            ->where('c.parent = :parentId')
+            ->setParameter('parentId', $id)
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    private function baseQuery(string $locale): QueryBuilder
     {
         return $this->createQueryBuilder('c')
-            ->select('DISTINCT c, t, children')
-            ->innerJoin('c.translations', 't')
-            ->leftJoin('c.children', 'children')
-            ->leftJoin('children.translations', 'ct')
-            ->addSelect('ct')
-            ->where('t.alias = :alias')
-            ->andWhere('t.locale = :locale')
-            ->setParameter('alias', $alias)
-            ->setParameter('locale', $locale)
-            ->getQuery()
-            ->getOneOrNullResult();
+            ->innerJoin('c.translations', 'ct', 'WITH', 'ct.locale = :locale')
+            ->andWhere('ct.locale = :locale')
+            ->setParameter('locale', $locale);
     }
 
     public function findChildrenIdsByAlias(string $alias, string $locale): array
