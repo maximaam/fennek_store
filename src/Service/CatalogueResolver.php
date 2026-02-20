@@ -6,7 +6,7 @@ namespace App\Service;
 
 use App\Dto\CatalogueRequestDto;
 use App\Dto\CatalogueResultDto;
-use App\Repository\CategoryRepository;
+use App\Dto\ProductViewDto;use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -42,14 +42,14 @@ final readonly class CatalogueResolver
         }
 
         $product = $this->productRepository
-            ->fetchOneFlatBy(['slug' => $dto->productSlug], $dto->locale)
+            ->fetchOneBy(['slug' => $dto->productSlug], $dto->locale)
             ?? throw new NotFoundHttpException();
 
         return new CatalogueResultDto(
             category: $category,
             subCategories: $subCategories,
             products: null,
-            product: $product,
+            product: ProductViewDto::fromProduct($product),
             template: 'index/product.html.twig',
         );
     }

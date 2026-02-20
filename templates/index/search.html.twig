@@ -19,7 +19,7 @@
 
                     <div class="row">
                         {% for product in products %}
-                            {% include 'partials/_product_card.html.twig' with {product: product} %}
+                            {% include 'partials/_product_card.html.twig' with {product: product, sub_cat: product.sub_cat} %}
                         {% endfor %}
                     </div>
 

@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
-use App\Entity\Category;use App\Entity\Product;
+use App\Entity\Product;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\AbstractQuery;use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -14,6 +15,10 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ProductRepository extends ServiceEntityRepository
 {
+    public const string QB_ALIAS = 'p';
+    public const string QB_ALIAS_TRANSLATION = 'pt';
+    public const string QB_ALIAS_IMAGE = 'pi';
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Product::class);
@@ -32,7 +37,7 @@ class ProductRepository extends ServiceEntityRepository
     public function fetchOneBy(array $field, string $locale): ?Product
     {
         return $this->baseQuery($locale)
-            ->andWhere(\sprintf('t.%s = :target', key($field)))
+            ->andWhere(\sprintf('pt.%s = :target', key($field)))
             ->setParameter('target', current($field))
             ->getQuery()
             ->getOneOrNullResult();
@@ -78,12 +83,12 @@ class ProductRepository extends ServiceEntityRepository
      */
     public function searchTitle(string $query, string $locale, int $limit = 10): array
     {
-        return $this->baseQuery($locale)
-            ->andWhere('t.title LIKE :title')
+        return $this->baseQueryProducts($locale)
+            ->andWhere('pt.title LIKE :title')
             ->setParameter('title', '%'.$query.'%')
             ->setMaxResults($limit)
             ->getQuery()
-            ->getResult();
+            ->getArrayResult();
     }
 
     private function baseQueryProducts(string $locale): QueryBuilder

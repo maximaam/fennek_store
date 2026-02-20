@@ -93,7 +93,7 @@ final class IndexController extends AbstractController
          * Otherwise, the #[Cache is enough.
          */
         $dates = array_filter([
-            $result->product['updatedAt'] ?? null,
+            $result->product->updatedAt ?? null,
             $result->category['updatedAt'],
         ]);
 
@@ -112,7 +112,7 @@ final class IndexController extends AbstractController
             'category' => $result->category,
             'sub_categories' => $result->subCategories,
             'products' => $result->products,
-            'product' => EntityHelper::formatProduct($result->product),
+            'product' => $result->product,
         ], $response);
     }
 }

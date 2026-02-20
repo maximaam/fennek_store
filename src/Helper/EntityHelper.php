@@ -56,20 +56,20 @@ final readonly class EntityHelper
 
     public static function formatProduct(?array $product): ?array
     {
-        if (null === $product) {
+        if (!$product) {
             return null;
         }
 
-        $translations = current($product['translations']);
-        $images = $product['images'];
+        $translation = $product['translations'][0] ?? [];
+        $images = $product['images'] ?? [];
         unset($product['translations'], $product['images']);
 
-        $final = $product;
-        $final['title'] = $translations['title'];
-        $final['description'] = $translations['description'];
-        $final['slug'] = $translations['slug'];
-        $final['images'] = array_column($images, 'imageName');
-
-        return $final;
+        return [
+            ...$product,
+            'title' => $translation['title'] ?? null,
+            'description' => $translation['description'] ?? null,
+            'slug' => $translation['slug'] ?? null,
+            'images' => array_column($images, 'imageName'),
+        ];
     }
 }
