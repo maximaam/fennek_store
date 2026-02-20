@@ -6,7 +6,9 @@ namespace App\Repository;
 
 use App\Entity\Category;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\AbstractQuery;use Doctrine\ORM\Query;use Doctrine\ORM\QueryBuilder;use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\QueryBuilder;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<Category>
@@ -35,22 +37,20 @@ class CategoryRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findAllByLocale(string $locale): array
+    public function fetchOneBy(array $field, string $locale): ?Category
     {
-        return $this->createQueryBuilder('c')
-            ->leftJoin('c.translations', 't', 'WITH', 't.locale = :locale')
-            ->addSelect('t')
-            ->setParameter('locale', $locale)
+        return $this->baseQuery($locale)
+            ->andWhere(\sprintf('ct.%s = :target', key($field)))
+            ->setParameter('target', current($field))
             ->getQuery()
-            ->getResult();
+            ->getOneOrNullResult();
     }
 
-    public function fetchOneBy(array $field): ?Category
+    public function fetchOneByAlias(string $alias, string $locale): ?Category
     {
-        return $this->createQueryBuilder('c')
-            ->leftJoin('c.translations', 't')
-            ->andWhere(\sprintf('t.%s = :target', key($field)))
-            ->setParameter('target', current($field))
+        return $this->baseQuery($locale)
+            ->andWhere('ct.alias = :alias')
+            ->setParameter('alias', $alias)
             ->getQuery()
             ->getOneOrNullResult();
     }

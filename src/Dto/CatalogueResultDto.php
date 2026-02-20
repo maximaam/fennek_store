@@ -12,7 +12,7 @@ final readonly class CatalogueResultDto
      * @param Product[]|null $products
      */
     public function __construct(
-        public array $category,
+        public CategoryViewDto $category,
         public array $subCategories,
         public ?array $products,
         public ?ProductViewDto $product,

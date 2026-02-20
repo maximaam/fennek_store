@@ -94,7 +94,7 @@ final class IndexController extends AbstractController
          */
         $dates = array_filter([
             $result->product->updatedAt ?? null,
-            $result->category['updatedAt'],
+            $result->category->updatedAt ?? null,
         ]);
 
         $lastModified = ([] !== $dates) ? max($dates) : new \DateTimeImmutable();

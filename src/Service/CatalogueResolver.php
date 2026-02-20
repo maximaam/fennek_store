@@ -6,7 +6,9 @@ namespace App\Service;
 
 use App\Dto\CatalogueRequestDto;
 use App\Dto\CatalogueResultDto;
-use App\Dto\ProductViewDto;use App\Repository\CategoryRepository;
+use App\Dto\CategoryViewDto;
+use App\Dto\ProductViewDto;
+use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -21,16 +23,17 @@ final readonly class CatalogueResolver
     public function resolve(CatalogueRequestDto $dto): CatalogueResultDto
     {
         $category = $this->categoryRepository
-            ->fetchOneFlatByAlias($dto->category, $dto->locale)
+            ->fetchOneByAlias($dto->category, $dto->locale)
             ?? throw new NotFoundHttpException();
         $subCategories = $this->categoryRepository
             ->fetchSubCategoriesByParentId(
-                $category['parent_id'] ?? $category['id'],
+                $category->getParent() ? $category->getParent()->getId() : $category->getId(),
                 $dto->locale,
             );
+        $category = CategoryViewDto::fromCategory($category);
 
         if ($dto->isCategoryView()) {
-            $subCategoryIds = $category['is_parent'] ? array_column($subCategories, 'id') : [$category['id']];
+            $subCategoryIds = $category->parentId ? [$category->id] : array_column($subCategories, 'id');
 
             return new CatalogueResultDto(
                 category: $category,
