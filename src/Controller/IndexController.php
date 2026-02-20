@@ -74,6 +74,7 @@ final class IndexController extends AbstractController
         $query = mb_strtolower($query);
         $products = $productRepo->searchTitle($query, $request->getLocale());
 
+
         return $this->render('index/search.html.twig', [
             'query' => $query,
             'products' => $products,

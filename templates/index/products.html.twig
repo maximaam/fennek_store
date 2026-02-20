@@ -29,7 +29,7 @@
                     <div class="row">
                         <h1>{{ category.name }}</h1>
                         {% for product in products %}
-                            {% include 'partials/_product_card_array.html.twig' with {product: product, category: category, card_size: 4, img_filter: 'medium'} %}
+                            {% include 'partials/_product_card.html.twig' with {product: product, category: category, card_size: 4, img_filter: 'medium'} %}
                         {% endfor %}
                     </div>
                 {% endif %}

@@ -64,9 +64,8 @@ class ProductRepository extends ServiceEntityRepository
      */
     public function searchTitle(string $query, string $locale, int $limit = 10): array
     {
-        return $this->createQueryBuilder('p')
-            ->select('p')
-            ->where('p.title'.\ucfirst($locale).' LIKE :title')
+        return $this->baseQuery($locale)
+            ->andWhere('t.title LIKE :title')
             ->setParameter('title', '%'.$query.'%')
             ->setMaxResults($limit)
             ->getQuery()
