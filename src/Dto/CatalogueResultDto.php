@@ -15,7 +15,7 @@ final readonly class CatalogueResultDto
         public array $category,
         public array $subCategories,
         public ?array $products,
-        public ?Product $product,
+        public ?array $product,
         public string $template,
     ) {
     }

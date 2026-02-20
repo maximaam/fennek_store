@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Dto\CatalogueRequestDto;
 use App\Entity\Page;
+use App\Helper\EntityHelper;
 use App\Repository\PageRepository;
 use App\Repository\ProductRepository;
 use App\Service\CatalogueResolver;
@@ -74,7 +75,6 @@ final class IndexController extends AbstractController
         $query = mb_strtolower($query);
         $products = $productRepo->searchTitle($query, $request->getLocale());
 
-
         return $this->render('index/search.html.twig', [
             'query' => $query,
             'products' => $products,
@@ -89,23 +89,15 @@ final class IndexController extends AbstractController
 
         /**
          * The goal here is to make reload of the page
-         * return 304 response instead of 200.
+         * return 304 response instead of 200 using last modified header.
          * Otherwise, the #[Cache is enough.
          */
-
-        /*
         $dates = array_filter([
-            $result->product?->getUpdatedAt(),
-            $result->category?->getUpdatedAt(),
-            $result->category?->getParent()?->getUpdatedAt(),
+            $result->product['updatedAt'] ?? null,
+            $result->category['updatedAt'],
         ]);
-        */
 
-        $dates = [];
-        $lastModified = ([] !== $dates)
-            ? max($dates)
-            : new \DateTimeImmutable();
-
+        $lastModified = ([] !== $dates) ? max($dates) : new \DateTimeImmutable();
         $response = new Response()
             ->setPublic()
             ->setMaxAge(86400)
@@ -120,7 +112,7 @@ final class IndexController extends AbstractController
             'category' => $result->category,
             'sub_categories' => $result->subCategories,
             'products' => $result->products,
-            'product' => $result->product,
+            'product' => EntityHelper::formatProduct($result->product),
         ], $response);
     }
 }

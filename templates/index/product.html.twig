@@ -4,7 +4,7 @@
 
 {% block title %}
     {{ category.name }} -
-    {{ product.title(locale) }} -
+    {{ product.title }} -
     {{ parent() }}
 {% endblock %}
 
@@ -28,12 +28,12 @@
                     </div>
                 {% endfor %}
 
-                <h1>{{ product.title(locale)}}</h1>
+                <h1>{{ product.title}}</h1>
                 <div data-controller="carousel" class="carousel">
                     <div class="carousel-track" data-carousel-target="track">
                         {% for image in product.images %}
                         <div class="carousel-slide">
-                            <img src="{{ asset('uploads/images/' ~ image.imageName) | imagine_filter('product_medium') }}" alt="" class="carousel-image">
+                            <img src="{{ asset('uploads/images/' ~ image) | imagine_filter('product_medium') }}" alt="" class="carousel-image">
                         </div>
                         {% endfor %}
                     </div>
@@ -42,7 +42,7 @@
                 </div>
 
                 <div class="product-details">
-                    <p class="p-2">{{ product.description(locale)|nl2br }}</p>
+                    <p class="p-2">{{ product.description|nl2br }}</p>
                     <hr>
                     <ul>
                         <li>{{ 'product.item_number'|trans }}: {{ product.itemNumber }}</li>

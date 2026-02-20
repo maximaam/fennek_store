@@ -1,5 +1,5 @@
 {% set itemUrl = path('app_index_catalogue', {
-    category: category.alias,
+    category: sub_cat is defined ? sub_cat : category.alias,
     productSlug: product.slug,
 }) %}
 

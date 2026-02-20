@@ -6,7 +6,7 @@ namespace App\Repository;
 
 use App\Entity\Category;use App\Entity\Product;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\AbstractQuery;use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -38,11 +38,25 @@ class ProductRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    public function fetchOneFlatBy(array $field, string $locale): ?array
+    {
+        return $this->createQueryBuilder('p')
+            ->innerJoin('p.translations', 'pt', 'WITH', 'pt.locale = :locale')
+            ->andWhere('pt.locale = :locale')
+            ->setParameter('locale', $locale)
+            ->leftJoin('p.images', 'i')
+            ->addSelect('i, pt')
+            ->andWhere(\sprintf('pt.%s = :target', key($field)))
+            ->setParameter('target', current($field))
+            ->getQuery()
+            ->getOneOrNullResult(AbstractQuery::HYDRATE_ARRAY);
+    }
+
     private function baseQuery(string $locale): QueryBuilder
     {
         return $this->createQueryBuilder('p')
-            ->innerJoin('p.translations', 't', 'WITH', 't.locale = :locale')
-            ->andWhere('t.locale = :locale')
+            ->innerJoin('p.translations', 'pt', 'WITH', 'pt.locale = :locale')
+            ->andWhere('pt.locale = :locale')
             ->setParameter('locale', $locale);
     }
 

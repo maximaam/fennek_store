@@ -42,7 +42,7 @@ final readonly class CatalogueResolver
         }
 
         $product = $this->productRepository
-            ->fetchOneBy(['slug' => $dto->productSlug], $dto->locale)
+            ->fetchOneFlatBy(['slug' => $dto->productSlug], $dto->locale)
             ?? throw new NotFoundHttpException();
 
         return new CatalogueResultDto(

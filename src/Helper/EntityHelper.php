@@ -53,4 +53,23 @@ final readonly class EntityHelper
     {
         return \array_map(static fn (Category $cat) => $cat->getId(), \iterator_to_array($category->getChildren()));
     }
+
+    public static function formatProduct(?array $product): ?array
+    {
+        if (null === $product) {
+            return null;
+        }
+
+        $translations = current($product['translations']);
+        $images = $product['images'];
+        unset($product['translations'], $product['images']);
+
+        $final = $product;
+        $final['title'] = $translations['title'];
+        $final['description'] = $translations['description'];
+        $final['slug'] = $translations['slug'];
+        $final['images'] = array_column($images, 'imageName');
+
+        return $final;
+    }
 }
