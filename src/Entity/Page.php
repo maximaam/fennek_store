@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Helper\EntityHelper;
 use App\Repository\PageRepository;
 use App\Traits\TimestampableTrait;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -26,7 +27,7 @@ class Page
     /**
      * @var Collection<int, PageTranslation>
      */
-    #[ORM\OneToMany(targetEntity: PageTranslation::class, mappedBy: 'page', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: PageTranslation::class, mappedBy: 'page', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $translations;
 
     public function __construct()
@@ -91,5 +92,81 @@ class Page
         }
 
         return $this;
+    }
+
+    // | Extra methods | \\
+    // ----------------- \\
+
+    public function getTranslationByLocale(string $locale): ?PageTranslation
+    {
+        foreach ($this->translations as $translation) {
+            if ($translation->getLocale() === $locale) {
+                return $translation;
+            }
+        }
+
+        return null;
+    }
+
+    public function __toString(): string
+    {
+        return $this->getTitleDe();
+    }
+
+    public function getTitleDe(): ?string
+    {
+        return $this->getTranslationByLocale(EntityHelper::LOCALE_DE)
+            ?->getTitle();
+    }
+
+    public function getTitleEn(): ?string
+    {
+        return $this->getTranslationByLocale(EntityHelper::LOCALE_EN)
+            ?->getTitle();
+    }
+
+    public function getAliasDe(): ?string
+    {
+        return $this->getTranslationByLocale(EntityHelper::LOCALE_DE)
+            ?->getAlias();
+    }
+
+    public function getAliasEn(): ?string
+    {
+        return $this->getTranslationByLocale(EntityHelper::LOCALE_EN)
+            ?->getAlias();
+    }
+
+    public function getDescriptionDe(): ?string
+    {
+        return $this->getTranslationByLocale(EntityHelper::LOCALE_DE)
+            ?->getDescription();
+    }
+
+    public function getDescriptionEn(): ?string
+    {
+        return $this->getTranslationByLocale(EntityHelper::LOCALE_EN)
+            ?->getDescription();
+    }
+
+    public function getTitle(string $locale): ?string
+    {
+        $method = __FUNCTION__.ucfirst($locale);
+
+        return $this->$method();
+    }
+
+    public function getAlias(string $locale): ?string
+    {
+        $method = __FUNCTION__.ucfirst($locale);
+
+        return $this->$method();
+    }
+
+    public function getDescription(string $locale): ?string
+    {
+        $method = __FUNCTION__.ucfirst($locale);
+
+        return $this->$method();
     }
 }

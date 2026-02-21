@@ -32,10 +32,9 @@ final readonly class EntityHelper
 
     public function setPageAlias(Page $page): void
     {
-        $aliasDe = $this->slugger->slug($page->getTitleDe())->lower();
-        $aliasEn = $this->slugger->slug($page->getTitleEn())->lower();
-        $page->setAliasDe($aliasDe->toString());
-        $page->setAliasEn($aliasEn->toString());
+        foreach ($page->getTranslations() as $translation) {
+            $translation->setAlias($this->slugger->slug($translation->getTitle())->lower()->toString());
+        }
     }
 
     public function setProductTitleSlug(Product $product): void
@@ -44,13 +43,5 @@ final readonly class EntityHelper
         foreach ($product->getTranslations() as $translation) {
             $translation->setSlug($this->slugger->slug($translation->getTitle())->lower()->toString());
         }
-    }
-
-    /**
-     * @return array<int, int>
-     */
-    public static function getCategoryChildrenIds(Category $category): array
-    {
-        return \array_map(static fn (Category $cat) => $cat->getId(), \iterator_to_array($category->getChildren()));
     }
 }

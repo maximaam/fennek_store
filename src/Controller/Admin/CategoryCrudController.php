@@ -75,7 +75,7 @@ final class CategoryCrudController extends AbstractCrudController
         return $filters->add(CategoryNameFilter::new('name', 'Name (DE)', 'de'));
     }
 
-    // This join avoids FETCH::EAGER
+    // This join avoids FETCH::EAGER and reduces the number of queries
     public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): QueryBuilder
     {
         $qb = parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);

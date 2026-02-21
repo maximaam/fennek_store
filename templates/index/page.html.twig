@@ -1,11 +1,14 @@
 {% extends 'base.html.twig' %}
 
+{% set translation = page.translations[0] %}
+{% set image = page.images|length > 0 ? page.images|first : null %}
+
 {% block body %}
     <div class="container">
         <div class="row">
             <div class="col-12 admin-page">
-                <h1>{{ page.title(app.request.locale) }}</h1>
-                {{ page.description(app.request.locale)|raw }}
+                <h1>{{ translation.title }}</h1>
+                {{ translation.description|raw }}
             </div>
         </div>
     </div>

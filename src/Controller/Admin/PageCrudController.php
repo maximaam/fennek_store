@@ -5,17 +5,18 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Entity\Page;
+use App\Entity\PageTranslation;
 use App\Form\MediaImageType;
+use App\Form\PageTranslationType;
+use App\Helper\EntityHelper;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -34,6 +35,18 @@ final class PageCrudController extends AbstractCrudController
         return Page::class;
     }
 
+    public function createEntity(string $entityFqcn): Page
+    {
+        $page = new Page();
+        foreach (EntityHelper::LOCALES as $locale) {
+            $translation = new PageTranslation();
+            $translation->setLocale($locale);
+            $page->addTranslation($translation);
+        }
+
+        return $page;
+    }
+
     #[\Override]
     public function configureActions(Actions $actions): Actions
     {
@@ -47,11 +60,13 @@ final class PageCrudController extends AbstractCrudController
             );
     }
 
+    /*
     #[\Override]
     public function configureFilters(Filters $filters): Filters
     {
         return $filters->add('titleDe');
     }
+    */
 
     #[\Override]
     public function configureCrud(Crud $crud): Crud
@@ -94,14 +109,19 @@ final class PageCrudController extends AbstractCrudController
     private function getMainFields(): iterable
     {
         yield FormField::addColumn(12);
-        yield FormField::addFieldset('label.german');
-        yield TextField::new('titleDe', 'label.title.de');
-        yield TextEditorField::new('descriptionDe', 'label.description.de');
-
-        yield FormField::addColumn(12);
-        yield FormField::addFieldset('label.english');
-        yield TextField::new('titleEn', 'label.title.en');
-        yield TextEditorField::new('descriptionEn', 'label.description.en');
+        yield CollectionField::new('translations')
+            ->setEntryType(PageTranslationType::class)
+            ->setEntryIsComplex()
+            ->setFormTypeOptions([
+                'by_reference' => false,
+                'label' => false,
+            ])
+            ->allowAdd(false)
+            ->allowDelete(false)
+            ->setEntryToStringMethod(
+                static fn (PageTranslation $value, TranslatorInterface $translator): string => $translator->trans(\sprintf('label.%s', $value->getLocale()))
+            )
+            ->renderExpanded();
 
         yield FormField::addColumn(12);
         yield CollectionField::new('images', 'label.image')

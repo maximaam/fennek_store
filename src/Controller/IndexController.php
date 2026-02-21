@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Dto\CatalogueRequestDto;
-use App\Entity\Page;
-use App\Helper\EntityHelper;
 use App\Repository\PageRepository;
 use App\Repository\ProductRepository;
 use App\Service\CatalogueResolver;
@@ -28,7 +26,7 @@ use Symfony\Contracts\Cache\ItemInterface as CacheItemInterface;
 final class IndexController extends AbstractController
 {
     public function __construct(
-        #[Autowire(service: 'app.navbar_categories')]
+        #[Autowire(service: 'app.index_page_products')]
         private readonly CacheInterface $cache,
     ) {
     }
@@ -54,14 +52,12 @@ final class IndexController extends AbstractController
     #[Cache(maxage: 86400, smaxage: 86400, public: true)]
     public function page(PageRepository $pageRepo, string $alias, string $_locale): Response
     {
-        $aliasI18n = 'alias'.ucfirst($_locale);
-        $page = $pageRepo->findOneBy([$aliasI18n => $alias]);
-
-        if (!$page instanceof Page) {
+        $page = $pageRepo->fetchOneByAlias($alias, $_locale) ??
             throw $this->createNotFoundException(\sprintf('Page with alias "%s" not found', $alias));
-        }
 
-        return $this->render('index/page.html.twig', ['page' => $page]);
+        return $this->render('index/page.html.twig', [
+            'page' => $page,
+        ]);
     }
 
     #[Route('/search', name: 'search', methods: [Request::METHOD_GET])]

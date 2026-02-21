@@ -8,8 +8,10 @@ use App\Entity\Category;
 use App\Entity\CategoryTranslation;
 use App\Entity\MediaImage;
 use App\Entity\Page;
+use App\Entity\PageTranslation;
 use App\Entity\Product;
-use App\Entity\ProductTranslation;use App\Entity\Purchase;
+use App\Entity\ProductTranslation;
+use App\Entity\Purchase;
 use App\Enum\MediaImageOwner;
 use App\Enum\PayPalStatus;
 use App\Helper\EntityHelper;
@@ -22,6 +24,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[AsCommand(
@@ -36,6 +39,7 @@ class ImportLegacyDataCommand extends Command
         private readonly EntityManagerInterface $entityManager,
         private readonly EntityHelper $entityHelper,
         private readonly TranslatorInterface $translator,
+        private readonly UrlGeneratorInterface $urlGenerator,
         #[Autowire('%kernel.project_dir%')]
         private readonly string $rootDir,
     ) {
@@ -235,13 +239,21 @@ class ImportLegacyDataCommand extends Command
 
             $page = new Page()
                 ->setCreatedAtLegacy($row[1])
-                ->setUpdatedAtLegacy($row[2])
-                ->setTitleDe($row[3])
-                ->setTitleEn($row[4])
-                ->setDescriptionDe($row[5])
-                ->setDescriptionEn($row[6])
-                ->setAliasDe($row[7])
-                ->setAliasEn($row[8]);
+                ->setUpdatedAtLegacy($row[2]);
+
+            $translationDe = new PageTranslation()
+                ->setLocale('de')
+                ->setTitle($row[3])
+                ->setAlias($row[7])
+                ->setDescription($row[5]);
+            $translationEn = new PageTranslation()
+                ->setLocale('en')
+                ->setTitle($row[4])
+                ->setAlias($row[8])
+                ->setDescription($row[6]);
+
+            $page->addTranslation($translationDe);
+            $page->addTranslation($translationEn);
 
             $this->entityManager->persist($page);
         }
@@ -334,24 +346,33 @@ class ImportLegacyDataCommand extends Command
 
         $i = 0;
         foreach ($items as $key => $item) {
-            $product = $this->entityManager->getRepository(Product::class)
-                ->findOneBy(['titleDe' => $item['title']]);
-
-            if (!isset($productsIds[$i])) {
-                dd($productsIds);
+            if ('Sommer Schiebermütze Kinder' === $item['title']) {
+                $item['title'] = 'Kinder Sommer Schiebermütze';
             }
+
+            $product = $this->entityManager->getRepository(Product::class)
+                ->fetchOneFlatByImport(['title' => $item['title']], 'de');
+
+            if (!$product) {
+                dd($item);
+            }
+
+            $itemUrl = $this->urlGenerator->generate('app_index_catalogue', [
+                'category' => $product['category']['translations'][0]['alias'],
+                'productSlug' => $product['translations'][0]['slug'],
+            ], UrlGeneratorInterface::ABSOLUTE_URL);
+            $itemUrl = str_replace('http://localhost', 'https://www.fennek-store.de', $itemUrl);
 
             $data['products'][$key] = [
                 'id' => $productsIds[$i],
-                'title' => $item['title'],
+                'title' => $product['translations'][0]['title'],
                 'quantity' => $item['meta']['menge'] ?? null,
                 'color' => isset($item['meta']['farbe']) ? $this->translator->trans('colors_list_de.'.$item['meta']['farbe']) : null,
                 'size' => $item['meta']['groesse'] ?? null,
-                'image' => $product instanceof Product ? $product->getImages()[0]->getImageName() : null,
-                'item_url' => $item['url'],
-                'item_number' => $product instanceof Product ? $product->getItemNumber() : null,
-                'price' => $product instanceof Product ? $product->getPrice() : null,
-                'full_price' => $product instanceof Product ? $product->getPrice() * ($item['meta']['menge'] ?? 1) : null,
+                'item_url' => $itemUrl,
+                'item_number' => $product['itemNumber'] ?? null,
+                'price' => $product['price'] ?? null,
+                'full_price' => $product['price'] ? $product['price'] * ($item['meta']['menge'] ?? 1) : null,
             ];
 
             ++$i;

@@ -57,6 +57,23 @@ class ProductRepository extends ServiceEntityRepository
             ->getOneOrNullResult(AbstractQuery::HYDRATE_ARRAY);
     }
 
+    public function fetchOneFlatByImport(array $field, string $locale): ?array
+    {
+        return $this->createQueryBuilder('p')
+            ->innerJoin('p.translations', 'pt', 'WITH', 'pt.locale = :locale')
+            ->innerJoin('p.category', 'pc')
+            ->innerJoin('pc.translations', 'pct')
+            ->leftJoin('p.images', 'i')
+            ->andWhere('pt.locale = :locale')
+            ->setParameter('locale', $locale)
+            ->addSelect('i, pt, pc, pct')
+            ->andWhere(\sprintf('pt.%s = :target', key($field)))
+            ->setParameter('target', current($field))
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult(AbstractQuery::HYDRATE_ARRAY);
+    }
+
     private function baseQuery(string $locale): QueryBuilder
     {
         return $this->createQueryBuilder('p')
