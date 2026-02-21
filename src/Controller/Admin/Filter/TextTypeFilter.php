@@ -12,7 +12,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Dto\FilterDataDto;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\FilterTrait;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 
-final class CategoryNameFilter implements FilterInterface
+final class TextTypeFilter implements FilterInterface
 {
     use FilterTrait;
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Controller\Admin\Filter\TextTypeFilter;
 use App\Entity\Category;
 use App\Entity\Product;
 use App\Entity\ProductTranslation;
@@ -13,14 +14,19 @@ use App\Form\MediaImageType;
 use App\Form\ProductTranslationType;
 use App\Helper\EntityHelper;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\QueryBuilder;use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use Doctrine\ORM\QueryBuilder;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
@@ -92,9 +98,9 @@ final class ProductCrudController extends AbstractCrudController
     public function configureFilters(Filters $filters): Filters
     {
         return $filters
-            // ->add('titleDe')
-            // ->add('titleEn')
-            ->add('topItem');
+            ->add('topItem')
+            ->add('price')
+            ->add(TextTypeFilter::new('title', 'Titel (DE)', 'de'));
     }
 
     #[\Override]

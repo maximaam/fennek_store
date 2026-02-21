@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
-use App\Controller\Admin\Filter\CategoryNameFilter;
+use App\Controller\Admin\Filter\TextTypeFilter;
 use App\Entity\Category;
 use App\Entity\CategoryTranslation;
 use App\Form\CategoryTranslationType;
@@ -72,7 +72,7 @@ final class CategoryCrudController extends AbstractCrudController
     #[\Override]
     public function configureFilters(Filters $filters): Filters
     {
-        return $filters->add(CategoryNameFilter::new('name', 'Name (DE)', 'de'));
+        return $filters->add(TextTypeFilter::new('name', 'Name (DE)', 'de'));
     }
 
     // This join avoids FETCH::EAGER and reduces the number of queries
