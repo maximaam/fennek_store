@@ -5,19 +5,22 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Entity\Category;
-use App\Entity\CategoryTranslation;use App\Entity\Product;
-use App\Entity\ProductTranslation;use App\Enum\Color;
+use App\Entity\Product;
+use App\Entity\ProductTranslation;
+use App\Enum\Color;
 use App\Enum\Size;
-use App\Form\CategoryTranslationType;use App\Form\MediaImageType;
-use App\Form\ProductTranslationType;use Doctrine\ORM\EntityRepository;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use App\Form\MediaImageType;
+use App\Form\ProductTranslationType;
+use App\Helper\EntityHelper;
+use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\QueryBuilder;use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
@@ -25,7 +28,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\MoneyField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Psr\Container\ContainerExceptionInterface;
@@ -48,6 +50,31 @@ final class ProductCrudController extends AbstractCrudController
         return Product::class;
     }
 
+    public function createEntity(string $entityFqcn): Product
+    {
+        $product = new Product();
+        foreach (EntityHelper::LOCALES as $locale) {
+            $translation = new ProductTranslation();
+            $translation->setLocale($locale);
+            $product->addTranslation($translation);
+        }
+
+        return $product;
+    }
+
+    public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): QueryBuilder
+    {
+        $qb = parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
+        $qb
+            ->innerJoin('entity.translations', 't')
+            ->innerJoin('entity.category', 'c')
+            ->innerJoin('c.translations', 'ct')
+            ->addSelect('t, c, ct')
+            ->addOrderBy('entity.createdAt', 'DESC');
+
+        return $qb;
+    }
+
     #[\Override]
     public function configureActions(Actions $actions): Actions
     {
@@ -65,8 +92,8 @@ final class ProductCrudController extends AbstractCrudController
     public function configureFilters(Filters $filters): Filters
     {
         return $filters
-            //->add('titleDe')
-            //->add('titleEn')
+            // ->add('titleDe')
+            // ->add('titleEn')
             ->add('topItem');
     }
 
@@ -129,8 +156,9 @@ final class ProductCrudController extends AbstractCrudController
             ->renderAsNativeWidget()
             ->setFormTypeOptions([
                 'query_builder' => static fn (EntityRepository $er) => $er->createQueryBuilder('c')
-                    ->leftJoin('c.translations', 'ct')
+                    ->innerJoin('c.translations', 'ct', 'WITH', 'ct.locale = :locale')
                     ->andWhere('c.parent IS NOT NULL')
+                    ->setParameter('locale', 'de')
                     ->orderBy('c.parent', 'ASC')
                     ->addOrderBy('ct.name', 'ASC'),
                 'choice_label' => static function (Category $c) {
@@ -216,9 +244,10 @@ final class ProductCrudController extends AbstractCrudController
      */
     private function getIndexFields(): iterable
     {
-        yield AssociationField::new('category')->setLabel('category.singular');
+        yield DateField::new('createdAt', 'date.created_at');
+        yield AssociationField::new('category')
+            ->setLabel('category.singular');
         yield TextField::new('titleDe', 'label.name.de');
-        // yield TextField::new('titleEn', 'label.name.en');
         yield BooleanField::new('topItem', 'product.top_item');
     }
 

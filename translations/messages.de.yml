@@ -48,11 +48,11 @@ category:
   parent: Parent Kategorie
 
 product:
-  singular: Artikel
-  plural: Artikel
-  list: Artikel Liste
-  top_item: Top Artikel
-  item_number: Artikel Nummer
+  singular: Produkt
+  plural: Produkte
+  list: Produkte Liste
+  top_item: Top Produkt
+  item_number: Produkt Nummer
   color: Farbe
   colors: Farben
   sizes: Größen
