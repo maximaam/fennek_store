@@ -36,6 +36,8 @@ label:
     about_us: About us
     make_order: Order product
     login: Login
+    firstname: Firstname
+    lastname: Lastname
 
 date:
     created_at: Created at
@@ -133,6 +135,8 @@ purchase:
         singular: Buyer
         email: Buyer email
         name: Buyer name
+        firstname: Buyer firstname
+        lastname: Buyer Lastname
     shipping:
         singular: Shipping
         address: Shipping address

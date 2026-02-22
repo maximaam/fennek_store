@@ -12,7 +12,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Dto\FilterDataDto;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\FilterTrait;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 
-final class TextTypeFilter implements FilterInterface
+final class PurchasePaymentFilter implements FilterInterface
 {
     use FilterTrait;
 
@@ -34,37 +34,17 @@ final class TextTypeFilter implements FilterInterface
 
     public function apply(QueryBuilder $queryBuilder, FilterDataDto $filterDataDto, ?FieldDto $fieldDto, EntityDto $entityDto): void
     {
-        if (null === $filterDataDto->getValue()) {
+        $value = $filterDataDto->getValue();
+
+        if (!$value) {
             return;
         }
 
         $alias = $filterDataDto->getEntityAlias();
-        $joinAlias = 'translation_'.$this->property;
-
-        // Prevent duplicate joins
-        if (!\in_array($joinAlias, $queryBuilder->getAllAliases(), true)) {
-            $queryBuilder->innerJoin($alias.'.translations', $joinAlias);
-        }
-
+        $jsonPath = '$.payer.'.$this->property;
         $queryBuilder
-            ->andWhere(\sprintf(
-                '%s.%s LIKE :%s',
-                $joinAlias,
-                $this->property,
-                $this->property
-            ))
-            ->andWhere(\sprintf(
-                '%s.locale = :locale_%s',
-                $joinAlias,
-                $this->property
-            ))
-            ->setParameter(
-                $this->property,
-                '%'.$filterDataDto->getValue().'%'
-            )
-            ->setParameter(
-                'locale_'.$this->property,
-                $this->locale
-            );
+            ->andWhere(\sprintf('LOWER(JSON_EXTRACT(%s.payment, :jsonPath)) LIKE LOWER(:value)', $alias))
+            ->setParameter('jsonPath', $jsonPath)
+            ->setParameter('value', '%'.$value.'%');
     }
 }

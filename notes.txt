@@ -46,4 +46,6 @@ AY5Js6weY-E4vW_ANJPkOctMNNw4l6MaPRKaW-tgMcw2Hw-aLunnPf2Mn66hlaNHdN-r1VFJAkpHpUu6
 Secret key 1
 EGy5Ta2oKu1GcOPr28-Z1i0iDR1ICDoH6xTdY04hlSuLxH9xVVcnxbZ8BESa33Sz0bMbw01O5p4Q_fVA
 
+bin/console cache:pool:clear --all
+
 

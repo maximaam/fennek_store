@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
-use App\Entity\Purchase;
+use App\Controller\Admin\Filter\PurchasePaymentFilter;use App\Controller\Admin\Filter\TextTypeFilter;use App\Entity\Purchase;
 use App\Enum\PayPalStatus;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
@@ -49,6 +49,8 @@ final class PurchaseCrudController extends AbstractCrudController
     public function configureFilters(Filters $filters): Filters
     {
         return $filters
+            ->add(PurchasePaymentFilter::new('name', 'purchase.payer.lastname', 'de'))
+            ->add(PurchasePaymentFilter::new('email_address', 'purchase.payer.email', 'de'))
             ->add(
                 ChoiceFilter::new('status')
                     ->setChoices(array_combine(

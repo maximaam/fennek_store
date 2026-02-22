@@ -35,6 +35,8 @@ label:
   about_us: Über uns
   make_order: Produkt Bestellen
   login: Anmelden
+  firstname: Vorname
+  lastname: Nachname
 
 date:
     created_at: Erstellt am
@@ -135,6 +137,8 @@ purchase:
         singular: Käufer
         email: Käufer Email
         name: Käufer Name
+        firstname: Käufer Vorname
+        lastname: Käufer Nachname
     shipping:
         singular: Lieferung
         address: Lieferadresse

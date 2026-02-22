@@ -35,6 +35,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\MoneyField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
+use EasyCorp\Bundle\EasyAdminBundle\Filter\NumericFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -98,9 +100,10 @@ final class ProductCrudController extends AbstractCrudController
     public function configureFilters(Filters $filters): Filters
     {
         return $filters
-            ->add('topItem')
-            ->add('price')
-            ->add(TextTypeFilter::new('title', 'Titel (DE)', 'de'));
+            ->add('topItem') // BooleanFilter resolves the translated label: product.top_item!
+            // ->add(NumericFilter::new('price', 'product.price')) // NumericFilter does not resolve the translated label!
+            ->add(EntityFilter::new('category', 'category.singular'))
+            ->add(TextTypeFilter::new('title', 'label.title.all', 'de'));
     }
 
     #[\Override]
@@ -254,6 +257,8 @@ final class ProductCrudController extends AbstractCrudController
         yield AssociationField::new('category')
             ->setLabel('category.singular');
         yield TextField::new('titleDe', 'label.name.de');
+        yield MoneyField::new('price', 'product.price')
+            ->setCurrency('EUR');
         yield BooleanField::new('topItem', 'product.top_item');
     }
 
