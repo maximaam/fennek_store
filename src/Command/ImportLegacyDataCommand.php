@@ -157,7 +157,7 @@ class ImportLegacyDataCommand extends Command
 
             $category = $this->entityManager
                 ->getRepository(Category::class)
-                ->fetchOneBy(['alias' => $cats[$row[1]]]) ?? throw new \RuntimeException("Category {$cats[$row[1]]} not found.");
+                ->fetchOneBy(['alias' => $cats[$row[1]]], 'de') ?? throw new \RuntimeException("Category {$cats[$row[1]]} not found.");
 
             $colors = [];
             if (isset($row[10]) && '' !== $row[10] && 'NULL' !== $row[10]) {
