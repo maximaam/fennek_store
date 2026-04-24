@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App\EventSubscriber;
 
 use App\Entity\Product;
-use App\Entity\ProductTranslation;use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
+use App\Entity\ProductTranslation;
+use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Events;
 use Psr\Cache\InvalidArgumentException;

@@ -45,12 +45,12 @@ final readonly class NavBuilder
         });
 
         foreach ($categories as $category) {
-            $menu->addChild($category->getName($locale), [
+            $menu->addChild($category['name'], [
                 'route' => 'app_index_catalogue',
                 'attributes' => ['class' => 'nav-item'],
                 'linkAttributes' => ['class' => 'nav-link'],
                 'routeParameters' => [
-                    'category' => $category->getAlias($locale),
+                    'category' => $category['alias'],
                 ],
             ])->setExtra('translation_domain', false);
         }

@@ -35,6 +35,7 @@ final class IndexController extends AbstractController
     #[Cache(maxage: 86400, smaxage: 86400, public: true)]
     public function index(ProductRepository $productRepo, string $_locale): Response
     {
+        /*
         $cacheKey = \sprintf('index_page_products_%s', $_locale);
         $products = $this->cache->get($cacheKey, static function (CacheItemInterface $item) use ($productRepo, $_locale) {
             $item->expiresAfter(null);
@@ -42,6 +43,9 @@ final class IndexController extends AbstractController
 
             return $productRepo->fetchForIndexPage($_locale);
         });
+        */
+
+        $products = $productRepo->fetchForIndexPage($_locale);
 
         return $this->render('index/index.html.twig', [
             'products' => $products,

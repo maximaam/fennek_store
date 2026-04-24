@@ -25,6 +25,7 @@ final readonly class CatalogueResolver
         $category = $this->categoryRepository
             ->fetchOneByAlias($dto->category, $dto->locale)
             ?? throw new NotFoundHttpException();
+
         $subCategories = $this->categoryRepository
             ->fetchSubCategoriesByParentId(
                 $category->getParent() ? $category->getParent()->getId() : $category->getId(),
@@ -38,7 +39,7 @@ final readonly class CatalogueResolver
             return new CatalogueResultDto(
                 category: $category,
                 subCategories: $subCategories,
-                products: $this->productRepository->fetchByCategories($subCategoryIds, $dto->locale),
+                products: $this->productRepository->fetchByCategories($subCategoryIds, $dto->locale, 60),
                 product: null,
                 template: 'index/products.html.twig',
             );

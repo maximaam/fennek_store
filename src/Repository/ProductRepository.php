@@ -85,12 +85,12 @@ class ProductRepository extends ServiceEntityRepository
     /**
      * @param array<int, int|null> $categories
      */
-    public function fetchByCategories(array $categories, string $locale): array
+    public function fetchByCategories(array $categories, string $locale, int $limit = 24): array
     {
         return $this->baseQueryProducts($locale)
             ->andWhere('c.id IN(:categories)')
             ->setParameter('categories', $categories)
-            ->setMaxResults(12)
+            ->setMaxResults($limit)
             ->getQuery()
             ->getArrayResult();
     }

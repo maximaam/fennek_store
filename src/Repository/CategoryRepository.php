@@ -27,14 +27,14 @@ class CategoryRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('c')
             ->innerJoin('c.translations', 't')
-            ->addSelect('t')
             ->where('c.parent IS NULL')
             ->andWhere('t.locale = :locale')
             ->setParameter('locale', $locale)
             ->setMaxResults($limit)
             ->orderBy('c.position', 'ASC')
+            ->select('t.name, t.alias, c.id')
             ->getQuery()
-            ->getResult();
+            ->getArrayResult();
     }
 
     public function fetchOneBy(array $field, string $locale): ?Category

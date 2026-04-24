@@ -13,7 +13,7 @@
                     {% include 'partials/_sub_categories.html.twig' %}
                 </div>
                 <blockquote class="cat-desc">
-                    {% if sub_categories != null %}
+                    {% if sub_categories != null and category.description != null %}
                         <i class="fa fa-quote-right"></i>
                         <p>{{ category.description|nl2br }}</p>
                     {% endif %}
