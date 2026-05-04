@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
-use App\Entity\Category;
-use App\Entity\Page;
-use App\Entity\Product;
-use App\Entity\Purchase;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
@@ -73,9 +69,9 @@ final class DashboardController extends AbstractDashboardController
     public function configureMenuItems(): iterable
     {
         yield MenuItem::linkToDashboard('dashboard', 'fas fa-home');
-        yield MenuItem::linkToCrud('page.plural', 'fas fa-box', Page::class);
-        yield MenuItem::linkToCrud('category.plural', 'fas fa-tags', Category::class);
-        yield MenuItem::linkToCrud('product.plural', 'fas fa-box', Product::class);
-        yield MenuItem::linkToCrud('purchase.plural', 'fas fa-box', Purchase::class);
+        yield MenuItem::linkTo(PageCrudController::class, 'page.plural', 'fas fa-box');
+        yield MenuItem::linkTo(CategoryCrudController::class, 'category.plural', 'fas fa-tags');
+        yield MenuItem::linkTo(ProductCrudController::class, 'product.plural', 'fas fa-box');
+        yield MenuItem::linkTo(PurchaseCrudController::class, 'purchase.plural', 'fas fa-box');
     }
 }
