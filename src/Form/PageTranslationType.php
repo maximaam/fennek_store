@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Form;
 
 use App\Entity\PageTranslation;
-use EasyCorp\Bundle\EasyAdminBundle\Field\CodeEditorField;use EasyCorp\Bundle\EasyAdminBundle\Form\Type\TextEditorType;use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;

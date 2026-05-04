@@ -56,7 +56,7 @@ final class CartController extends AbstractController
         $itemUrl = $this->generateUrl(
             'app_index_catalogue',
             [
-                'category' => $product->getCategory()?->getAlias($request->getLocale()),
+                'category' => $product->getCategory()->getAlias($request->getLocale()),
                 'productSlug' => $product->getTitleSlug($request->getLocale()),
             ],
             UrlGeneratorInterface::ABSOLUTE_URL

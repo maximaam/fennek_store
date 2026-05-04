@@ -26,27 +26,27 @@ class CategoryTranslation
     private ?int $id = null;
 
     #[ORM\Column(length: 2)]
-    private ?string $locale = null;
+    private string $locale;
 
     #[ORM\Column(length: 64)]
-    private ?string $name = null;
+    private string $name;
+
+    #[ORM\Column(length: 128)]
+    private string $alias;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\Column(length: 128)]
-    private ?string $alias = null;
-
     #[ORM\ManyToOne(inversedBy: 'translations')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Category $category = null;
+    private Category $category;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getLocale(): ?string
+    public function getLocale(): string
     {
         return $this->locale;
     }
@@ -58,7 +58,7 @@ class CategoryTranslation
         return $this;
     }
 
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -82,7 +82,7 @@ class CategoryTranslation
         return $this;
     }
 
-    public function getAlias(): ?string
+    public function getAlias(): string
     {
         return $this->alias;
     }
@@ -94,12 +94,12 @@ class CategoryTranslation
         return $this;
     }
 
-    public function getCategory(): ?Category
+    public function getCategory(): Category
     {
         return $this->category;
     }
 
-    public function setCategory(?Category $category): static
+    public function setCategory(Category $category): static
     {
         $this->category = $category;
 

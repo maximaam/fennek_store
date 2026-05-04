@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Helper\EntityHelper;use App\Repository\ProductRepository;
+use App\Helper\EntityHelper;
+use App\Repository\ProductRepository;
 use App\Traits\TimestampableTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -45,6 +46,9 @@ class Product
     #[ORM\OneToMany(targetEntity: MediaImage::class, mappedBy: 'product', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $images;
 
+    /**
+     * @var Collection<int, ProductTranslation>
+     */
     #[ORM\OneToMany(targetEntity: ProductTranslation::class, mappedBy: 'product', cascade: ['persist'], orphanRemoval: true)]
     private Collection $translations;
 
@@ -168,6 +172,9 @@ class Product
         return $this;
     }
 
+    /**
+     * @return Collection<int, ProductTranslation>
+     */
     public function getTranslations(): Collection
     {
         return $this->translations;
@@ -185,14 +192,10 @@ class Product
 
     public function removeTranslation(ProductTranslation $translation): self
     {
-        if ($this->translations->removeElement($translation) && $translation->getProduct() === $this) {
-            $translation->setProduct(null);
-        }
-
         return $this;
     }
 
-    public function getTranslationByLocale(string $locale): ?ProductTranslation
+    public function getTranslationByLocale(string $locale): ProductTranslation
     {
         foreach ($this->translations as $translation) {
             if ($translation->getLocale() === $locale) {
@@ -200,7 +203,7 @@ class Product
             }
         }
 
-        return null;
+        throw new \InvalidArgumentException(\sprintf('No translation found for locale "%s".', $locale));
     }
 
     public function getTitleDe(): ?string
@@ -235,15 +238,11 @@ class Product
 
     public function getTitle(string $locale): ?string
     {
-        $method = __FUNCTION__.ucfirst($locale);
-
-        return $this->$method();
+        return $this->getTranslationByLocale($locale)->getTitle();
     }
 
     public function getDescription(string $locale): ?string
     {
-        $method = __FUNCTION__.ucfirst($locale);
-
-        return $this->$method();
+        return $this->getTranslationByLocale($locale)->getDescription();
     }
 }

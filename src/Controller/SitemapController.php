@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Category;
+use App\Entity\Product;
 use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -50,19 +52,20 @@ final class SitemapController extends AbstractController
         return $response;
     }
 
+    /**
+     * @param Category[]                  $categories
+     * @param array<string>               $locales
+     * @param array<array<string, mixed>> $urls
+     */
     private function categories(array $categories, array $locales, array &$urls): void
     {
         foreach ($categories as $category) {
-            $mainCategory = $category->getParent() ?? $category;
-            $subCategory = $category->getParent() ? $category : null;
             $alternates = [];
-
             foreach ($locales as $locale) {
                 $alternates[$locale] = $this->generateUrl(
-                    'app_index_catalogue_category',
+                    'app_index_catalogue',
                     [
-                        'catAlias' => $mainCategory->getAlias($locale),
-                        'subCatAlias' => $subCategory?->getAlias($locale),
+                        'category' => $category->getAlias($locale),
                         '_locale' => $locale,
                     ],
                     UrlGeneratorInterface::ABSOLUTE_URL
@@ -78,6 +81,11 @@ final class SitemapController extends AbstractController
         }
     }
 
+    /**
+     * @param Product[]                   $products
+     * @param array<string>               $locales
+     * @param array<array<string, mixed>> $urls
+     */
     private function products(array $products, array $locales, array &$urls): void
     {
         foreach ($products as $product) {
@@ -85,11 +93,10 @@ final class SitemapController extends AbstractController
 
             foreach ($locales as $locale) {
                 $alternates[$locale] = $this->generateUrl(
-                    'app_index_catalogue_category',
+                    'app_index_catalogue',
                     [
-                        'catAlias' => $product->getCategory()->getParent()->getAlias($locale),
-                        'subCatAlias' => $product->getCategory()->getAlias($locale),
-                        'productAlias' => $product->getTitleSlug($locale),
+                        'category' => $product->getCategory()->getAlias($locale),
+                        'productSlug' => $product->getTitleSlug($locale),
                         '_locale' => $locale,
                     ],
                     UrlGeneratorInterface::ABSOLUTE_URL

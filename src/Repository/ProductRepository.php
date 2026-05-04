@@ -15,15 +15,14 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ProductRepository extends ServiceEntityRepository
 {
-    public const string QB_ALIAS = 'p';
-    public const string QB_ALIAS_TRANSLATION = 'pt';
-    public const string QB_ALIAS_IMAGE = 'pi';
-
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Product::class);
     }
 
+    /**
+     * @return array<mixed, mixed>
+     */
     public function fetchForIndexPage(string $locale, int $limit = 20): array
     {
         return $this->baseQueryProducts($locale)
@@ -34,6 +33,9 @@ class ProductRepository extends ServiceEntityRepository
             ->getArrayResult();
     }
 
+    /**
+     * @param array<string, mixed> $field
+     */
     public function fetchOneBy(array $field, string $locale): ?Product
     {
         return $this->baseQuery($locale)
@@ -43,6 +45,11 @@ class ProductRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    /**
+     * @param array<string, mixed> $field
+     *
+     * @return array<mixed, mixed>|null
+     */
     public function fetchOneFlatBy(array $field, string $locale): ?array
     {
         return $this->createQueryBuilder('p')
@@ -57,6 +64,11 @@ class ProductRepository extends ServiceEntityRepository
             ->getOneOrNullResult(AbstractQuery::HYDRATE_ARRAY);
     }
 
+    /**
+     * @param array<string, mixed> $field
+     *
+     * @return array<mixed, mixed>|null
+     */
     public function fetchOneFlatByImport(array $field, string $locale): ?array
     {
         return $this->createQueryBuilder('p')
@@ -84,6 +96,8 @@ class ProductRepository extends ServiceEntityRepository
 
     /**
      * @param array<int, int|null> $categories
+     *
+     * @return array<int, Product>
      */
     public function fetchByCategories(array $categories, string $locale, int $limit = 24): array
     {

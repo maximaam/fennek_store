@@ -8,6 +8,7 @@ use App\Dto\CatalogueRequestDto;
 use App\Dto\CatalogueResultDto;
 use App\Dto\CategoryViewDto;
 use App\Dto\ProductViewDto;
+use App\Entity\Category;
 use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -26,15 +27,14 @@ final readonly class CatalogueResolver
             ->fetchOneByAlias($dto->category, $dto->locale)
             ?? throw new NotFoundHttpException();
 
-        $subCategories = $this->categoryRepository
-            ->fetchSubCategoriesByParentId(
-                $category->getParent() ? $category->getParent()->getId() : $category->getId(),
-                $dto->locale,
-            );
-        $category = CategoryViewDto::fromCategory($category);
+        $subCategories = $category->getParent() instanceof Category
+            ? []
+            : $this->categoryRepository->fetchSubCategoriesByParentId((int) $category->getId(), $dto->locale);
+
+        $category = CategoryViewDto::fromCategory($category, $dto->locale);
 
         if ($dto->isCategoryView()) {
-            $subCategoryIds = $category->parentId ? [$category->id] : array_column($subCategories, 'id');
+            $subCategoryIds = null !== $category->parentId ? [$category->id] : array_column($subCategories, 'id');
 
             return new CatalogueResultDto(
                 category: $category,
@@ -53,7 +53,7 @@ final readonly class CatalogueResolver
             category: $category,
             subCategories: $subCategories,
             products: null,
-            product: ProductViewDto::fromProduct($product),
+            product: ProductViewDto::fromProduct($product, $dto->locale),
             template: 'index/product.html.twig',
         );
     }

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\EventSubscriber;
 
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
-use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Events;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
@@ -19,7 +19,10 @@ final readonly class NavbarCacheInvalidator
     ) {
     }
 
-    public function postFlush(PostFlushEventArgs $args): void
+    /**
+     * @throws InvalidArgumentException
+     */
+    public function postFlush(): void
     {
         $this->cache->invalidateTags(['navbar_categories']);
     }

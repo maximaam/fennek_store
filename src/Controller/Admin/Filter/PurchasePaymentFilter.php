@@ -17,9 +17,8 @@ final class PurchasePaymentFilter implements FilterInterface
     use FilterTrait;
 
     private string $property;
-    private string $locale;
 
-    public static function new(string $property, string $label, string $locale): self
+    public static function new(string $property, string $label): self
     {
         $filter = new self()
             ->setProperty($property)
@@ -27,7 +26,6 @@ final class PurchasePaymentFilter implements FilterInterface
             ->setFormType(TextType::class);
 
         $filter->property = $property;
-        $filter->locale = $locale;
 
         return $filter;
     }
@@ -36,15 +34,13 @@ final class PurchasePaymentFilter implements FilterInterface
     {
         $value = $filterDataDto->getValue();
 
-        if (!$value) {
-            return;
+        if (\is_scalar($value)) {
+            $alias = $filterDataDto->getEntityAlias();
+            $jsonPath = '$.payer.'.$this->property;
+            $queryBuilder
+                ->andWhere(\sprintf('LOWER(JSON_EXTRACT(%s.payment, :jsonPath)) LIKE LOWER(:value)', $alias))
+                ->setParameter('jsonPath', $jsonPath)
+                ->setParameter('value', '%'.$value.'%');
         }
-
-        $alias = $filterDataDto->getEntityAlias();
-        $jsonPath = '$.payer.'.$this->property;
-        $queryBuilder
-            ->andWhere(\sprintf('LOWER(JSON_EXTRACT(%s.payment, :jsonPath)) LIKE LOWER(:value)', $alias))
-            ->setParameter('jsonPath', $jsonPath)
-            ->setParameter('value', '%'.$value.'%');
     }
 }

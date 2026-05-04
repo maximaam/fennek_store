@@ -58,6 +58,9 @@ final readonly class NavBuilder
         return $menu;
     }
 
+    /**
+     * @param array<string, mixed> $options
+     */
     public function subCategoryMenu(array $options): ItemInterface
     {
         $menu = $this->factory->createItem('root');

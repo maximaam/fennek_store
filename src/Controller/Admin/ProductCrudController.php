@@ -58,6 +58,7 @@ final class ProductCrudController extends AbstractCrudController
         return Product::class;
     }
 
+    #[\Override]
     public function createEntity(string $entityFqcn): Product
     {
         $product = new Product();
@@ -70,6 +71,7 @@ final class ProductCrudController extends AbstractCrudController
         return $product;
     }
 
+    #[\Override]
     public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): QueryBuilder
     {
         $qb = parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);

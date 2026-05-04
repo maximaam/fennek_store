@@ -30,16 +30,16 @@ class ProductTranslation
     private ?int $id = null;
 
     #[ORM\Column(length: 2)]
-    private ?string $locale = null;
+    private string $locale;
 
     #[ORM\Column(length: 128)]
-    private ?string $title = null;
+    private string $title;
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $description = null;
+    private string $description;
 
     #[ORM\Column(length: 255)]
-    private ?string $slug = null;
+    private string $slug;
 
     #[ORM\ManyToOne(inversedBy: 'translations')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
@@ -50,7 +50,7 @@ class ProductTranslation
         return $this->id;
     }
 
-    public function getLocale(): ?string
+    public function getLocale(): string
     {
         return $this->locale;
     }
@@ -62,7 +62,7 @@ class ProductTranslation
         return $this;
     }
 
-    public function getTitle(): ?string
+    public function getTitle(): string
     {
         return $this->title;
     }
@@ -74,7 +74,7 @@ class ProductTranslation
         return $this;
     }
 
-    public function getDescription(): ?string
+    public function getDescription(): string
     {
         return $this->description;
     }
@@ -86,7 +86,7 @@ class ProductTranslation
         return $this;
     }
 
-    public function getSlug(): ?string
+    public function getSlug(): string
     {
         return $this->slug;
     }

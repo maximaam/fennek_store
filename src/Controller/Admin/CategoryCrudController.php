@@ -44,6 +44,7 @@ final class CategoryCrudController extends AbstractCrudController
         return Category::class;
     }
 
+    #[\Override]
     public function createEntity(string $entityFqcn): Category
     {
         $category = new Category();
@@ -76,6 +77,7 @@ final class CategoryCrudController extends AbstractCrudController
     }
 
     // This join avoids FETCH::EAGER and reduces the number of queries
+    #[\Override]
     public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): QueryBuilder
     {
         $qb = parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);

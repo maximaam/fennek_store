@@ -35,6 +35,7 @@ final class PageCrudController extends AbstractCrudController
         return Page::class;
     }
 
+    #[\Override]
     public function createEntity(string $entityFqcn): Page
     {
         $page = new Page();

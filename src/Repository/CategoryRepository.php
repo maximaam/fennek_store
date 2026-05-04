@@ -21,7 +21,7 @@ class CategoryRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return Category[]
+     * @return array<mixed, mixed>
      */
     public function fetchForTopNavBar(string $locale, int $limit = 5): array
     {
@@ -37,6 +37,9 @@ class CategoryRepository extends ServiceEntityRepository
             ->getArrayResult();
     }
 
+    /**
+     * @param array<string, mixed> $field
+     */
     public function fetchOneBy(array $field, string $locale): ?Category
     {
         return $this->baseQuery($locale)
@@ -55,6 +58,9 @@ class CategoryRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    /**
+     * @return array<mixed, mixed>
+     */
     public function fetchOneFlatByAlias(string $alias, string $locale): array
     {
         return $this->baseQuery($locale)
@@ -76,6 +82,9 @@ class CategoryRepository extends ServiceEntityRepository
             ->getOneOrNullResult(AbstractQuery::HYDRATE_ARRAY);
     }
 
+    /**
+     * @return array<mixed, mixed>
+     */
     public function fetchSubCategoriesByParentId(int $id, string $locale): array
     {
         return $this->baseQuery($locale)
@@ -92,19 +101,5 @@ class CategoryRepository extends ServiceEntityRepository
             ->innerJoin('c.translations', 'ct', 'WITH', 'ct.locale = :locale')
             ->andWhere('ct.locale = :locale')
             ->setParameter('locale', $locale);
-    }
-
-    public function findChildrenIdsByAlias(string $alias, string $locale): array
-    {
-        return $this->createQueryBuilder('c')
-            ->select('children.id')
-            ->innerJoin('c.translations', 't')
-            ->innerJoin('c.children', 'children')
-            ->where('t.alias = :alias')
-            ->andWhere('t.locale = :locale')
-            ->setParameter('alias', $alias)
-            ->setParameter('locale', $locale)
-            ->getQuery()
-            ->getSingleColumnResult(); // Doctrine >= 2.8
     }
 }

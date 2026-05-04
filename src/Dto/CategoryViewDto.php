@@ -9,27 +9,25 @@ use App\Entity\Category;
 final readonly class CategoryViewDto
 {
     public function __construct(
-        public int $id,
-        public \DateTimeImmutable $updatedAt,
+        public ?int $id,
+        public ?\DateTimeImmutable $updatedAt,
         public string $name,
         public string $alias,
-        public string $description,
+        public ?string $description,
         public ?int $parentId,
     ) {
     }
 
-    public static function fromCategory(?Category $category): ?self
+    public static function fromCategory(Category $category, string $locale): self
     {
-        if (null === $category) {
-            return null;
-        }
+        $translation = $category->getTranslationByLocale($locale);
 
         return new self(
             id: $category->getId(),
             updatedAt: $category->getUpdatedAt(),
-            name: $category->getTranslations()[0]->getName(),
-            alias: $category->getTranslations()[0]->getAlias(),
-            description: $category->getTranslations()[0]->getDescription(),
+            name: $translation->getName(),
+            alias: $translation->getAlias(),
+            description: $translation->getDescription(),
             parentId: $category->getParent()?->getId() ?? null,
         );
     }

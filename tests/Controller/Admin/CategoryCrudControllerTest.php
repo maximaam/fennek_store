@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Tests\Controller\Admin;
 
 use App\Entity\Category;
+use App\Entity\CategoryTranslation;
+use App\Helper\EntityHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -198,10 +200,17 @@ final class CategoryCrudControllerTest extends WebTestCase
     private function createCategory(bool $isParent, string $nameDe, string $nameEn, ?Category $parent = null): Category
     {
         $category = new Category();
-        $category->setNameDe($nameDe)
-                 ->setNameEn($nameEn)
-                 ->setAliasDe($this->slugger->slug($nameDe)->toString())
-                 ->setAliasEn($this->slugger->slug($nameEn)->toString());
+        $translationDe = new CategoryTranslation()
+            ->setLocale(EntityHelper::LOCALE_DE)
+            ->setName($nameDe)
+            ->setAlias($this->slugger->slug($nameDe)->toString());
+        $translationEn = new CategoryTranslation()
+            ->setLocale(EntityHelper::LOCALE_EN)
+            ->setName($nameEn)
+            ->setAlias($this->slugger->slug($nameEn)->toString());
+
+        $category->addTranslation($translationDe);
+        $category->addTranslation($translationEn);
 
         if (!$isParent && $parent instanceof Category) {
             $category->setParent($parent);

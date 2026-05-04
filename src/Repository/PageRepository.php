@@ -20,6 +20,9 @@ class PageRepository extends ServiceEntityRepository
         parent::__construct($registry, Page::class);
     }
 
+    /**
+     * @return array<mixed, mixed>|null
+     */
     public function fetchOneByAlias(string $alias, string $locale): ?array
     {
         return $this->baseQuery($locale)

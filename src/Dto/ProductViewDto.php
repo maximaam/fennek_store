@@ -9,14 +9,19 @@ use App\Entity\Product;
 
 final readonly class ProductViewDto
 {
+    /**
+     * @param array<string>|null      $sizes
+     * @param array<string>           $colors
+     * @param array<int, string|null> $images
+     */
     public function __construct(
-        public int $id,
-        public string $itemNumber,
+        public ?int $id,
+        public ?string $itemNumber,
         public int $price,
         public ?array $sizes,
         public array $colors,
         public bool $topItem,
-        public \DateTimeImmutable $updatedAt,
+        public ?\DateTimeImmutable $updatedAt,
         public string $title,
         public string $slug,
         public string $description,
@@ -24,11 +29,9 @@ final readonly class ProductViewDto
     ) {
     }
 
-    public static function fromProduct(?Product $product): ?self
+    public static function fromProduct(Product $product, string $locale): self
     {
-        if (null === $product) {
-            return null;
-        }
+        $translation = $product->getTranslationByLocale($locale);
 
         return new self(
             id: $product->getId(),
@@ -38,9 +41,9 @@ final readonly class ProductViewDto
             colors: $product->getColors(),
             topItem: $product->isTopItem(),
             updatedAt: $product->getUpdatedAt(),
-            title: $product->getTranslations()[0]->getTitle(),
-            slug: $product->getTranslations()[0]->getSlug(),
-            description: $product->getTranslations()[0]->getDescription(),
+            title: $translation->getTitle(),
+            slug: $translation->getSlug(),
+            description: $translation->getDescription(),
             images: $product->getImages()->map(static fn (MediaImage $image) => $image->getImageName())->toArray(),
         );
     }
