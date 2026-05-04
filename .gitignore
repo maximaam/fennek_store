@@ -28,6 +28,7 @@ phpstan.neon
 ###< phpstan/phpstan ###
 /public/uploads/
 /.idea
+/notes.txt
 
 ###> liip/imagine-bundle ###
 /public/media/cache/
