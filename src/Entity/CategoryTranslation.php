@@ -9,16 +9,10 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CategoryTranslationRepository::class)]
-#[ORM\Table(
-    indexes: [
-        new ORM\Index(name: 'idx_alias', columns: ['alias']),
-    ],
-    uniqueConstraints: [
-        new ORM\UniqueConstraint(
-            name: 'uniq_alias_locale',
-            columns: ['alias', 'locale']
-        ),
-    ]
+#[ORM\Index(name: 'idx_alias', columns: ['alias'])]
+#[ORM\UniqueConstraint(
+    name: 'uniq_alias_locale',
+    columns: ['alias', 'locale']
 )]
 class CategoryTranslation
 {

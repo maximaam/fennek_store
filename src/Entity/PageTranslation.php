@@ -9,13 +9,9 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PageTranslationRepository::class)]
-#[ORM\Table(
-    uniqueConstraints: [
-        new ORM\UniqueConstraint(
-            name: 'uniq_alias_locale',
-            columns: ['alias', 'locale']
-        ),
-    ]
+#[ORM\UniqueConstraint(
+    name: 'uniq_alias_locale',
+    columns: ['alias', 'locale']
 )]
 class PageTranslation
 {
