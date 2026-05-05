@@ -25,19 +25,19 @@ final readonly class CatalogueResolver
     {
         $category = $this->categoryRepository
             ->fetchOneByAlias($dto->category, $dto->locale)
-            ?? throw new NotFoundHttpException();
+            ?? throw new NotFoundHttpException(\sprintf('Category with alias "%s" not found.', $dto->category));
 
-        $subCategories = $category->getParent() instanceof Category
-            ? []
-            : $this->categoryRepository->fetchSubCategoriesByParentId((int) $category->getId(), $dto->locale);
+        $subCategories = $this->categoryRepository->fetchSubCategoriesByParentId(
+            (int) ($category->getParent() instanceof Category ? $category->getParent()->getId() : $category->getId()),
+            $dto->locale,
+        );
 
-        $category = CategoryViewDto::fromCategory($category, $dto->locale);
-
+        $categoryViewDto = CategoryViewDto::fromCategory($category, $dto->locale);
         if ($dto->isCategoryView()) {
-            $subCategoryIds = null !== $category->parentId ? [$category->id] : array_column($subCategories, 'id');
+            $subCategoryIds = [] !== $subCategories ? [$categoryViewDto->id] : array_column($subCategories, 'id');
 
             return new CatalogueResultDto(
-                category: $category,
+                category: $categoryViewDto,
                 subCategories: $subCategories,
                 products: $this->productRepository->fetchByCategories($subCategoryIds, $dto->locale, 60),
                 product: null,
@@ -47,10 +47,10 @@ final readonly class CatalogueResolver
 
         $product = $this->productRepository
             ->fetchOneBy(['slug' => $dto->productSlug], $dto->locale)
-            ?? throw new NotFoundHttpException();
+            ?? throw new NotFoundHttpException(\sprintf('Product with slug "%s" not found.', $dto->productSlug));
 
         return new CatalogueResultDto(
-            category: $category,
+            category: $categoryViewDto,
             subCategories: $subCategories,
             products: null,
             product: ProductViewDto::fromProduct($product, $dto->locale),
