@@ -9,7 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProductTranslationRepository::class)]
-#[ORM\Index(name: 'idx_slug', columns: ['slug'])]
+#[ORM\Index(name: 'idx_product_slug', columns: ['slug'])]
 #[ORM\UniqueConstraint(
     name: 'uniq_product_id_locale',
     columns: ['product_id', 'locale']
