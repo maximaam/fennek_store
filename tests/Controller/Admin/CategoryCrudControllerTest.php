@@ -7,6 +7,7 @@ namespace App\Tests\Controller\Admin;
 use App\Entity\Category;
 use App\Entity\CategoryTranslation;
 use App\Helper\EntityHelper;
+use App\Tests\LoginUserTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -15,6 +16,8 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 
 final class CategoryCrudControllerTest extends WebTestCase
 {
+    use LoginUserTrait;
+
     private KernelBrowser $client;
     private EntityManagerInterface $em;
     private SluggerInterface $slugger;
@@ -22,6 +25,7 @@ final class CategoryCrudControllerTest extends WebTestCase
     protected function setUp(): void
     {
         $this->client = self::createClient();
+        $this->loginSuperAdmin($this->client);
 
         /** @var ManagerRegistry $doctrine */
         $doctrine = self::getContainer()->get('doctrine');
@@ -69,10 +73,15 @@ final class CategoryCrudControllerTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('h1');
         self::assertSelectorExists('select#Category_parent');
-        self::assertSelectorExists('input#Category_nameDe');
+        self::assertSelectorExists('input#Category_translations_0_name');
+        self::assertSelectorExists('textarea#Category_translations_0_description');
+        self::assertSelectorExists('input#Category_translations_1_name');
+        self::assertSelectorExists('textarea#Category_translations_1_description');
 
-        $inputValue = $this->client->getCrawler()->filter('input#Category_nameDe')->attr('value');
+        $inputValue = $this->client->getCrawler()->filter('input#Category_translations_0_name')->attr('value');
         self::assertSame($category->getNameDe(), $inputValue);
+        $inputValue = $this->client->getCrawler()->filter('input#Category_translations_1_name')->attr('value');
+        self::assertSame($category->getNameEn(), $inputValue);
     }
 
     public function testDetailPageSuccessful(): void
@@ -93,43 +102,47 @@ final class CategoryCrudControllerTest extends WebTestCase
 
         $this->client->submitForm('ea[newForm][btn]', [
             'Category[parent]' => '',
-            'Category[nameDe]' => 'Parent DE',
-            'Category[nameEn]' => 'Parent EN',
-            'Category[descriptionDe]' => 'Description DE',
-            'Category[descriptionEn]' => 'Description EN',
+            'Category[translations][0][name]' => 'Name DE',
+            'Category[translations][1][name]' => 'Name EN',
+            'Category[translations][0][description]' => 'Description DE',
+            'Category[translations][1][description]' => 'Description EN',
         ]);
 
         self::assertResponseRedirects();
         $this->client->followRedirect();
 
-        $category = $this->em->getRepository(Category::class)->findOneBy(['nameDe' => 'Parent DE']);
+        $category = $this->em->getRepository(Category::class)->fetchOneBy(['name' => 'Name DE'], EntityHelper::LOCALE_DE);
         self::assertNotNull($category);
         self::assertNull($category->getParent());
-        self::assertSame('Parent EN', $category->getNameEn());
+        self::assertSame('Name EN', $category->getNameEn());
     }
 
     public function testCreateChildCategory(): void
     {
-        $parent = $this->createCategory(true, 'Parent DE', 'Parent EN');
+        // Call first, otherwise client run setup and deletes the category
+        $parent = $this->createCategory(true, 'ParentName DE', 'ParentName EN');
 
         $this->client->request('GET', '/admin/category/new');
         self::assertResponseIsSuccessful();
 
         $this->client->submitForm('ea[newForm][btn]', [
             'Category[parent]' => $parent->getId(),
-            'Category[nameDe]' => 'Child DE',
-            'Category[nameEn]' => 'Child EN',
-            'Category[descriptionDe]' => 'Child DE desc',
-            'Category[descriptionEn]' => 'Child EN desc',
+            'Category[translations][0][name]' => 'Child Name DE',
+            'Category[translations][1][name]' => 'Child Name EN',
+            'Category[translations][0][description]' => 'Child Description DE',
+            'Category[translations][1][description]' => 'Child Description EN',
         ]);
 
         self::assertResponseRedirects();
         $this->client->followRedirect();
 
-        $child = $this->em->getRepository(Category::class)->findOneBy(['nameDe' => 'Child DE']);
+        $child = $this->em
+            ->getRepository(Category::class)
+            ->fetchOneBy(['name' => 'Child Name DE'], EntityHelper::LOCALE_DE);
         self::assertNotNull($child);
+        self::assertNotNull($child->getParent());
         self::assertSame($parent->getId(), $child->getParent()?->getId());
-        self::assertSame('Child EN', $child->getNameEn());
+        self::assertSame('Child Name EN', $child->getNameEn());
     }
 
     public function testEditParentCategory(): void
@@ -142,10 +155,10 @@ final class CategoryCrudControllerTest extends WebTestCase
 
         $this->client->submitForm('ea[newForm][btn]', [
             'Category[parent]' => '',
-            'Category[nameDe]' => 'Parent DE Edited',
-            'Category[nameEn]' => 'Parent EN Edited',
-            'Category[descriptionDe]' => 'Edited DE',
-            'Category[descriptionEn]' => 'Edited EN',
+            'Category[translations][0][name]' => 'Parent DE Edited',
+            'Category[translations][1][name]' => 'Parent EN Edited',
+            'Category[translations][0][description]' => 'Parent Description DE Edited',
+            'Category[translations][1][description]' => 'Parent Description EN Edited',
         ]);
 
         self::assertResponseRedirects();
@@ -167,10 +180,10 @@ final class CategoryCrudControllerTest extends WebTestCase
 
         $this->client->submitForm('ea[newForm][btn]', [
             'Category[parent]' => $parent->getId(),
-            'Category[nameDe]' => 'Child DE Edited',
-            'Category[nameEn]' => 'Child EN Edited',
-            'Category[descriptionDe]' => 'Edited DE',
-            'Category[descriptionEn]' => 'Edited EN',
+            'Category[translations][0][name]' => 'Child DE Edited',
+            'Category[translations][1][name]' => 'Child EN Edited',
+            'Category[translations][0][description]' => 'ChildDescription DE Edited',
+            'Category[translations][1][description]' => 'ChildDescription EN Edited',
         ]);
 
         self::assertResponseRedirects();
@@ -224,6 +237,7 @@ final class CategoryCrudControllerTest extends WebTestCase
 
     private function cleanUp(): void
     {
+        $this->em->createQuery('DELETE FROM App\Entity\CategoryTranslation ct')->execute();
         $this->em->createQuery('DELETE FROM App\Entity\Category c')->execute();
     }
 }
