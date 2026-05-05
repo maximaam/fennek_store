@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use PhpCsFixer\Config;
 use PhpCsFixer\Finder;
 
@@ -8,9 +10,13 @@ $finder = Finder::create()
     ->in(__DIR__.'/tests')
     ->name('*.php')
     ->ignoreDotFiles(true)
-    ->ignoreVCS(true);
+    ->ignoreVCS(true)
+    ->notPath([
+        'config/bundles.php',
+        'config/reference.php',
+    ]);
 
-return (new Config())
+return new Config()
     ->setRiskyAllowed(true)
     ->setFinder($finder)
     ->setRules([
@@ -29,12 +35,12 @@ return (new Config())
         'types_spaces' => ['space' => 'none'],
         'multiline_whitespace_before_semicolons' => ['strategy' => 'no_multi_line'],
         'binary_operator_spaces' => [
-            //'operators' => ['=>' => 'align', '=' => 'align_single_space_minimal']
-            'operators' => ['=>' => 'single_space', '='  => 'single_space'],
+            // 'operators' => ['=>' => 'align', '=' => 'align_single_space_minimal']
+            'operators' => ['=>' => 'single_space', '=' => 'single_space'],
         ],
         'yoda_style' => true,
         'native_function_invocation' => [
-            //'include' => ['@all'],
+            // 'include' => ['@all'],
             'include' => ['@compiler_optimized'],
             'strict' => false,
         ],
