@@ -15,5 +15,9 @@ final class DefaultControllerTest extends WebTestCase
         $client->request('GET', '/');
 
         self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $client->followRedirect();
+        self::assertResponseIsSuccessful();
+        self::assertSame('/de/', $client->getRequest()->getPathInfo());
     }
 }

@@ -8,6 +8,7 @@
         "ext-bcmath": "*",
         "ext-ctype": "*",
         "ext-iconv": "*",
+        "ext-dom": "*",
         "doctrine/dbal": "^4.4.3",
         "doctrine/doctrine-bundle": "^3.2.2",
         "doctrine/doctrine-migrations-bundle": "^4.0.0",
