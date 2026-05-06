@@ -96,15 +96,16 @@ final class CartControllerTest extends WebTestCase
 
     public function testRemoveItem(): void
     {
-        $session = $this->client->getSession();
-        $session->set('cart', [
-            '1_red_L' => [
-                'id' => 1,
-                'quantity' => 2,
+        $this->setSessionData($this->client, [
+            'cart' => [
+                '1_red_L' => [
+                    'id' => 1,
+                    'quantity' => 2,
+                ],
             ],
         ]);
 
-        $cart = $session->get('cart');
+        $cart = $this->client->getSession()->get('cart');
         self::assertArrayHasKey('1_red_L', $cart);
 
         $this->client->request('GET', '/de/cart/remove/1_red_L');
@@ -116,11 +117,30 @@ final class CartControllerTest extends WebTestCase
 
     public function testCountItemsFragment(): void
     {
-        $session = $this->client->getSession();
-        $session->set('cart', [
-            'a' => [],
-            'b' => [],
+        $this->setSessionData($this->client, [
+            'cart' => ['a' => [], 'b' => []],
         ]);
+
+        $this->client->request('GET', '/de/cart/_fragment/count-items');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.with-items', '2');
+    }
+
+    /**
+     * Symfony test client simulates real HTTP:
+     *
+     * Each request is stateless
+     * Session is linked via cookie
+     * If you don’t attach the cookie → new empty session
+     */
+    private function setSessionData(KernelBrowser $client, array $data): void
+    {
+        $session = $client->getSession();
+
+        foreach ($data as $key => $value) {
+            $session->set($key, $value);
+        }
 
         // ✅ important, otherwise the session cookie is empty for the next request
         $session->save();
@@ -129,11 +149,6 @@ final class CartControllerTest extends WebTestCase
         $this->client->getCookieJar()->set(
             new Cookie($session->getName(), $session->getId())
         );
-
-        $this->client->request('GET', '/de/cart/_fragment/count-items');
-
-        self::assertResponseIsSuccessful();
-        self::assertSelectorTextContains('.with-items', '2');
     }
 
     private function createProduct(): Product
