@@ -10,7 +10,7 @@ use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-final readonly class EmailFactory
+readonly class EmailFactory
 {
     public function __construct(
         private UrlGeneratorInterface $router,

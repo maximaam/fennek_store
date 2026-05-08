@@ -9,8 +9,8 @@ final readonly class OrderCaptureDto
     /**
      * @param array<string, string> $links
      * @param array<string, string> $payer
-     * @param array<string, string> $payment_source
-     * @param array<string, string> $purchase_units
+     * @param array<string, mixed>  $payment_source
+     * @param array<string, mixed>  $purchase_units
      */
     public function __construct(
         public string $id,

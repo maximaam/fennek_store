@@ -13,7 +13,7 @@ use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-final class PayPalClient
+class PayPalClient
 {
     private const string ORDERS_ENDPOINT = '/v2/checkout/orders';
     private const string TOKEN_ENDPOINT = '/v1/oauth2/token';

@@ -11,7 +11,7 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 
-final readonly class Mailer
+readonly class Mailer
 {
     public function __construct(
         private MailerInterface $mailer,

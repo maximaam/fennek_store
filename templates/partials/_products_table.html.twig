@@ -25,11 +25,15 @@
                     </a>
                     {% endif %}
                 </td>
-                <td><img src="{{ asset('uploads/images/' ~ product.image) | imagine_filter('product_thumbnail') }}" alt="" width="120"></td>
+                <td>
+                    {% if product.image is defined %}
+                        <img src="{{ asset('uploads/images/' ~ product.image) | imagine_filter('product_thumbnail') }}" alt="" width="120">
+                    {% endif %}
+                </td>
                 <td nowrap="nowrap">
-                    <a href="{{ product.item_url }}">{{ product.title }}</a>
+                    {% if product.image is defined %} <a href="{{ product.item_url }}">{{ product.title }}</a> {% endif %}
                     <p title="{{ 'label.message'|trans }}">
-                        {% if product.message is not empty %}
+                        {% if product.message is defined and product.message is not empty %}
                             {{ ux_icon('bi:envelope-at', {class: 'basic-icon white-bg'}) }} {{ product.message }}
                         {% endif %}
                     </p>
