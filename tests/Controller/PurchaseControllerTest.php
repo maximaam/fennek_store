@@ -4,7 +4,20 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller;
 
-use App\Dto\EmailMessageDto;use App\Dto\PayPal\OrderCaptureDto;use App\Dto\PayPal\OrderDto;use App\Entity\Purchase;use App\Enum\PayPalStatus;use App\Factory\EmailFactory;use App\Helper\ProductHelper;use App\Service\Mailer;use App\Service\PayPalClient;use Doctrine\ORM\EntityManagerInterface;use Symfony\Bridge\Doctrine\ManagerRegistry;use Symfony\Bundle\FrameworkBundle\KernelBrowser;use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;use Symfony\Component\Mime\Address;
+use App\Dto\EmailMessageDto;
+use App\Dto\PayPal\OrderCaptureDto;
+use App\Dto\PayPal\OrderDto;
+use App\Entity\Purchase;
+use App\Enum\PayPalStatus;
+use App\Factory\EmailFactory;
+use App\Helper\ProductHelper;
+use App\Service\Mailer;
+use App\Service\PayPalClient;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\ManagerRegistry;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Mime\Address;
 
 final class PurchaseControllerTest extends WebTestCase
 {

@@ -4,7 +4,16 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller;
 
-use App\Entity\Category;use App\Entity\CategoryTranslation;use App\Entity\Product;use App\Entity\ProductTranslation;use App\Helper\EntityHelper;use Doctrine\ORM\EntityManagerInterface;use Symfony\Bridge\Doctrine\ManagerRegistry;use Symfony\Bundle\FrameworkBundle\KernelBrowser;use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;use Symfony\Component\String\Slugger\SluggerInterface;
+use App\Entity\Category;
+use App\Entity\CategoryTranslation;
+use App\Entity\Product;
+use App\Entity\ProductTranslation;
+use App\Helper\EntityHelper;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\ManagerRegistry;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 final class CartControllerTest extends WebTestCase
 {
