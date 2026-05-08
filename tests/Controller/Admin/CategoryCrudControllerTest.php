@@ -141,7 +141,7 @@ final class CategoryCrudControllerTest extends WebTestCase
             ->fetchOneBy(['name' => 'Child Name DE'], EntityHelper::LOCALE_DE);
         self::assertNotNull($child);
         self::assertNotNull($child->getParent());
-        self::assertSame($parent->getId(), $child->getParent()?->getId());
+        self::assertSame($parent->getId(), $child->getParent()->getId());
         self::assertSame('Child Name EN', $child->getNameEn());
     }
 

@@ -4,17 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller;
 
-use App\Entity\Category;
-use App\Entity\CategoryTranslation;
-use App\Entity\Product;
-use App\Entity\ProductTranslation;
-use App\Helper\EntityHelper;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bridge\Doctrine\ManagerRegistry;
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\BrowserKit\Cookie;
-use Symfony\Component\String\Slugger\SluggerInterface;
+use App\Entity\Category;use App\Entity\CategoryTranslation;use App\Entity\Product;use App\Entity\ProductTranslation;use App\Helper\EntityHelper;use Doctrine\ORM\EntityManagerInterface;use Symfony\Bridge\Doctrine\ManagerRegistry;use Symfony\Bundle\FrameworkBundle\KernelBrowser;use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;use Symfony\Component\String\Slugger\SluggerInterface;
 
 final class CartControllerTest extends WebTestCase
 {
@@ -59,7 +49,7 @@ final class CartControllerTest extends WebTestCase
 
         self::assertResponseRedirects('/de/cart/');
 
-        $cart = $this->client->getSession()->get('cart');
+        $cart = CartHelper::getCartFromSession($this->client);
         $itemKey = \sprintf('%d_red_L', $product->getId());
         $locale = $this->client->getRequest()->getLocale();
 
@@ -96,7 +86,7 @@ final class CartControllerTest extends WebTestCase
 
     public function testRemoveItem(): void
     {
-        $this->setSessionData($this->client, [
+        CartHelper::setSessionData($this->client, [
             'cart' => [
                 '1_red_L' => [
                     'id' => 1,
@@ -105,19 +95,20 @@ final class CartControllerTest extends WebTestCase
             ],
         ]);
 
-        $cart = $this->client->getSession()->get('cart');
+        $cart = CartHelper::getCartFromSession($this->client);
         self::assertArrayHasKey('1_red_L', $cart);
 
         $this->client->request('GET', '/de/cart/remove/1_red_L');
         self::assertResponseRedirects('/de/cart/');
 
-        $cart = $this->client->getSession()->get('cart', []);
+        // HTTP request is stateless, so the session gets modified by the request
+        $cart = CartHelper::getCartFromSession($this->client);
         self::assertEmpty($cart);
     }
 
     public function testCountItemsFragment(): void
     {
-        $this->setSessionData($this->client, [
+        CartHelper::setSessionData($this->client, [
             'cart' => ['a' => [], 'b' => []],
         ]);
 
@@ -125,30 +116,6 @@ final class CartControllerTest extends WebTestCase
 
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('.with-items', '2');
-    }
-
-    /**
-     * Symfony test client simulates real HTTP:
-     *
-     * Each request is stateless
-     * Session is linked via cookie
-     * If you don’t attach the cookie → new empty session
-     */
-    private function setSessionData(KernelBrowser $client, array $data): void
-    {
-        $session = $client->getSession();
-
-        foreach ($data as $key => $value) {
-            $session->set($key, $value);
-        }
-
-        // ✅ important, otherwise the session cookie is empty for the next request
-        $session->save();
-
-        // attach session cookie to the client for the next request
-        $this->client->getCookieJar()->set(
-            new Cookie($session->getName(), $session->getId())
-        );
     }
 
     private function createProduct(): Product

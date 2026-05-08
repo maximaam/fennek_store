@@ -206,42 +206,42 @@ class Product
         throw new \InvalidArgumentException(\sprintf('No translation found for locale "%s".', $locale));
     }
 
-    public function getTitleDe(): ?string
+    public function getTitleDe(): string
     {
         return $this->getTranslationByLocale(EntityHelper::LOCALE_DE)
             ->getTitle();
     }
 
-    public function getTitleEn(): ?string
+    public function getTitleEn(): string
     {
         return $this->getTranslationByLocale(EntityHelper::LOCALE_EN)
             ->getTitle();
     }
 
-    public function getDescriptionDe(): ?string
+    public function getDescriptionDe(): string
     {
         return $this->getTranslationByLocale(EntityHelper::LOCALE_DE)
             ->getDescription();
     }
 
-    public function getDescriptionEn(): ?string
+    public function getDescriptionEn(): string
     {
         return $this->getTranslationByLocale(EntityHelper::LOCALE_EN)
             ->getDescription();
     }
 
-    public function getTitleSlug(string $locale): ?string
+    public function getTitleSlug(string $locale): string
     {
         return $this->getTranslationByLocale($locale)
             ->getSlug();
     }
 
-    public function getTitle(string $locale): ?string
+    public function getTitle(string $locale): string
     {
         return $this->getTranslationByLocale($locale)->getTitle();
     }
 
-    public function getDescription(string $locale): ?string
+    public function getDescription(string $locale): string
     {
         return $this->getTranslationByLocale($locale)->getDescription();
     }

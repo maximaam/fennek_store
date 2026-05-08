@@ -4,19 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller;
 
-use App\Dto\EmailMessageDto;
-use App\Dto\PayPal\OrderCaptureDto;
-use App\Dto\PayPal\OrderDto;
-use App\Entity\Purchase;
-use App\Enum\PayPalStatus;
-use App\Factory\EmailFactory;
-use App\Helper\ProductHelper;
-use App\Service\Mailer;
-use App\Service\PayPalClient;
-use Doctrine\ORM\EntityManagerInterface;use Symfony\Bridge\Doctrine\ManagerRegistry;use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\BrowserKit\Cookie;
-use Symfony\Component\Mime\Address;
+use App\Dto\EmailMessageDto;use App\Dto\PayPal\OrderCaptureDto;use App\Dto\PayPal\OrderDto;use App\Entity\Purchase;use App\Enum\PayPalStatus;use App\Factory\EmailFactory;use App\Helper\ProductHelper;use App\Service\Mailer;use App\Service\PayPalClient;use Doctrine\ORM\EntityManagerInterface;use Symfony\Bridge\Doctrine\ManagerRegistry;use Symfony\Bundle\FrameworkBundle\KernelBrowser;use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;use Symfony\Component\Mime\Address;
 
 final class PurchaseControllerTest extends WebTestCase
 {
@@ -48,7 +36,7 @@ final class PurchaseControllerTest extends WebTestCase
         $container = $this->client->getContainer();
 
         // set cart in session for the coming request
-        $this->setSessionData($this->client, [
+        CartHelper::setSessionData($this->client, [
             'cart' => [
                 '1_red_L' => [
                     'id' => 1,
@@ -61,7 +49,7 @@ final class PurchaseControllerTest extends WebTestCase
             ],
         ]);
 
-        $cart = $this->client->getSession()->get('cart');
+        $cart = CartHelper::getCartFromSession($this->client);
         $computedCart = ProductHelper::computeCard($cart);
         $expectedTotal = $computedCart['totals']['total'];
         self::assertEquals(2000, $expectedTotal);
@@ -256,7 +244,7 @@ final class PurchaseControllerTest extends WebTestCase
 
         $container->set(EmailFactory::class, $emailFactoryMock);
 
-        $this->setSessionData($this->client, [
+        CartHelper::setSessionData($this->client, [
             'cart' => [
                 '1_red_L' => [
                     'id' => 1,
@@ -268,15 +256,14 @@ final class PurchaseControllerTest extends WebTestCase
                 ],
             ],
         ]);
-        $session = $this->client->getSession();
-        self::assertNotEmpty($session->get('cart'));
-        self::assertSame(1, $session->get('cart')['1_red_L']['id']);
+        $cart = CartHelper::getCartFromSession($this->client);
+        self::assertNotEmpty($cart);
+        self::assertSame(1, $cart['1_red_L']['id']);
 
         $this->client->request('GET', '/de/purchase/complete/ORDER123');
         self::assertResponseRedirects('/de/purchase/success/ORDER123');
 
-        $session = $this->client->getSession();
-        self::assertNull($session->get('cart'));
+        self::assertEmpty(CartHelper::getCartFromSession($this->client));
     }
 
     public function testSuccessPage(): void
@@ -315,28 +302,38 @@ final class PurchaseControllerTest extends WebTestCase
         self::assertSelectorExists('body');
     }
 
-    /**
-     * Symfony test client simulates real HTTP:
-     *
-     * Each request is stateless
-     * Session is linked via cookie
-     * If you don’t attach the cookie → new empty session
-     */
-    private function setSessionData(KernelBrowser $client, array $data): void
+    private function createCart(int $sum = 1): array
     {
-        $session = $client->getSession();
+        $cart1 = [
+            '1_red_L' => [
+                'id' => 1,
+                'quantity' => 2,
+                'color' => 'red',
+                'size' => 'L',
+                'price' => 1000,
+                'full_price' => 2000,
+                'message' => 'test message',
+                'image' => 'https://via.placeholder.com/150',
+            ],
+        ];
 
-        foreach ($data as $key => $value) {
-            $session->set($key, $value);
+        // No message, no image, single item
+        $cart2 = [
+            '2_red_L' => [
+                'id' => 2,
+                'quantity' => 1,
+                'color' => 'blue',
+                'size' => null,
+                'price' => 1000,
+                'full_price' => 1000,
+            ],
+        ];
+
+        if (1 === $sum) {
+            return $cart1;
         }
 
-        // ✅ important, otherwise the session cookie is empty for the next request
-        $session->save();
-
-        // attach session cookie to the client for the next request
-        $this->client->getCookieJar()->set(
-            new Cookie($session->getName(), $session->getId())
-        );
+        return array_merge($cart1, $cart2);
     }
 
     private function cleanUp(): void
