@@ -78,11 +78,11 @@ final class PurchaseControllerTest extends WebTestCase
         $this->client->request('POST', '/de/purchase/create');
         self::assertResponseIsSuccessful();
 
-        $data = json_decode($this->client->getResponse()->getContent(), true);
+        $data = json_decode((string) $this->client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
         self::assertSame('ORDER123', $data['id']);
 
         // assert DB
-        $purchase = $container->get('doctrine')
+        $purchase = $this->em
             ->getRepository(Purchase::class)
             ->findOneBy(['orderId' => 'ORDER123']);
 
@@ -103,15 +103,13 @@ final class PurchaseControllerTest extends WebTestCase
     public function testCaptureSuccess(): void
     {
         $container = $this->client->getContainer();
-        $em = $container->get('doctrine')->getManager();
 
         // create purchase
         $purchase = new Purchase()
             ->setOrderId('ORDER123')
             ->setStatus(PayPalStatus::CREATED);
-
-        $em->persist($purchase);
-        $em->flush();
+        $this->em->persist($purchase);
+        $this->em->flush();
 
         // mock PayPalClient
         $paypalMock = $this->createMock(PayPalClient::class);
@@ -188,7 +186,7 @@ final class PurchaseControllerTest extends WebTestCase
 
         self::assertResponseIsSuccessful();
 
-        $data = json_decode($this->client->getResponse()->getContent(), true);
+        $data = json_decode((string) $this->client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
         self::assertSame('ORDER123', $data['id']);
         self::assertSame(PayPalStatus::COMPLETED->value, $data['status']);
         self::assertSame('9WHK9U3N3UU8J', $data['payer']['payer_id']);
@@ -197,11 +195,10 @@ final class PurchaseControllerTest extends WebTestCase
         self::assertSame('Rampe Vallée - Casbah', $data['purchase_units'][0]['shipping']['address']['address_line_1']);
 
         $purchase->setStatus(PayPalStatus::from($captureDto->status));
-        $em->flush();
-        $em->refresh($purchase);
+        $this->em->flush();
+        $this->em->refresh($purchase);
 
         self::assertSame(PayPalStatus::COMPLETED, $purchase->getStatus());
-        self::assertIsArray($purchase->getPayment());
     }
 
     public function testCaptureFailsIfNotCompleted(): void
@@ -233,15 +230,13 @@ final class PurchaseControllerTest extends WebTestCase
     public function testComplete(): void
     {
         $container = $this->client->getContainer();
-        $em = $container->get('doctrine')->getManager();
 
         // create purchase
         $purchase = new Purchase()
             ->setOrderId('ORDER123')
             ->setStatus(PayPalStatus::COMPLETED);
-
-        $em->persist($purchase);
-        $em->flush();
+        $this->em->persist($purchase);
+        $this->em->flush();
 
         // mock mailer
         $mailerMock = $this->createMock(Mailer::class);
@@ -281,9 +276,6 @@ final class PurchaseControllerTest extends WebTestCase
 
     public function testSuccessPage(): void
     {
-        $container = $this->client->getContainer();
-        $em = $container->get('doctrine')->getManager();
-
         $purchase = new Purchase()
             ->setOrderId('ORDER123')
             ->setStatus(PayPalStatus::COMPLETED)
@@ -306,47 +298,13 @@ final class PurchaseControllerTest extends WebTestCase
                 ],
             ]);
 
-        $em->persist($purchase);
-        $em->flush();
+        $this->em->persist($purchase);
+        $this->em->flush();
 
         $this->client->request('GET', '/de/purchase/success/ORDER123');
 
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('body');
-    }
-
-    private function createCart(int $sum = 1): array
-    {
-        $cart1 = [
-            '1_red_L' => [
-                'id' => 1,
-                'quantity' => 2,
-                'color' => 'red',
-                'size' => 'L',
-                'price' => 1000,
-                'full_price' => 2000,
-                'message' => 'test message',
-                'image' => 'https://via.placeholder.com/150',
-            ],
-        ];
-
-        // No message, no image, single item
-        $cart2 = [
-            '2_red_L' => [
-                'id' => 2,
-                'quantity' => 1,
-                'color' => 'blue',
-                'size' => null,
-                'price' => 1000,
-                'full_price' => 1000,
-            ],
-        ];
-
-        if (1 === $sum) {
-            return $cart1;
-        }
-
-        return array_merge($cart1, $cart2);
     }
 
     private function cleanUp(): void

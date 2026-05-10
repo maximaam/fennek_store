@@ -7,10 +7,10 @@ namespace App\Dto\PayPal;
 final readonly class OrderCaptureDto
 {
     /**
-     * @param array<string, string> $links
-     * @param array<string, string> $payer
-     * @param array<string, mixed>  $payment_source
-     * @param array<string, mixed>  $purchase_units
+     * @param array<string, string>                                                                                                $links
+     * @param array<string, array<string, string>|string>                                                                          $payer
+     * @param array<string, mixed>                                                                                                 $payment_source
+     * @param array<int, array<string, array<string, array<int|string, array<string, array<string, string>|bool|string>|string>>>> $purchase_units
      */
     public function __construct(
         public string $id,

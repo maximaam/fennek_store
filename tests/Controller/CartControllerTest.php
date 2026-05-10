@@ -129,9 +129,6 @@ final class CartControllerTest extends WebTestCase
 
     private function createProduct(): Product
     {
-        $container = $this->client->getContainer();
-        $em = $container->get('doctrine')->getManager();
-
         $product = new Product()
             ->setPrice(1000)
             ->setCategory($this->createCategory(true, 'test category', 'test category'));
@@ -143,8 +140,8 @@ final class CartControllerTest extends WebTestCase
 
         $product->addTranslation($productTranslation);
 
-        $em->persist($product);
-        $em->flush();
+        $this->em->persist($product);
+        $this->em->flush();
 
         return $product;
     }

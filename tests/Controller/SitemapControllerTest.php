@@ -16,10 +16,10 @@ final class SitemapControllerTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertResponseHeaderSame('content-type', 'application/xml');
 
-        $content = $client->getResponse()->getContent();
+        $content = (string) $client->getResponse()->getContent();
         $xml = new \DOMDocument();
         self::assertTrue($xml->loadXML($content));
-        self::assertSame('urlset', $xml->documentElement->localName);
+        self::assertSame('urlset', $xml->documentElement?->localName);
         self::assertGreaterThan(0, $xml->getElementsByTagName('url')->length);
     }
 }

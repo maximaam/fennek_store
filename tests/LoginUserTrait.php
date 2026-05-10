@@ -14,7 +14,7 @@ trait LoginUserTrait
     {
         $container = self::getContainer();
 
-        /** @var UserProviderInterface $provider */
+        /** @var UserProviderInterface<UserInterface> $provider */
         $provider = $container->get('security.user.provider.concrete.admin_provider');
 
         $user = $provider->loadUserByIdentifier('admin');
@@ -27,7 +27,7 @@ trait LoginUserTrait
     {
         $container = self::getContainer();
 
-        /** @var UserProviderInterface $provider */
+        /** @var UserProviderInterface<UserInterface> $provider */
         $provider = $container->get('security.user.provider.concrete.admin_provider');
 
         $user = $provider->loadUserByIdentifier('sadmin');

@@ -6,12 +6,16 @@ namespace App\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Component\BrowserKit\Cookie;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 final readonly class CartHelper
 {
+    /**
+     * @return array<int|string, mixed> $data
+     */
     public static function getCartFromSession(KernelBrowser $client): array
     {
-        return $client->getSession()->get('cart') ?? [];
+        return $client->getSession()?->get('cart') ?? [];
     }
 
     /**
@@ -26,7 +30,7 @@ final readonly class CartHelper
     public static function setSessionData(KernelBrowser $client, array $data): void
     {
         $session = $client->getSession();
-        if (!$session) {
+        if (!$session instanceof SessionInterface) {
             return;
         }
 
@@ -39,7 +43,7 @@ final readonly class CartHelper
 
         // attach session cookie to the client for the next request
         $client->getCookieJar()->set(
-            new Cookie($session?->getName(), $session->getId())
+            new Cookie($session->getName(), $session->getId())
         );
     }
 }

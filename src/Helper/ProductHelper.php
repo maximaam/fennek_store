@@ -9,7 +9,7 @@ final readonly class ProductHelper
     public const int VAT = 19;
 
     /**
-     * @param array<int, mixed> $cart
+     * @param array<int|string, mixed> $cart
      *
      * @return array<int|string, mixed>
      */
