@@ -8,6 +8,7 @@ use App\Entity\Category;
 use App\Entity\CategoryTranslation;
 use App\Helper\EntityHelper;
 use App\Tests\Trait\DoctrineManagerTrait;
+use App\Tests\Trait\LoginUserTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\String\Slugger\SluggerInterface;

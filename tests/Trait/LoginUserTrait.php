@@ -2,11 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Controller\Admin;
+namespace App\Tests\Trait;
 
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Core\User\UserProviderInterface;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;use Symfony\Component\Security\Core\User\UserInterface;use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 trait LoginUserTrait
 {
