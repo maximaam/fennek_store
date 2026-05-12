@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App\DataFixtures;
 
 use App\Entity\Purchase;
-use App\Enum\PayPalStatus;use Doctrine\Bundle\FixturesBundle\Fixture;
+use App\Enum\PayPalStatus;
+use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
 final class PurchaseFixtures extends Fixture

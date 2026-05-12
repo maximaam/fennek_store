@@ -15,6 +15,7 @@ use App\Helper\ProductHelper;
 use App\Service\Mailer;
 use App\Service\PayPalClient;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
 use Liip\TestFixturesBundle\Services\DatabaseTools\AbstractDatabaseTool;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -32,9 +33,17 @@ final class PurchaseControllerTest extends WebTestCase
     protected function setUp(): void
     {
         $this->client = self::createClient();
-        $this->em = self::getContainer()->get('doctrine')->getManager();
 
-        $this->databaseTool = self::getContainer()->get(DatabaseToolCollection::class)->get();
+        /** @var ManagerRegistry $doctrine */
+        $doctrine = self::getContainer()->get('doctrine');
+        /** @var EntityManagerInterface $em */
+        $em = $doctrine->getManager();
+        $this->em = $em;
+
+        /** @var DatabaseToolCollection $databaseToolCollection */
+        $databaseToolCollection = self::getContainer()->get(DatabaseToolCollection::class);
+        $databaseTool = $databaseToolCollection->get();
+        $this->databaseTool = $databaseTool;
         $this->databaseTool->loadFixtures([PurchaseFixtures::class]);
     }
 
@@ -101,7 +110,7 @@ final class PurchaseControllerTest extends WebTestCase
     public function testCaptureSuccess(): void
     {
         $container = $this->client->getContainer();
-        $purchase = $this->em->getRepository(Purchase::class)->findOneBy([]);
+        $purchase = $this->getPurchase();
         $orderId = $purchase->getOrderId();
 
         $paypalMock = $this->createMock(PayPalClient::class);
@@ -194,7 +203,7 @@ final class PurchaseControllerTest extends WebTestCase
 
     public function testCaptureFailsIfNotCompleted(): void
     {
-        $purchase = $this->em->getRepository(Purchase::class)->findOneBy([]);
+        $purchase = $this->getPurchase();
         $orderId = $purchase->getOrderId();
 
         $paypalMock = $this->createMock(PayPalClient::class);
@@ -223,7 +232,7 @@ final class PurchaseControllerTest extends WebTestCase
     public function testComplete(): void
     {
         $container = $this->client->getContainer();
-        $purchase = $this->em->getRepository(Purchase::class)->findOneBy([]);
+        $purchase = $this->getPurchase();
         $purchase->setStatus(PayPalStatus::COMPLETED);
         $orderId = $purchase->getOrderId();
 
@@ -265,8 +274,7 @@ final class PurchaseControllerTest extends WebTestCase
 
     public function testSuccessPage(): void
     {
-        $purchase = $this->em->getRepository(Purchase::class)->findOneBy([]);
-        $purchase
+        $purchase = $this->getPurchase()
             ->setStatus(PayPalStatus::COMPLETED)
             ->setProduct([
                 'totals' => [
@@ -291,5 +299,14 @@ final class PurchaseControllerTest extends WebTestCase
 
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('body');
+    }
+
+    /**
+     * Get any purchase from the fixtures.
+     */
+    private function getPurchase(): Purchase
+    {
+        return $this->em->getRepository(Purchase::class)->findOneBy([])
+            ?? throw new \RuntimeException('No purchase found');
     }
 }

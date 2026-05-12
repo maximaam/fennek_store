@@ -7,7 +7,6 @@ namespace App\Tests\Controller\Admin;
 use App\Entity\Category;
 use App\Entity\CategoryTranslation;
 use App\Helper\EntityHelper;
-use App\Tests\LoginUserTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;

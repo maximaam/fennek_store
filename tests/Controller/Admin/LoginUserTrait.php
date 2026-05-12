@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests;
+namespace App\Tests\Controller\Admin;
 
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Component\Security\Core\User\UserInterface;

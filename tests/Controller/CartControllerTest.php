@@ -7,6 +7,7 @@ namespace App\Tests\Controller;
 use App\DataFixtures\ProductFixtures;
 use App\Entity\Product;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
 use Liip\TestFixturesBundle\Services\DatabaseTools\AbstractDatabaseTool;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -23,9 +24,17 @@ final class CartControllerTest extends WebTestCase
     protected function setUp(): void
     {
         $this->client = self::createClient();
-        $this->em = self::getContainer()->get('doctrine')->getManager();
-        $this->databaseTool = self::getContainer()->get(DatabaseToolCollection::class)->get();
 
+        /** @var ManagerRegistry $doctrine */
+        $doctrine = self::getContainer()->get('doctrine');
+        /** @var EntityManagerInterface $em */
+        $em = $doctrine->getManager();
+        $this->em = $em;
+
+        /** @var DatabaseToolCollection $databaseToolCollection */
+        $databaseToolCollection = self::getContainer()->get(DatabaseToolCollection::class);
+        $databaseTool = $databaseToolCollection->get();
+        $this->databaseTool = $databaseTool;
         $this->databaseTool->loadFixtures([ProductFixtures::class]);
     }
 
