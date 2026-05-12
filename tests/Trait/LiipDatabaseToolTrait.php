@@ -12,12 +12,15 @@ trait LiipDatabaseToolTrait
 {
     private AbstractDatabaseTool $databaseTool;
 
-    protected function initDatabaseTool(): void
+    /**
+     * @param array<class-string> $fixtures
+     */
+    protected function initDatabaseTool(array $fixtures): void
     {
         /** @var DatabaseToolCollection $databaseToolCollection */
         $databaseToolCollection = self::getContainer()->get(DatabaseToolCollection::class);
         $databaseTool = $databaseToolCollection->get();
         $this->databaseTool = $databaseTool;
-        $this->databaseTool->loadFixtures([ProductFixtures::class]);
+        $this->databaseTool->loadFixtures($fixtures);
     }
 }

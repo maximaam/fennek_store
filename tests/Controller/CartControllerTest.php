@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller;
 
-use App\Entity\Product;
+use App\DataFixtures\ProductFixtures;use App\Entity\Product;
 use App\Tests\Trait\DoctrineManagerTrait;
 use App\Tests\Trait\LiipDatabaseToolTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -24,7 +24,7 @@ final class CartControllerTest extends WebTestCase
         $this->client = self::createClient();
 
         $this->initDoctrineManager();
-        $this->initDatabaseTool();
+        $this->initDatabaseTool([ProductFixtures::class]);
     }
 
     public function testIndexDisplaysCart(): void
