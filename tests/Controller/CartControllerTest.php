@@ -4,33 +4,27 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller;
 
-use App\DataFixtures\ProductFixtures;
 use App\Entity\Product;
 use App\Tests\Trait\DoctrineManagerTrait;
-use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
-use Liip\TestFixturesBundle\Services\DatabaseTools\AbstractDatabaseTool;
+use App\Tests\Trait\LiipDatabaseToolTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 final class CartControllerTest extends WebTestCase
 {
     use DoctrineManagerTrait;
+    use LiipDatabaseToolTrait;
+
     public const string BASE_URL = '/de/cart';
 
     private KernelBrowser $client;
-    private AbstractDatabaseTool $databaseTool;
 
     protected function setUp(): void
     {
         $this->client = self::createClient();
 
         $this->initDoctrineManager();
-
-        /** @var DatabaseToolCollection $databaseToolCollection */
-        $databaseToolCollection = self::getContainer()->get(DatabaseToolCollection::class);
-        $databaseTool = $databaseToolCollection->get();
-        $this->databaseTool = $databaseTool;
-        $this->databaseTool->loadFixtures([ProductFixtures::class]);
+        $this->initDatabaseTool();
     }
 
     public function testIndexDisplaysCart(): void

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller;
 
-use App\DataFixtures\PurchaseFixtures;
 use App\Dto\EmailMessageDto;
 use App\Dto\PayPal\OrderCaptureDto;
 use App\Dto\PayPal\OrderDto;
@@ -15,8 +14,7 @@ use App\Helper\ProductHelper;
 use App\Service\Mailer;
 use App\Service\PayPalClient;
 use App\Tests\Trait\DoctrineManagerTrait;
-use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
-use Liip\TestFixturesBundle\Services\DatabaseTools\AbstractDatabaseTool;
+use App\Tests\Trait\LiipDatabaseToolTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Mime\Address;
@@ -24,22 +22,18 @@ use Symfony\Component\Mime\Address;
 final class PurchaseControllerTest extends WebTestCase
 {
     use DoctrineManagerTrait;
+    use LiipDatabaseToolTrait;
+
     public const string BASE_URL = '/de/purchase';
 
     private KernelBrowser $client;
-    private AbstractDatabaseTool $databaseTool;
 
     protected function setUp(): void
     {
         $this->client = self::createClient();
 
         $this->initDoctrineManager();
-
-        /** @var DatabaseToolCollection $databaseToolCollection */
-        $databaseToolCollection = self::getContainer()->get(DatabaseToolCollection::class);
-        $databaseTool = $databaseToolCollection->get();
-        $this->databaseTool = $databaseTool;
-        $this->databaseTool->loadFixtures([PurchaseFixtures::class]);
+        $this->initDatabaseTool();
     }
 
     public function testCreateWithEmptyCartRedirects(): void
