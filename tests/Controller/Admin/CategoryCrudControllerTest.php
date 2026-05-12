@@ -4,34 +4,30 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller\Admin;
 
+use App\DataFixtures\CategoryFixtures;
 use App\Entity\Category;
-use App\Entity\CategoryTranslation;
 use App\Helper\EntityHelper;
 use App\Tests\Trait\DoctrineManagerTrait;
+use App\Tests\Trait\LiipDatabaseToolTrait;
 use App\Tests\Trait\LoginUserTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\String\Slugger\SluggerInterface;
 
 final class CategoryCrudControllerTest extends WebTestCase
 {
     use DoctrineManagerTrait;
+    use LiipDatabaseToolTrait;
     use LoginUserTrait;
 
     private KernelBrowser $client;
-    private SluggerInterface $slugger;
 
     protected function setUp(): void
     {
         $this->client = self::createClient();
+
         $this->loginSuperAdmin($this->client);
         $this->initDoctrineManager();
-
-        /** @var SluggerInterface $slugger */
-        $slugger = self::getContainer()->get(SluggerInterface::class);
-        $this->slugger = $slugger;
-
-        $this->cleanUp();
+        $this->initDatabaseTool([CategoryFixtures::class]);
     }
 
     public function testIndexPageSuccessful(): void
@@ -60,7 +56,7 @@ final class CategoryCrudControllerTest extends WebTestCase
 
     public function testEditPageSuccessful(): void
     {
-        $category = $this->createCategory(true, 'Name DE', 'Name EN');
+        $category = $this->getCategory();
 
         $this->client->request('GET', \sprintf('/admin/category/%s/edit', $category->getId()));
         self::assertResponseIsSuccessful();
@@ -79,7 +75,7 @@ final class CategoryCrudControllerTest extends WebTestCase
 
     public function testDetailPageSuccessful(): void
     {
-        $category = $this->createCategory(true, 'Name DE', 'Name EN');
+        $category = $this->getCategory();
 
         $this->client->request('GET', \sprintf('/admin/category/%s', $category->getId()));
         self::assertResponseIsSuccessful();
@@ -104,7 +100,8 @@ final class CategoryCrudControllerTest extends WebTestCase
         self::assertResponseRedirects();
         $this->client->followRedirect();
 
-        $category = $this->em->getRepository(Category::class)->fetchOneBy(['name' => 'Name DE'], EntityHelper::LOCALE_DE);
+        $category = $this->em->getRepository(Category::class)
+            ->fetchOneBy(['name' => 'Name DE'], EntityHelper::LOCALE_DE);
         self::assertNotNull($category);
         self::assertNull($category->getParent());
         self::assertSame('Name EN', $category->getNameEn());
@@ -112,8 +109,7 @@ final class CategoryCrudControllerTest extends WebTestCase
 
     public function testCreateChildCategory(): void
     {
-        // Call first, otherwise client run setup and deletes the category
-        $parent = $this->createCategory(true, 'ParentName DE', 'ParentName EN');
+        $parent = $this->getCategory(true);
 
         $this->client->request('GET', '/admin/category/new');
         self::assertResponseIsSuccessful();
@@ -140,7 +136,7 @@ final class CategoryCrudControllerTest extends WebTestCase
 
     public function testEditParentCategory(): void
     {
-        $category = $this->createCategory(true, 'Parent DE', 'Parent EN');
+        $category = $this->getCategory(true);
         self::assertNull($category->getParent());
 
         $this->client->request('GET', \sprintf('/admin/category/%s/edit', $category->getId()));
@@ -165,8 +161,8 @@ final class CategoryCrudControllerTest extends WebTestCase
 
     public function testEditChildCategory(): void
     {
-        $parent = $this->createCategory(true, 'Parent DE', 'Parent EN');
-        $child = $this->createCategory(false, 'Child DE', 'Child EN', $parent);
+        $parent = $this->getCategory(true);
+        $child = $this->getCategory();
 
         $this->client->request('GET', \sprintf('/admin/category/%s/edit', $child->getId()));
         self::assertResponseIsSuccessful();
@@ -189,48 +185,23 @@ final class CategoryCrudControllerTest extends WebTestCase
         self::assertSame('Child EN Edited', $updatedChild->getNameEn());
     }
 
-    #[\Override]
-    protected function tearDown(): void
+    private function getCategory(bool $parent = false): Category
     {
-        $this->cleanUp();
-
-        parent::tearDown();
-        $this->em->close();
-        unset($this->em);
-    }
-
-    /**
-     * EventSubscriber of EA does not apply in the text context,
-     * so position and alias must be manually.
-     */
-    private function createCategory(bool $isParent, string $nameDe, string $nameEn, ?Category $parent = null): Category
-    {
-        $category = new Category();
-        $translationDe = new CategoryTranslation()
-            ->setLocale(EntityHelper::LOCALE_DE)
-            ->setName($nameDe)
-            ->setAlias($this->slugger->slug($nameDe)->toString());
-        $translationEn = new CategoryTranslation()
-            ->setLocale(EntityHelper::LOCALE_EN)
-            ->setName($nameEn)
-            ->setAlias($this->slugger->slug($nameEn)->toString());
-
-        $category->addTranslation($translationDe);
-        $category->addTranslation($translationEn);
-
-        if (!$isParent && $parent instanceof Category) {
-            $category->setParent($parent);
+        $qb = $this->em
+            ->getRepository(Category::class)
+            ->createQueryBuilder('c');
+        if ($parent) {
+            $qb->where('c.parent IS NULL');
+        } else {
+            $qb->where('c.parent IS NOT NULL');
         }
 
-        $this->em->persist($category);
-        $this->em->flush();
+        $qb->setMaxResults(1);
 
-        return $category;
-    }
+        if (null !== $result = $qb->getQuery()->getOneOrNullResult()) {
+            return $result;
+        }
 
-    private function cleanUp(): void
-    {
-        $this->em->createQuery('DELETE FROM App\Entity\CategoryTranslation ct')->execute();
-        $this->em->createQuery('DELETE FROM App\Entity\Category c')->execute();
+        throw new \RuntimeException('No category found');
     }
 }
