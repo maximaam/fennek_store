@@ -6,9 +6,8 @@ echo "Git-Hook: running static-analysers and tests before push."
 echo
 
 TEST_DB="var/test.db"
-if [ ! -s "$TEST_DB" ]; then
+if [ -f "$TEST_DB" ]; then
   echo "Initializing test database..."
-  echo
 
   rm -f "$TEST_DB"
   php bin/console doctrine:schema:create --env=test --no-interaction
