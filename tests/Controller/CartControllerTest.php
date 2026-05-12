@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller;
 
+use App\DataFixtures\CategoryFixtures;
 use App\DataFixtures\ProductFixtures;
 use App\Entity\Product;
 use App\Tests\Trait\DoctrineManagerTrait;
@@ -25,7 +26,7 @@ final class CartControllerTest extends WebTestCase
         $this->client = self::createClient();
 
         $this->initDoctrineManager();
-        $this->initDatabaseTool([ProductFixtures::class]);
+        $this->initDatabaseTool([CategoryFixtures::class, ProductFixtures::class]);
     }
 
     public function testIndexDisplaysCart(): void

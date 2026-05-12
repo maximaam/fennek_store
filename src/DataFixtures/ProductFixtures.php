@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\DataFixtures;
 
 use App\Entity\Category;
-use App\Entity\CategoryTranslation;
 use App\Entity\Product;
 use App\Entity\ProductTranslation;
 use App\Helper\EntityHelper;
@@ -18,15 +17,7 @@ final class ProductFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
-        $category = new Category();
-
-        $categoryTranslation = new CategoryTranslation()
-            ->setLocale(EntityHelper::LOCALE_DE)
-            ->setName('Test category')
-            ->setAlias('test-category');
-
-        $category->addTranslation($categoryTranslation);
-
+        $category = $this->getReference(CategoryFixtures::CATEGORY_CHILD_1, Category::class);
         $product = new Product()
             ->setPrice(1000)
             ->setCategory($category);
