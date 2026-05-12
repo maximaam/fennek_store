@@ -4,44 +4,34 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller;
 
-use App\Entity\Category;
-use App\Entity\CategoryTranslation;
+use App\DataFixtures\ProductFixtures;
 use App\Entity\Product;
-use App\Entity\ProductTranslation;
-use App\Helper\EntityHelper;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bridge\Doctrine\ManagerRegistry;
+use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
+use Liip\TestFixturesBundle\Services\DatabaseTools\AbstractDatabaseTool;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\String\Slugger\SluggerInterface;
 
 final class CartControllerTest extends WebTestCase
 {
+    public const string BASE_URL = '/de/cart';
+
     private KernelBrowser $client;
     private EntityManagerInterface $em;
-    private SluggerInterface $slugger;
+    private AbstractDatabaseTool $databaseTool;
 
     protected function setUp(): void
     {
         $this->client = self::createClient();
+        $this->em = self::getContainer()->get('doctrine')->getManager();
+        $this->databaseTool = self::getContainer()->get(DatabaseToolCollection::class)->get();
 
-        /** @var ManagerRegistry $doctrine */
-        $doctrine = self::getContainer()->get('doctrine');
-
-        /** @var EntityManagerInterface $em */
-        $em = $doctrine->getManager();
-        $this->em = $em;
-
-        /** @var SluggerInterface $slugger */
-        $slugger = self::getContainer()->get(SluggerInterface::class);
-        $this->slugger = $slugger;
-
-        $this->cleanUp();
+        $this->databaseTool->loadFixtures([ProductFixtures::class]);
     }
 
     public function testIndexDisplaysCart(): void
     {
-        $this->client->request('GET', '/de/cart/');
+        $this->client->request('GET', self::BASE_URL.'/');
 
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('body');
@@ -49,14 +39,18 @@ final class CartControllerTest extends WebTestCase
 
     public function testAddValidProduct(): void
     {
-        $product = $this->createProduct();
-        $this->client->request('POST', '/de/cart/add/'.$product->getId(), [
+        /** @var Product $product */
+        $product = $this->em
+            ->getRepository(Product::class)
+            ->findOneBy([]);
+
+        $this->client->request('POST', self::BASE_URL.'/add/'.$product->getId(), [
             'quantity' => 2,
             'color' => 'red', // must exist in Color::values()
             'size' => 'L',
         ]);
 
-        self::assertResponseRedirects('/de/cart/');
+        self::assertResponseRedirects(self::BASE_URL.'/');
 
         $cart = CartHelper::getCartFromSession($this->client);
         $itemKey = \sprintf('%d_red_L', $product->getId());
@@ -79,8 +73,12 @@ final class CartControllerTest extends WebTestCase
 
     public function testAddInvalidProduct(): void
     {
-        $product = $this->createProduct();
-        $this->client->request('POST', '/de/cart/add/'.$product->getId(), [
+        /** @var Product $product */
+        $product = $this->em
+            ->getRepository(Product::class)
+            ->findOneBy([]);
+
+        $this->client->request('POST', self::BASE_URL.'/add/'.$product->getId(), [
             'quantity' => 0,
             'color' => '-not-exists',
         ]);
@@ -107,8 +105,8 @@ final class CartControllerTest extends WebTestCase
         $cart = CartHelper::getCartFromSession($this->client);
         self::assertArrayHasKey('1_red_L', $cart);
 
-        $this->client->request('GET', '/de/cart/remove/1_red_L');
-        self::assertResponseRedirects('/de/cart/');
+        $this->client->request('GET', self::BASE_URL.'/remove/1_red_L');
+        self::assertResponseRedirects(self::BASE_URL.'/');
 
         // HTTP request is stateless, so the session gets modified by the request
         $cart = CartHelper::getCartFromSession($this->client);
@@ -121,61 +119,9 @@ final class CartControllerTest extends WebTestCase
             'cart' => ['a' => [], 'b' => []],
         ]);
 
-        $this->client->request('GET', '/de/cart/_fragment/count-items');
+        $this->client->request('GET', self::BASE_URL.'/_fragment/count-items');
 
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('.with-items', '2');
-    }
-
-    private function createProduct(): Product
-    {
-        $product = new Product()
-            ->setPrice(1000)
-            ->setCategory($this->createCategory(true, 'test category', 'test category'));
-        $productTranslation = new ProductTranslation()
-            ->setLocale(EntityHelper::LOCALE_DE)
-            ->setTitle('Test product')
-            ->setDescription('Test product description')
-            ->setSlug('test-product');
-
-        $product->addTranslation($productTranslation);
-
-        $this->em->persist($product);
-        $this->em->flush();
-
-        return $product;
-    }
-
-    private function createCategory(bool $isParent, string $nameDe, string $nameEn, ?Category $parent = null): Category
-    {
-        $category = new Category();
-        $translationDe = new CategoryTranslation()
-            ->setLocale(EntityHelper::LOCALE_DE)
-            ->setName($nameDe)
-            ->setAlias($this->slugger->slug($nameDe)->toString());
-        $translationEn = new CategoryTranslation()
-            ->setLocale(EntityHelper::LOCALE_EN)
-            ->setName($nameEn)
-            ->setAlias($this->slugger->slug($nameEn)->toString());
-
-        $category->addTranslation($translationDe);
-        $category->addTranslation($translationEn);
-
-        if (!$isParent && $parent instanceof Category) {
-            $category->setParent($parent);
-        }
-
-        $this->em->persist($category);
-        $this->em->flush();
-
-        return $category;
-    }
-
-    private function cleanUp(): void
-    {
-        $this->em->createQuery('DELETE FROM App\Entity\ProductTranslation pt')->execute();
-        $this->em->createQuery('DELETE FROM App\Entity\CategoryTranslation ct')->execute();
-        $this->em->createQuery('DELETE FROM App\Entity\Product p')->execute();
-        $this->em->createQuery('DELETE FROM App\Entity\Category c')->execute();
     }
 }

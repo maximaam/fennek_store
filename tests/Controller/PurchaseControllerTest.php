@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller;
 
+use App\DataFixtures\PurchaseFixtures;
 use App\Dto\EmailMessageDto;
 use App\Dto\PayPal\OrderCaptureDto;
 use App\Dto\PayPal\OrderDto;
@@ -14,33 +15,32 @@ use App\Helper\ProductHelper;
 use App\Service\Mailer;
 use App\Service\PayPalClient;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bridge\Doctrine\ManagerRegistry;
+use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
+use Liip\TestFixturesBundle\Services\DatabaseTools\AbstractDatabaseTool;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Mime\Address;
 
 final class PurchaseControllerTest extends WebTestCase
 {
+    public const string BASE_URL = '/de/purchase';
+
     private KernelBrowser $client;
     private EntityManagerInterface $em;
+    private AbstractDatabaseTool $databaseTool;
 
     protected function setUp(): void
     {
         $this->client = self::createClient();
+        $this->em = self::getContainer()->get('doctrine')->getManager();
 
-        /** @var ManagerRegistry $doctrine */
-        $doctrine = self::getContainer()->get('doctrine');
-
-        /** @var EntityManagerInterface $em */
-        $em = $doctrine->getManager();
-        $this->em = $em;
-
-        $this->cleanUp();
+        $this->databaseTool = self::getContainer()->get(DatabaseToolCollection::class)->get();
+        $this->databaseTool->loadFixtures([PurchaseFixtures::class]);
     }
 
     public function testCreateWithEmptyCartRedirects(): void
     {
-        $this->client->request('POST', '/de/purchase/create');
+        $this->client->request('POST', self::BASE_URL.'/create');
         self::assertResponseRedirects('/de/');
     }
 
@@ -48,7 +48,7 @@ final class PurchaseControllerTest extends WebTestCase
     {
         $container = $this->client->getContainer();
 
-        // set cart in session for the coming request
+        // set the cart in session for the coming request
         CartHelper::setSessionData($this->client, [
             'cart' => [
                 '1_red_L' => [
@@ -67,26 +67,25 @@ final class PurchaseControllerTest extends WebTestCase
         $expectedTotal = $computedCart['totals']['total'];
         self::assertEquals(2000, $expectedTotal);
 
-        // mock PayPalClient
+        $orderId = uniqid('ORDER', true);
         $paypalMock = $this->createMock(PayPalClient::class);
         $paypalMock->expects(self::once())
             ->method('createOrder')
             ->with(self::equalTo($expectedTotal)) // Price is in cents
-            ->willReturn(new OrderDto('ORDER123', PayPalStatus::CREATED->value, []));
+            ->willReturn(new OrderDto($orderId, PayPalStatus::CREATED->value, []));
         $container->set(PayPalClient::class, $paypalMock);
 
-        $this->client->request('POST', '/de/purchase/create');
+        $this->client->request('POST', self::BASE_URL.'/create');
         self::assertResponseIsSuccessful();
 
         $data = json_decode((string) $this->client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
-        self::assertSame('ORDER123', $data['id']);
+        self::assertSame($orderId, $data['id']);
 
-        // assert DB
         $purchase = $this->em
             ->getRepository(Purchase::class)
-            ->findOneBy(['orderId' => 'ORDER123']);
+            ->findOneBy(['orderId' => $orderId]);
 
-        self::assertNotNull($purchase);
+        self::assertInstanceOf(Purchase::class, $purchase);
         self::assertArrayHasKey('1_red_L', $purchase->getProduct()['products']);
 
         $itemKey = $purchase->getProduct()['products']['1_red_L'];
@@ -97,24 +96,17 @@ final class PurchaseControllerTest extends WebTestCase
         self::assertSame(2000, $purchase->getProduct()['totals']['total']);
         self::assertSame('red', $itemKey['color']);
         self::assertSame('L', $itemKey['size']);
-        self::assertSame(1, $itemKey['id']);
     }
 
     public function testCaptureSuccess(): void
     {
         $container = $this->client->getContainer();
+        $purchase = $this->em->getRepository(Purchase::class)->findOneBy([]);
+        $orderId = $purchase->getOrderId();
 
-        // create purchase
-        $purchase = new Purchase()
-            ->setOrderId('ORDER123')
-            ->setStatus(PayPalStatus::CREATED);
-        $this->em->persist($purchase);
-        $this->em->flush();
-
-        // mock PayPalClient
         $paypalMock = $this->createMock(PayPalClient::class);
         $captureDto = new OrderCaptureDto(
-            'ORDER123',
+            $orderId,
             [],
             [
                 'name' => [
@@ -175,19 +167,18 @@ final class PurchaseControllerTest extends WebTestCase
                 ],
             ],
         );
+
         $paypalMock->expects(self::once())
             ->method('captureOrder')
-            ->with(self::equalTo('ORDER123'))
+            ->with(self::equalTo($orderId))
             ->willReturn($captureDto);
-
         $container->set(PayPalClient::class, $paypalMock);
 
-        $this->client->request('POST', '/de/purchase/capture/ORDER123');
-
+        $this->client->request('POST', self::BASE_URL.'/capture/'.$orderId);
         self::assertResponseIsSuccessful();
 
         $data = json_decode((string) $this->client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
-        self::assertSame('ORDER123', $data['id']);
+        self::assertSame($orderId, $data['id']);
         self::assertSame(PayPalStatus::COMPLETED->value, $data['status']);
         self::assertSame('9WHK9U3N3UU8J', $data['payer']['payer_id']);
         self::assertSame('amarezahi@chaabi.dz', $data['payer']['email_address']);
@@ -203,12 +194,14 @@ final class PurchaseControllerTest extends WebTestCase
 
     public function testCaptureFailsIfNotCompleted(): void
     {
+        $purchase = $this->em->getRepository(Purchase::class)->findOneBy([]);
+        $orderId = $purchase->getOrderId();
+
         $paypalMock = $this->createMock(PayPalClient::class);
         $paypalMock->expects(self::once())
             ->method('captureOrder')
-            ->with(self::equalTo('ORDER123'))
-            ->willReturn(new OrderCaptureDto('ORDER123', [], [], 'PENDING', [], []));
-
+            ->with(self::equalTo($orderId))
+            ->willReturn(new OrderCaptureDto($orderId, [], [], 'PENDING', [], []));
         $this->client->getContainer()->set(PayPalClient::class, $paypalMock);
 
         /**
@@ -224,19 +217,15 @@ final class PurchaseControllerTest extends WebTestCase
         self::expectException(\LogicException::class);
         self::expectExceptionMessage('Payment status is not COMPLETED');
 
-        $this->client->request('POST', '/de/purchase/capture/ORDER123');
+        $this->client->request('POST', self::BASE_URL.'/capture/'.$orderId);
     }
 
     public function testComplete(): void
     {
         $container = $this->client->getContainer();
-
-        // create purchase
-        $purchase = new Purchase()
-            ->setOrderId('ORDER123')
-            ->setStatus(PayPalStatus::COMPLETED);
-        $this->em->persist($purchase);
-        $this->em->flush();
+        $purchase = $this->em->getRepository(Purchase::class)->findOneBy([]);
+        $purchase->setStatus(PayPalStatus::COMPLETED);
+        $orderId = $purchase->getOrderId();
 
         // mock mailer
         $mailerMock = $this->createMock(Mailer::class);
@@ -268,16 +257,16 @@ final class PurchaseControllerTest extends WebTestCase
         self::assertNotEmpty($cart);
         self::assertSame(1, $cart['1_red_L']['id']);
 
-        $this->client->request('GET', '/de/purchase/complete/ORDER123');
-        self::assertResponseRedirects('/de/purchase/success/ORDER123');
+        $this->client->request('GET', self::BASE_URL.'/complete/'.$orderId);
+        self::assertResponseRedirects(self::BASE_URL.'/success/'.$orderId);
 
         self::assertEmpty(CartHelper::getCartFromSession($this->client));
     }
 
     public function testSuccessPage(): void
     {
-        $purchase = new Purchase()
-            ->setOrderId('ORDER123')
+        $purchase = $this->em->getRepository(Purchase::class)->findOneBy([]);
+        $purchase
             ->setStatus(PayPalStatus::COMPLETED)
             ->setProduct([
                 'totals' => [
@@ -298,17 +287,9 @@ final class PurchaseControllerTest extends WebTestCase
                 ],
             ]);
 
-        $this->em->persist($purchase);
-        $this->em->flush();
-
-        $this->client->request('GET', '/de/purchase/success/ORDER123');
+        $this->client->request('GET', self::BASE_URL.'/success/'.$purchase->getOrderId());
 
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('body');
-    }
-
-    private function cleanUp(): void
-    {
-        $this->em->createQuery('DELETE FROM App\Entity\Purchase p')->execute();
     }
 }

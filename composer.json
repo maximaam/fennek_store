@@ -55,8 +55,10 @@
         "vich/uploader-bundle": "^2.9.2"
     },
     "require-dev": {
+        "dama/doctrine-test-bundle": "^8.6",
         "doctrine/doctrine-fixtures-bundle": "^4.3",
         "friendsofphp/php-cs-fixer": "^3.95.1",
+        "liip/test-fixtures-bundle": "^3.9",
         "phpstan/phpstan": "^2.1.54",
         "phpstan/phpstan-doctrine": "^2.0.21",
         "phpstan/phpstan-strict-rules": "^2.0.11",

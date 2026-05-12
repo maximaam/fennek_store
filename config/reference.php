@@ -1634,6 +1634,20 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     },
  *     ignore_not_found?: bool|Param, // Ignore error when an icon is not found. Set to 'true' to fail silently. // Default: false
  * }
+ * @psalm-type DamaDoctrineTestConfig = array{
+ *     enable_static_connection?: mixed, // Default: true
+ *     enable_static_meta_data_cache?: bool|Param, // Default: true
+ *     enable_static_query_cache?: bool|Param, // Default: true
+ *     connection_keys?: list<mixed>,
+ * }
+ * @psalm-type LiipTestFixturesConfig = array{
+ *     cache_db?: array{
+ *         sqlite?: scalar|Param|null, // Default: null
+ *         ...<string, mixed>
+ *     },
+ *     keep_database_and_schema?: bool|Param, // Default: false
+ *     cache_metadata?: bool|Param, // Default: true
+ * }
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
  *     parameters?: ParametersConfig,
@@ -1673,6 +1687,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         liip_imagine?: LiipImagineConfig,
  *         knp_menu?: KnpMenuConfig,
  *         ux_icons?: UxIconsConfig,
+ *         liip_test_fixtures?: LiipTestFixturesConfig,
  *     },
  *     "when@prod"?: array{
  *         imports?: ImportsConfig,
@@ -1712,6 +1727,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         liip_imagine?: LiipImagineConfig,
  *         knp_menu?: KnpMenuConfig,
  *         ux_icons?: UxIconsConfig,
+ *         dama_doctrine_test?: DamaDoctrineTestConfig,
+ *         liip_test_fixtures?: LiipTestFixturesConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias
  *         imports?: ImportsConfig,
