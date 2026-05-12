@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller\Admin;
 
-use App\DataFixtures\CategoryFixtures;
-use App\DataFixtures\ProductFixtures;
 use App\Tests\Trait\LoginUserTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
