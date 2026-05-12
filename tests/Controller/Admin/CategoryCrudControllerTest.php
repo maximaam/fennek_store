@@ -24,6 +24,7 @@ final class CategoryCrudControllerTest extends WebTestCase
     {
         $this->client = self::createClient();
         $this->loginSuperAdmin($this->client);
+        $this->initDoctrineManager();
 
         /** @var SluggerInterface $slugger */
         $slugger = self::getContainer()->get(SluggerInterface::class);
