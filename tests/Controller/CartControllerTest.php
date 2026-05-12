@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller;
 
-use App\DataFixtures\ProductFixtures;use App\Entity\Product;
+use App\DataFixtures\ProductFixtures;
+use App\Entity\Product;
 use App\Tests\Trait\DoctrineManagerTrait;
 use App\Tests\Trait\LiipDatabaseToolTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;

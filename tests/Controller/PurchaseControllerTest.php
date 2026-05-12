@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller;
 
-use App\DataFixtures\PurchaseFixtures;use App\Dto\EmailMessageDto;
+use App\DataFixtures\PurchaseFixtures;
+use App\Dto\EmailMessageDto;
 use App\Dto\PayPal\OrderCaptureDto;
 use App\Dto\PayPal\OrderDto;
 use App\Entity\Purchase;
