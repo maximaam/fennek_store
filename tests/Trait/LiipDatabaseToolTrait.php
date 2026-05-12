@@ -12,7 +12,7 @@ trait LiipDatabaseToolTrait
     private AbstractDatabaseTool $databaseTool;
 
     /**
-     * @param array<class-string> $fixtures
+     * @param list<string> $fixtures
      */
     protected function initDatabaseTool(array $fixtures): void
     {
