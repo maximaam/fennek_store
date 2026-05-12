@@ -14,8 +14,7 @@ use App\Factory\EmailFactory;
 use App\Helper\ProductHelper;
 use App\Service\Mailer;
 use App\Service\PayPalClient;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Persistence\ManagerRegistry;
+use App\Tests\Trait\DoctrineManagerTrait;
 use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
 use Liip\TestFixturesBundle\Services\DatabaseTools\AbstractDatabaseTool;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -24,21 +23,17 @@ use Symfony\Component\Mime\Address;
 
 final class PurchaseControllerTest extends WebTestCase
 {
+    use DoctrineManagerTrait;
     public const string BASE_URL = '/de/purchase';
 
     private KernelBrowser $client;
-    private EntityManagerInterface $em;
     private AbstractDatabaseTool $databaseTool;
 
     protected function setUp(): void
     {
         $this->client = self::createClient();
 
-        /** @var ManagerRegistry $doctrine */
-        $doctrine = self::getContainer()->get('doctrine');
-        /** @var EntityManagerInterface $em */
-        $em = $doctrine->getManager();
-        $this->em = $em;
+        $this->initDoctrineManager();
 
         /** @var DatabaseToolCollection $databaseToolCollection */
         $databaseToolCollection = self::getContainer()->get(DatabaseToolCollection::class);

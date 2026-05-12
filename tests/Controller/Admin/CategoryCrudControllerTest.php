@@ -7,31 +7,23 @@ namespace App\Tests\Controller\Admin;
 use App\Entity\Category;
 use App\Entity\CategoryTranslation;
 use App\Helper\EntityHelper;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bridge\Doctrine\ManagerRegistry;
+use App\Tests\Trait\DoctrineManagerTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 final class CategoryCrudControllerTest extends WebTestCase
 {
+    use DoctrineManagerTrait;
     use LoginUserTrait;
 
     private KernelBrowser $client;
-    private EntityManagerInterface $em;
     private SluggerInterface $slugger;
 
     protected function setUp(): void
     {
         $this->client = self::createClient();
         $this->loginSuperAdmin($this->client);
-
-        /** @var ManagerRegistry $doctrine */
-        $doctrine = self::getContainer()->get('doctrine');
-
-        /** @var EntityManagerInterface $em */
-        $em = $doctrine->getManager();
-        $this->em = $em;
 
         /** @var SluggerInterface $slugger */
         $slugger = self::getContainer()->get(SluggerInterface::class);

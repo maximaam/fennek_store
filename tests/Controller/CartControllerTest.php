@@ -6,8 +6,7 @@ namespace App\Tests\Controller;
 
 use App\DataFixtures\ProductFixtures;
 use App\Entity\Product;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Persistence\ManagerRegistry;
+use App\Tests\Trait\DoctrineManagerTrait;
 use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
 use Liip\TestFixturesBundle\Services\DatabaseTools\AbstractDatabaseTool;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -15,21 +14,17 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 final class CartControllerTest extends WebTestCase
 {
+    use DoctrineManagerTrait;
     public const string BASE_URL = '/de/cart';
 
     private KernelBrowser $client;
-    private EntityManagerInterface $em;
     private AbstractDatabaseTool $databaseTool;
 
     protected function setUp(): void
     {
         $this->client = self::createClient();
 
-        /** @var ManagerRegistry $doctrine */
-        $doctrine = self::getContainer()->get('doctrine');
-        /** @var EntityManagerInterface $em */
-        $em = $doctrine->getManager();
-        $this->em = $em;
+        $this->initDoctrineManager();
 
         /** @var DatabaseToolCollection $databaseToolCollection */
         $databaseToolCollection = self::getContainer()->get(DatabaseToolCollection::class);
