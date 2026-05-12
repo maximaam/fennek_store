@@ -1,11 +1,16 @@
 #!/bin/sh
 
-echo "Running static-analysers and tests before push..."
+set -e
+
+echo "Git-Hook: running static-analysers and tests before push."
+echo
 
 TEST_DB="var/test.db"
+if [ ! -s "$TEST_DB" ]; then
+  echo "Initializing test database..."
+  echo
 
-if [ ! -f "$TEST_DB" ]; then
-  echo "Test database not found. Creating..."
+  rm -f "$TEST_DB"
   php bin/console doctrine:schema:create --env=test --no-interaction
   # php bin/console doctrine:fixtures:load --env=test --no-interaction
 fi
@@ -17,4 +22,4 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-echo "Push allowed."
+echo "Push successful."
