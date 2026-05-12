@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Trait;
 
-use App\DataFixtures\ProductFixtures;
 use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
 use Liip\TestFixturesBundle\Services\DatabaseTools\AbstractDatabaseTool;
 
