@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller\Admin;
 
-use App\Tests\Trait\LoginUserTrait;use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Tests\Trait\LoginUserTrait;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 final class DashboardControllerTest extends WebTestCase
 {
