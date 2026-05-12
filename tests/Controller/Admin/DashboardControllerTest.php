@@ -4,32 +4,39 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller\Admin;
 
+use App\DataFixtures\CategoryFixtures;
+use App\DataFixtures\ProductFixtures;
 use App\Tests\Trait\LoginUserTrait;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 final class DashboardControllerTest extends WebTestCase
 {
     use LoginUserTrait;
 
+    private KernelBrowser $client;
+
+    protected function setUp(): void
+    {
+        $this->client = self::createClient();
+    }
+
     public function testIndexIsRedirect(): void
     {
-        $client = self::createClient();
-        $client->request('GET', '/admin');
-
+        $this->client->request('GET', '/admin');
         self::assertResponseRedirects();
     }
 
     public function testIndexIsLogged(): void
     {
-        $client = self::createClient();
-        $this->loginSuperAdmin($client);
+        $this->loginSuperAdmin($this->client);
 
-        $client->request('GET', '/admin');
+        $this->client->request('GET', '/admin');
         self::assertResponseRedirects();
 
-        $client->followRedirect();
+        $this->client->followRedirect();
         self::assertResponseIsSuccessful();
         self::assertPageTitleContains('Produkte Liste');
-        self::assertSame('/admin/product', $client->getRequest()->getPathInfo());
+        self::assertSame('/admin/product', $this->client->getRequest()->getPathInfo());
     }
 }
