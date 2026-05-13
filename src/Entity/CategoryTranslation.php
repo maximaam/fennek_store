@@ -27,7 +27,7 @@ class CategoryTranslation
     private string $name;
 
     #[ORM\Column(length: 128)]
-    #[Gedmo\Slug(fields: ['bane'])]
+    #[Gedmo\Slug(fields: ['name'])]
     private string $alias;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
