@@ -206,43 +206,48 @@ class Product
         throw new \InvalidArgumentException(\sprintf('No translation found for locale "%s".', $locale));
     }
 
-    public function getTitleDe(): string
-    {
-        return $this->getTranslationByLocale(EntityHelper::LOCALE_DE)
-            ->getTitle();
-    }
-
-    public function getTitleEn(): string
-    {
-        return $this->getTranslationByLocale(EntityHelper::LOCALE_EN)
-            ->getTitle();
-    }
-
-    public function getDescriptionDe(): string
-    {
-        return $this->getTranslationByLocale(EntityHelper::LOCALE_DE)
-            ->getDescription();
-    }
-
-    public function getDescriptionEn(): string
-    {
-        return $this->getTranslationByLocale(EntityHelper::LOCALE_EN)
-            ->getDescription();
-    }
-
-    public function getTitleSlug(string $locale): string
-    {
-        return $this->getTranslationByLocale($locale)
-            ->getSlug();
-    }
-
     public function getTitle(string $locale): string
     {
         return $this->getTranslationByLocale($locale)->getTitle();
     }
 
+    public function getTitleDe(): string
+    {
+        return $this->getTitle(EntityHelper::LOCALE_DE);
+    }
+
+    public function getTitleEn(): string
+    {
+        return $this->getTitle(EntityHelper::LOCALE_EN);
+    }
+
     public function getDescription(string $locale): string
     {
         return $this->getTranslationByLocale($locale)->getDescription();
+    }
+
+    public function getDescriptionDe(): string
+    {
+        return $this->getDescription(EntityHelper::LOCALE_DE);
+    }
+
+    public function getDescriptionEn(): string
+    {
+        return $this->getDescription(EntityHelper::LOCALE_EN);
+    }
+
+    public function getSlug(string $locale): string
+    {
+        return $this->getTranslationByLocale($locale)->getSlug();
+    }
+
+    public function getSlugDe(): string
+    {
+        return $this->getSlug(EntityHelper::LOCALE_DE);
+    }
+
+    public function getSlugEn(): string
+    {
+        return $this->getSlug(EntityHelper::LOCALE_EN);
     }
 }

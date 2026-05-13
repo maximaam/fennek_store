@@ -66,7 +66,7 @@ final class CartControllerTest extends WebTestCase
         self::assertSame(1000, $cart[$itemKey]['price']);
         self::assertSame(2000, $cart[$itemKey]['full_price']);
         self::assertStringContainsString(
-            \sprintf('/de/%s/%s', $product->getCategory()->getAlias($locale), $product->getTitleSlug($locale)),
+            \sprintf('/de/%s/%s', $product->getCategory()->getAlias($locale), $product->getSlug($locale)),
             $cart[$itemKey]['item_url'],
         );
     }

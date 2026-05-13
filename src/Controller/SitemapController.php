@@ -96,7 +96,7 @@ final class SitemapController extends AbstractController
                     'app_index_catalogue',
                     [
                         'category' => $product->getCategory()->getAlias($locale),
-                        'productSlug' => $product->getTitleSlug($locale),
+                        'productSlug' => $product->getSlug($locale),
                         '_locale' => $locale,
                     ],
                     UrlGeneratorInterface::ABSOLUTE_URL

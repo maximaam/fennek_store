@@ -32,11 +32,11 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\MoneyField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
-use EasyCorp\Bundle\EasyAdminBundle\Filter\NumericFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -270,7 +270,9 @@ final class ProductCrudController extends AbstractCrudController
     private function getDetailFields(): iterable
     {
         yield FormField::addColumn(12);
-        yield DateField::new('createdAt', 'label.date.created_at');
+        yield DateTimeField::new('createdAt', 'date.created_at');
+        yield FormField::addColumn(12);
+        yield DateTimeField::new('updatedAt', 'date.updated_at');
         yield FormField::addColumn(12);
         yield TextField::new('category', 'category.singular');
         yield FormField::addColumn(12);
@@ -279,13 +281,13 @@ final class ProductCrudController extends AbstractCrudController
         yield FormField::addColumn(6);
         yield FormField::addFieldset('label.german');
         yield TextField::new('titleDe', 'label.title.all');
-        // yield TextField::new('aliasDe');
+        yield TextField::new('slugDe', 'label.alias.all');
         yield TextField::new('descriptionDe', 'label.description.all');
 
         yield FormField::addColumn(6);
         yield FormField::addFieldset('label.english');
         yield TextField::new('titleEn', 'label.title.all');
-        // yield TextField::new('aliasEn');
+        yield TextField::new('slugEn', 'label.alias.all');
         yield TextField::new('descriptionEn', 'label.description.all');
 
         yield FormField::addColumn(12);
