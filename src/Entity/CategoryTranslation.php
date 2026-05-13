@@ -7,6 +7,7 @@ namespace App\Entity;
 use App\Repository\CategoryTranslationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 #[ORM\Entity(repositoryClass: CategoryTranslationRepository::class)]
 #[ORM\Index(name: 'idx_category_alias', columns: ['alias'])]
@@ -26,6 +27,7 @@ class CategoryTranslation
     private string $name;
 
     #[ORM\Column(length: 128)]
+    #[Gedmo\Slug(fields: ['bane'])]
     private string $alias;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]

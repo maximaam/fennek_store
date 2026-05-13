@@ -5,28 +5,18 @@ declare(strict_types=1);
 namespace App\Traits;
 
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 #[ORM\HasLifecycleCallbacks]
 trait TimestampableTrait
 {
     #[ORM\Column(type: 'datetime_immutable')]
+    #[Gedmo\Timestampable(on: 'create')]
     private \DateTimeImmutable $createdAt;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    #[Gedmo\Timestampable(on: 'create')]
     private ?\DateTimeImmutable $updatedAt = null;
-
-    #[ORM\PrePersist]
-    public function setCreatedAtValue(): void
-    {
-        $this->createdAt = new \DateTimeImmutable();
-        $this->updatedAt = new \DateTimeImmutable();
-    }
-
-    #[ORM\PreUpdate]
-    public function setUpdatedAtValue(): void
-    {
-        $this->updatedAt = new \DateTimeImmutable();
-    }
 
     public function getCreatedAt(): \DateTimeImmutable
     {

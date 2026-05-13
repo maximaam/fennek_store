@@ -7,6 +7,7 @@ namespace App\Entity;
 use App\Repository\PageTranslationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 #[ORM\Entity(repositoryClass: PageTranslationRepository::class)]
 #[ORM\Index(name: 'idx_page_alias', columns: ['alias'])]
@@ -29,6 +30,7 @@ class PageTranslation
     private string $description;
 
     #[ORM\Column(length: 64)]
+    #[Gedmo\Slug(fields: ['title'])]
     private string $alias;
 
     #[ORM\ManyToOne(inversedBy: 'translations')]

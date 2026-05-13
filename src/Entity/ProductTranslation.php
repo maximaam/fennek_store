@@ -7,6 +7,7 @@ namespace App\Entity;
 use App\Repository\ProductTranslationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 #[ORM\Entity(repositoryClass: ProductTranslationRepository::class)]
 #[ORM\Index(name: 'idx_product_slug', columns: ['slug'])]
@@ -29,6 +30,7 @@ class ProductTranslation
     private string $description;
 
     #[ORM\Column(length: 255)]
+    #[Gedmo\Slug(fields: ['title'])]
     private string $slug;
 
     #[ORM\ManyToOne(inversedBy: 'translations')]
