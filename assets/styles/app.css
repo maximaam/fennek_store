@@ -71,6 +71,11 @@ img.logo {
 .nav-item.current a.nav-link {
     color: var(--light-green) !important;
 }
+
+.sidebar-header-mobile {
+    display: none;
+}
+
 .navbar-cart {
     position: relative;
     margin: 0 1rem;
@@ -308,6 +313,9 @@ footer.main-footer {
 @media only screen and (min-width : 320px) and (max-width : 480px) {
     .sidebar-header {
         display: none;
+    }
+    .sidebar-header-mobile {
+        display: block;
     }
     .navbar-brand span {
         display: inline-block;

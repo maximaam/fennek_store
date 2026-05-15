@@ -12,6 +12,9 @@
                 <div class="sidebar-header">
                     {% include 'partials/_sub_categories.html.twig' %}
                 </div>
+                <div class="sidebar-header-mobile">
+                    {% include 'partials/_sub_categories_mobile.html.twig' %}
+                </div>
                 <blockquote class="cat-desc">
                     {% if sub_categories != null and category.description != null %}
                         <i class="fa fa-quote-right"></i>

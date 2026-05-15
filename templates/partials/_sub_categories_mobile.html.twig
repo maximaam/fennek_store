@@ -1,0 +1,9 @@
+<label for="sub_category"></label>
+<select name="sub_category" id="sub_category" class="mb-3 p-2" onchange="window.location.href = this.options[this.selectedIndex].value;">
+    <option value="">{{ 'category.form_select'|trans }}</option>
+    {% for sub_category in sub_categories %}
+        <option value="{{ path('app_index_catalogue', {'category': sub_category.alias }) }}" {{ app.request.attributes.get('category') == sub_category.alias ? 'selected' : ''}}>
+            {{ sub_category.name }}
+        </option>
+    {% endfor %}
+</select>

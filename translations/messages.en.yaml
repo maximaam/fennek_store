@@ -48,6 +48,7 @@ category:
     plural: Categories
     list: Category list
     parent: Parent category
+    form_select: Select category
 
 product:
     singular: Product

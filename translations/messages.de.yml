@@ -49,6 +49,7 @@ category:
   plural: Kategorien
   list: Kategorien Liste
   parent: Parent Kategorie
+  form_select: Kategorie auswählen
 
 product:
   singular: Produkt
