@@ -189,7 +189,8 @@ final class CategoryCrudController extends AbstractCrudController
     {
         yield FormField::addColumn(12);
         yield IntegerField::new('position');
-        yield DateTimeField::new('createdAt');
+        yield DateTimeField::new('createdAt', 'date.created_at');
+        yield DateTimeField::new('updatedAt', 'date.updated_at');
 
         yield FormField::addColumn(12);
         yield FormField::addFieldset('label.german');

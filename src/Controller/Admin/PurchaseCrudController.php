@@ -124,6 +124,7 @@ final class PurchaseCrudController extends AbstractCrudController
         yield FormField::addColumn(12);
         yield FormField::addFieldset('purchase.singular');
         yield DateTimeField::new('createdAt', 'date.created_at');
+        yield DateTimeField::new('updatedAt', 'date.updated_at');
         yield TextField::new('orderId', 'purchase.id');
         yield MoneyField::new('totalAmount', 'purchase.total_amount')
             ->setCurrency('EUR');
