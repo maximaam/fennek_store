@@ -156,6 +156,9 @@ final class PageCrudController extends AbstractCrudController
         yield DateTimeField::new('createdAt');
 
         yield FormField::addColumn(12);
+        yield DateTimeField::new('updatedAt');
+
+        yield FormField::addColumn(12);
         yield FormField::addFieldset('label.german');
         yield TextField::new('titleDe', 'label.title.all');
         yield TextField::new('descriptionDe', 'label.description.all');
