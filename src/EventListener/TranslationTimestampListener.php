@@ -13,7 +13,7 @@ use Doctrine\ORM\Events;
 
 /**
  * Update the parent entity's updated_at field when a translation is updated.
- * Because Doctrine doesn't update the parent entity when a translation is updated,.
+ * Because Doctrine doesn't update the parent entity when a translation is updated.
  */
 #[AsDoctrineListener(event: Events::onFlush)]
 final readonly class TranslationTimestampListener
